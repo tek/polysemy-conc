@@ -1,0 +1,47 @@
+name: polysemy-conc
+synopsis: Polysemy Effects for Concurrency
+description: See <https://hackage.haskell.org/package/polysemy-conc/docs/Polysemy-Conc.html>
+<<: !include shared/meta.yaml
+defaults:
+  local: shared/defaults.yaml
+
+extra-source-files:
+  - readme.md
+  - Changelog.md
+
+library:
+  source-dirs: lib
+  other-modules:
+    - Prelude
+  generated-other-modules:
+    - Paths_polysemy_conc
+
+dependencies:
+  - async
+  - name: base
+    version: ">= 4 && < 5"
+    mixin:
+      - hiding (Prelude)
+  - containers
+  - stm
+  - stm-chans
+  - template-haskell
+  - unix
+
+tests:
+  polysemy-conc-unit:
+    main: Main.hs
+    source-dirs: test
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+    dependencies:
+      - hedgehog
+      - name: polysemy-conc
+        mixin:
+          - hiding (Prelude)
+          - (Polysemy.Conc.Prelude as Prelude)
+      - polysemy-test
+      - tasty
+      - tasty-hedgehog

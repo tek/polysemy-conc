@@ -1,0 +1,7 @@
+cradle:
+  cabal:
+    - path: "./packages/conc/lib"
+      component: "lib:polysemy-conc"
+
+    - path: "./packages/conc/test"
+      component: "polysemy-conc:test:polysemy-conc-unit"
