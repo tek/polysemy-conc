@@ -19,6 +19,7 @@ import Polysemy.Conc.Data.Queue (Queue)
 import Polysemy.Conc.Data.Race (Race)
 import Polysemy.Conc.Queue.Result (closedBoolResult, closedNaResult, closedResult)
 import Polysemy.Conc.Queue.Timeout (withTimeout)
+import Polysemy.Resource (bracket, Resource)
 
 -- |Interpret 'Queue' with a 'TBMQueue'.
 --
@@ -56,11 +57,11 @@ interpretQueueTBMWith queue =
 -- |Interpret 'Queue' with a 'TBMQueue'.
 interpretQueueTBM ::
   ∀ d r .
-  Members [Race, Embed IO] r =>
+  Members [Resource, Race, Embed IO] r =>
   -- |Buffer size
   Int ->
   InterpreterFor (Queue d) r
 interpretQueueTBM maxQueued sem = do
-  queue <- embed (newTBMQueueIO @d maxQueued)
-  interpretQueueTBMWith queue sem
+  bracket (embed (newTBMQueueIO @d maxQueued)) (atomically . closeTBMQueue) \ queue ->
+    interpretQueueTBMWith queue sem
 {-# INLINE interpretQueueTBM #-}
