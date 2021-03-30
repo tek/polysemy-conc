@@ -37,6 +37,7 @@ library
       Polysemy.Conc.Data.Sync
       Polysemy.Conc.Interrupt
       Polysemy.Conc.Prelude
+      Polysemy.Conc.Queue
       Polysemy.Conc.Queue.Result
       Polysemy.Conc.Queue.TB
       Polysemy.Conc.Queue.TBM
