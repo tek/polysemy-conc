@@ -7,6 +7,7 @@ module Polysemy.Conc (
   -- $queue
   Queue,
   QueueResult,
+  resultToMaybe,
 
   -- ** Interpreters
   interpretQueueTBM,
@@ -44,6 +45,7 @@ import Polysemy.Conc.Data.QueueResult (QueueResult)
 import Polysemy.Conc.Data.Race (Race, race, timeout)
 import Polysemy.Conc.Data.Sync (Sync)
 import Polysemy.Conc.Interrupt (interpretInterrupt)
+import Polysemy.Conc.Queue.Result (resultToMaybe)
 import Polysemy.Conc.Queue.TB (interpretQueueTB)
 import Polysemy.Conc.Queue.TBM (interpretQueueTBM)
 import Polysemy.Conc.Race (interpretRace, race_, timeout_)
