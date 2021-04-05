@@ -24,10 +24,14 @@
       polysemy-chronos = source.sub polysemy-time "packages/chronos";
     };
 
-    compatOverrides = { hackage, ... }: {
+    compatOverrides = { hackage, source, only, ... }: {
+      polysemy = only "865" (hackage "1.4.0.0" "04bl0w7z35jh63jpy87sa1rrbgqhwn7c0pxsm5l3ww0pjnswkhjj");
       polysemy-test = hackage "0.3.1.1" "0x0zg1kljr7a1mwmm3zrmha5inz3l2pkldnq65fvsig8f3x8rsar";
-      polysemy-time = hackage "0.1.2.0" "1v7lxmz36pkdx8rdgy2dm5cplvfrp4p65b1mncwmhrvvr26zb5bj";
-      polysemy-chronos = hackage "0.1.2.0" "192h42wx6j2a9612agv08z36h2za9m7havwh1d7vd5vpmkgyb8a3";
+      polysemy-time = source.sub polysemy-time "packages/time";
+      polysemy-chronos = source.sub polysemy-time "packages/chronos";
+      # TODO wait for metadata on hackage to update
+      # polysemy-time = hackage "0.1.2.0" "1v7lxmz36pkdx8rdgy2dm5cplvfrp4p65b1mncwmhrvvr26zb5bj";
+      # polysemy-chronos = hackage "0.1.2.0" "192h42wx6j2a9612agv08z36h2za9m7havwh1d7vd5vpmkgyb8a3";
     };
   in
   tryp-hs.flake {
