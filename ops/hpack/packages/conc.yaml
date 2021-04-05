@@ -23,9 +23,13 @@ dependencies:
     mixin:
       - hiding (Prelude)
   - containers
+  - polysemy-time ^>= 0.1.2.0
+  - relude >= 0.7 && < 1.2
   - stm
-  - stm-chans
+  - stm-chans >= 2 && < 3.1
+  - string-interpolate >= 0.2 && < 0.4
   - template-haskell
+  - time
   - unix
 
 tests:

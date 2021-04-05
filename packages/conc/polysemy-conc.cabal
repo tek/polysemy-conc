@@ -118,7 +118,7 @@ library
     , polysemy-time >=0.1.2.0 && <0.2
     , relude >=0.7 && <1.2
     , stm
-    , stm-chans
+    , stm-chans >=2 && <3.1
     , string-interpolate >=0.2 && <0.4
     , template-haskell
     , text
@@ -208,7 +208,7 @@ test-suite polysemy-conc-unit
     , polysemy-time >=0.1.2.0 && <0.2
     , relude >=0.7 && <1.2
     , stm
-    , stm-chans
+    , stm-chans >=2 && <3.1
     , string-interpolate >=0.2 && <0.4
     , tasty
     , tasty-hedgehog
