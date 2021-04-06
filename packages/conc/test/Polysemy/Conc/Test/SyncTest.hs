@@ -9,40 +9,46 @@ import Polysemy.Conc.Data.Sync (Sync)
 import Polysemy.Conc.Race (interpretRace)
 import Polysemy.Conc.Sync (interpretSync)
 
+data Thread1 = Thread1
+data Thread2 = Thread2
+
 thread1 ::
-  Members [Sync Int, Sync ()] r =>
+  Members [Sync Int, Sync Thread1, Sync Thread2] r =>
   Sem r Int
 thread1 = do
   a <- Sync.takeBlock @Int
   Sync.putBlock (a + 1)
-  Sync.putBlock ()
-  Sync.takeBlock @()
+  Sync.putBlock Thread2
+  Sync.takeBlock @Thread1
   Sync.takeBlock
 
 thread2 ::
-  Members [Sync Int, Sync ()] r =>
+  Members [Sync Int, Sync Thread1, Sync Thread2] r =>
   Sem r Int
 thread2 = do
   Sync.takeTry @Int >>= \case
     Just a -> pure a
     Nothing -> do
       Sync.putBlock @Int 1
-      Sync.takeBlock @()
+      Sync.takeBlock @Thread2
       a <- Sync.takeBlock
       Sync.putBlock (a + 1)
-      Sync.putBlock ()
+      Sync.putBlock Thread1
       pure a
 
 run ::
   Members [Embed IO, Final IO] r =>
-  Sem (Race : Async : r) a ->
+  Sem (Sync Int : Sync Thread2 : Sync Thread1 : Race : Async : r) a ->
   Sem r a
 run =
   asyncToIOFinal .
-  interpretRace
+  interpretRace .
+  interpretSync @Thread1 .
+  interpretSync @Thread2 .
+  interpretSync @Int
 
 test_sync :: UnitTest
 test_sync =
   runTestAuto do
-    result <- run $ interpretSync @() $ interpretSync @Int $ sequenceConcurrently @[] [thread1, thread2]
+    result <- run $ sequenceConcurrently @[] [thread1, thread2]
     assertEq @_ @IO [Just 3, Just 2] result
