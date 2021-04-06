@@ -10,25 +10,27 @@ import Polysemy.Conc.Race (interpretRace)
 import Polysemy.Conc.Sync (interpretSync)
 
 thread1 ::
-  Members [Sync Int, Sync Text] r =>
+  Members [Sync Int, Sync ()] r =>
   Sem r Int
 thread1 = do
-  Sync.putBlock @Text "a"
   a <- Sync.takeBlock @Int
   Sync.putBlock (a + 1)
+  Sync.putBlock ()
+  Sync.takeBlock @()
   Sync.takeBlock
 
 thread2 ::
-  Members [Sync Int, Sync Text] r =>
+  Members [Sync Int, Sync ()] r =>
   Sem r Int
 thread2 = do
-  _ <- Sync.takeBlock @Text
   Sync.takeTry @Int >>= \case
     Just a -> pure a
     Nothing -> do
       Sync.putBlock @Int 1
+      Sync.takeBlock @()
       a <- Sync.takeBlock
       Sync.putBlock (a + 1)
+      Sync.putBlock ()
       pure a
 
 run ::
@@ -42,5 +44,5 @@ run =
 test_sync :: UnitTest
 test_sync =
   runTestAuto do
-    result <- run $ interpretSync @Text $ interpretSync @Int $ sequenceConcurrently @[] [thread1, thread2]
+    result <- run $ interpretSync @() $ interpretSync @Int $ sequenceConcurrently @[] [thread1, thread2]
     assertEq @_ @IO [Just 3, Just 2] result
