@@ -81,11 +81,11 @@
     },
     "flake-utils_2": {
       "locked": {
-        "lastModified": 1617631617,
-        "narHash": "sha256-PARRCz55qN3gy07VJZIlFeOX420d0nGF0RzGI/9hVlw=",
+        "lastModified": 1614513358,
+        "narHash": "sha256-LakhOx3S1dRjnh0b5Dg3mbZyH0ToC9I8Y2wKSkBaTzU=",
         "owner": "numtide",
         "repo": "flake-utils",
-        "rev": "b2c27d1a81b0dc266270fa8aeecebbd1807fc610",
+        "rev": "5466c5bbece17adaab2d82fae80b46e807611bf3",
         "type": "github"
       },
       "original": {
@@ -125,21 +125,6 @@
       }
     },
     "flake-utils_5": {
-      "locked": {
-        "lastModified": 1614513358,
-        "narHash": "sha256-LakhOx3S1dRjnh0b5Dg3mbZyH0ToC9I8Y2wKSkBaTzU=",
-        "owner": "numtide",
-        "repo": "flake-utils",
-        "rev": "5466c5bbece17adaab2d82fae80b46e807611bf3",
-        "type": "github"
-      },
-      "original": {
-        "owner": "numtide",
-        "repo": "flake-utils",
-        "type": "github"
-      }
-    },
-    "flake-utils_6": {
       "locked": {
         "lastModified": 1614513358,
         "narHash": "sha256-LakhOx3S1dRjnh0b5Dg3mbZyH0ToC9I8Y2wKSkBaTzU=",
@@ -460,7 +445,7 @@
     },
     "polysemy": {
       "inputs": {
-        "flake-utils": "flake-utils_3",
+        "flake-utils": "flake-utils_2",
         "nixpkgs": "nixpkgs_4"
       },
       "locked": {
@@ -479,17 +464,17 @@
     },
     "polysemy-test": {
       "inputs": {
-        "flake-utils": "flake-utils_2",
+        "flake-utils": "flake-utils",
         "nixpkgs": "nixpkgs_3",
         "polysemy": "polysemy",
         "tryp-hs": "tryp-hs"
       },
       "locked": {
-        "lastModified": 1617640585,
-        "narHash": "sha256-COKZI9gyAlrFSOxXSxGbvwooHz31ZQQCSgVqEzeWePQ=",
+        "lastModified": 1617715176,
+        "narHash": "sha256-CGkUdppTUtX9+8/3C5c9g/GB59OmwNI71Ff3F0bXZ+E=",
         "owner": "tek",
         "repo": "polysemy-test",
-        "rev": "9ece40219ed3c1cf81d037360a14d0d1a06e404f",
+        "rev": "0b1db570547794a6c19926c7b9b9ddd0c0220492",
         "type": "github"
       },
       "original": {
@@ -502,20 +487,15 @@
       "inputs": {
         "chronos": "chronos",
         "nixpkgs": "nixpkgs_2",
-        "polysemy": [
-          "polysemy-time",
-          "polysemy-test",
-          "polysemy"
-        ],
         "polysemy-test": "polysemy-test",
         "tryp-hs": "tryp-hs_2"
       },
       "locked": {
-        "lastModified": 1617644551,
-        "narHash": "sha256-n6FQtLZm5wL6tpyubWOTAd4xR5kE3IUL8UswTRCiBBI=",
+        "lastModified": 1617736106,
+        "narHash": "sha256-zaiiF+o8wbeJDx5D3OUWJcC3fpwaUlEQz856we0fO8Y=",
         "owner": "tek",
         "repo": "polysemy-time",
-        "rev": "08c9569cfb47b065808c76ef1d321726a67d2b2f",
+        "rev": "1778634dad241c4fa576c2e53cb1b73a3c7d49eb",
         "type": "github"
       },
       "original": {
@@ -577,12 +557,7 @@
     },
     "root": {
       "inputs": {
-        "flake-utils": "flake-utils",
         "nixpkgs": "nixpkgs",
-        "polysemy": [
-          "polysemy-time",
-          "polysemy"
-        ],
         "polysemy-test": [
           "polysemy-time",
           "polysemy-test"
@@ -693,7 +668,7 @@
     "tryp-hs": {
       "inputs": {
         "brittany": "brittany",
-        "flake-utils": "flake-utils_4",
+        "flake-utils": "flake-utils_3",
         "hls": "hls",
         "nixpkgs": [
           "nixpkgs"
@@ -705,36 +680,6 @@
         "reflex-platform": "reflex-platform",
         "snap-core": "snap-core",
         "thax": "thax"
-      },
-      "locked": {
-        "lastModified": 1617640434,
-        "narHash": "sha256-TSjrN14nKI5U5gatAECE97tXI1XsZoXPplktYd245Y4=",
-        "owner": "tek",
-        "repo": "tryp-hs",
-        "rev": "9bf9290eec752e51279066a0c77cf746b72a767f",
-        "type": "github"
-      },
-      "original": {
-        "owner": "tek",
-        "repo": "tryp-hs",
-        "type": "github"
-      }
-    },
-    "tryp-hs_2": {
-      "inputs": {
-        "brittany": "brittany_2",
-        "flake-utils": "flake-utils_5",
-        "hls": "hls_2",
-        "nixpkgs": [
-          "nixpkgs"
-        ],
-        "nixpkgs8104": "nixpkgs8104_2",
-        "nixpkgs865": "nixpkgs865_2",
-        "nixpkgs884": "nixpkgs884_2",
-        "obelisk": "obelisk_2",
-        "reflex-platform": "reflex-platform_2",
-        "snap-core": "snap-core_2",
-        "thax": "thax_2"
       },
       "locked": {
         "lastModified": 1617641045,
@@ -750,10 +695,40 @@
         "type": "github"
       }
     },
+    "tryp-hs_2": {
+      "inputs": {
+        "brittany": "brittany_2",
+        "flake-utils": "flake-utils_4",
+        "hls": "hls_2",
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "nixpkgs8104": "nixpkgs8104_2",
+        "nixpkgs865": "nixpkgs865_2",
+        "nixpkgs884": "nixpkgs884_2",
+        "obelisk": "obelisk_2",
+        "reflex-platform": "reflex-platform_2",
+        "snap-core": "snap-core_2",
+        "thax": "thax_2"
+      },
+      "locked": {
+        "lastModified": 1617735594,
+        "narHash": "sha256-whg/sTNfKS0ipoA6LSm+LSOYiJ23GDPtzhGVzyiNP6M=",
+        "owner": "tek",
+        "repo": "tryp-hs",
+        "rev": "f1b9998ac0f68638ebf201e14df21ea4691526e7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "tek",
+        "repo": "tryp-hs",
+        "type": "github"
+      }
+    },
     "tryp-hs_3": {
       "inputs": {
         "brittany": "brittany_3",
-        "flake-utils": "flake-utils_6",
+        "flake-utils": "flake-utils_5",
         "hls": "hls_3",
         "nixpkgs": [
           "nixpkgs"
@@ -767,11 +742,11 @@
         "thax": "thax_3"
       },
       "locked": {
-        "lastModified": 1617658222,
-        "narHash": "sha256-PtjE5OWyQD0fyfZyzxu1RudL+iA8MR4T/G9Bvmpv2pQ=",
+        "lastModified": 1617735594,
+        "narHash": "sha256-whg/sTNfKS0ipoA6LSm+LSOYiJ23GDPtzhGVzyiNP6M=",
         "owner": "tek",
         "repo": "tryp-hs",
-        "rev": "1750afb597ca7914409bfb0456b896db1f44f43f",
+        "rev": "f1b9998ac0f68638ebf201e14df21ea4691526e7",
         "type": "github"
       },
       "original": {

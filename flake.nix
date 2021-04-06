@@ -3,15 +3,15 @@
 
   inputs = {
     nixpkgs.url = github:NixOS/nixpkgs/c0e881852006b132236cbf0301bd1939bb50867e;
-    flake-utils.url = github:numtide/flake-utils;
-    tryp-hs.url = github:tek/tryp-hs;
-    tryp-hs.inputs.nixpkgs.follows = "nixpkgs";
+    tryp-hs = {
+      url = github:tek/tryp-hs;
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     polysemy-time.url = github:tek/polysemy-time;
     polysemy-test.follows = "polysemy-time/polysemy-test";
-    polysemy.follows = "polysemy-time/polysemy";
   };
 
-  outputs = { tryp-hs, polysemy-time, polysemy-test, polysemy, ... }@inputs:
+  outputs = { tryp-hs, polysemy-time, polysemy-test, ... }@inputs:
   let
     overrides = { hackage, source, ... }: {
       path = hackage "0.8.0" "0isldidz2gypw2pz399g6rn77x9mppd1mvj5h6ify4pj4mpla0pb";
@@ -27,11 +27,8 @@
     compatOverrides = { hackage, source, only, ... }: {
       polysemy = only "865" (hackage "1.4.0.0" "04bl0w7z35jh63jpy87sa1rrbgqhwn7c0pxsm5l3ww0pjnswkhjj");
       polysemy-test = hackage "0.3.1.1" "0x0zg1kljr7a1mwmm3zrmha5inz3l2pkldnq65fvsig8f3x8rsar";
-      polysemy-time = source.sub polysemy-time "packages/time";
-      polysemy-chronos = source.sub polysemy-time "packages/chronos";
-      # TODO wait for metadata on hackage to update
-      # polysemy-time = hackage "0.1.2.0" "1v7lxmz36pkdx8rdgy2dm5cplvfrp4p65b1mncwmhrvvr26zb5bj";
-      # polysemy-chronos = hackage "0.1.2.0" "192h42wx6j2a9612agv08z36h2za9m7havwh1d7vd5vpmkgyb8a3";
+      polysemy-time = hackage "0.1.2.1" "09l8r5fx0vnapdn8p0cwiwprgg3i67m58dd4j5hcdhw34gfqnnsr";
+      polysemy-chronos = hackage "0.1.2.1" "0layan6jxg857n2dmxwnylichnk2ynlpxih5iya3q8x2nbndpbl2";
     };
   in
   tryp-hs.flake {
@@ -43,5 +40,6 @@
     packages.polysemy-conc = "packages/conc";
     ghci.extraArgs = ["-fplugin=Polysemy.Plugin"];
     ghcid.prelude = "packages/conc/lib/Prelude.hs";
+    versionFile = "ops/hpack/shared/meta.yaml";
   };
 }

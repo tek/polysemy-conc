@@ -23,7 +23,7 @@ dependencies:
     mixin:
       - hiding (Prelude)
   - containers
-  - polysemy-time ^>= 0.1.2.0
+  - polysemy-time ^>= 0.1.2.1
   - relude >= 0.7 && < 1.2
   - stm
   - stm-chans >= 2 && < 3.1
