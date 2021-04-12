@@ -2,16 +2,12 @@
   description = "Polysemy Effects for Concurrency";
 
   inputs = {
-    nixpkgs.url = github:NixOS/nixpkgs/c0e881852006b132236cbf0301bd1939bb50867e;
-    tryp-hs = {
-      url = github:tek/tryp-hs;
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     polysemy-time.url = github:tek/polysemy-time;
     polysemy-test.follows = "polysemy-time/polysemy-test";
+    tryp-hs.follows = "polysemy-time/polysemy-test/tryp-hs";
   };
 
-  outputs = { tryp-hs, polysemy-time, polysemy-test, ... }@inputs:
+  outputs = { tryp-hs, polysemy-time, polysemy-test, ... }:
   let
     overrides = { hackage, source, ... }: {
       path = hackage "0.8.0" "0isldidz2gypw2pz399g6rn77x9mppd1mvj5h6ify4pj4mpla0pb";
@@ -33,13 +29,9 @@
   in
   tryp-hs.flake {
     base = ./.;
-    compiler = "ghc8104";
-    main = "polysemy-conc";
-    overrides = tryp-hs.overrides overrides;
-    compatOverrides = tryp-hs.overrides compatOverrides;
+    inherit overrides compatOverrides;
     packages.polysemy-conc = "packages/conc";
     ghci.extraArgs = ["-fplugin=Polysemy.Plugin"];
-    ghcid.prelude = "packages/conc/lib/Prelude.hs";
     versionFile = "ops/hpack/shared/meta.yaml";
   };
 }
