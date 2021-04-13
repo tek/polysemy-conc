@@ -1,14 +1,12 @@
 {
   description = "Polysemy Effects for Concurrency";
 
-  inputs = {
-    polysemy-time.url = github:tek/polysemy-time;
-    polysemy-test.follows = "polysemy-time/polysemy-test";
-    tryp-hs.follows = "polysemy-time/polysemy-test/tryp-hs";
-  };
+  inputs.polysemy-time.url = github:tek/polysemy-time;
 
-  outputs = { tryp-hs, polysemy-time, polysemy-test, ... }:
+  outputs = { polysemy-time, ... }:
   let
+    inherit (polysemy-time.inputs) polysemy-test;
+    inherit (polysemy-test.inputs) tryp-hs;
     overrides = { hackage, source, ... }: {
       path = hackage "0.8.0" "0isldidz2gypw2pz399g6rn77x9mppd1mvj5h6ify4pj4mpla0pb";
       tasty-hedgehog = hackage "1.1.0.0" "0cs96s7z5csrlwj334v8zl459j5s4ws6gmjh59cv01wwvvrrjwd9";

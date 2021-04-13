@@ -149,19 +149,14 @@
     "polysemy-time": {
       "inputs": {
         "chronos": "chronos",
-        "polysemy-test": "polysemy-test",
-        "tryp-hs": [
-          "polysemy-time",
-          "polysemy-test",
-          "tryp-hs"
-        ]
+        "polysemy-test": "polysemy-test"
       },
       "locked": {
-        "lastModified": 1618267836,
-        "narHash": "sha256-n9YccOmza6uK/ZF7KW8y1Ona2lbuF17huNJ/HXqqJxk=",
+        "lastModified": 1618353423,
+        "narHash": "sha256-YOEPBl14fEu389zjXGofDtc9080nrEe1zAxalOy7JaY=",
         "owner": "tek",
         "repo": "polysemy-time",
-        "rev": "5837af41c91c1d3e134054de9a3b9a342181be68",
+        "rev": "8a2167d1408d56ffcce86b770494ac50732533df",
         "type": "github"
       },
       "original": {
@@ -172,16 +167,7 @@
     },
     "root": {
       "inputs": {
-        "polysemy-test": [
-          "polysemy-time",
-          "polysemy-test"
-        ],
-        "polysemy-time": "polysemy-time",
-        "tryp-hs": [
-          "polysemy-time",
-          "polysemy-test",
-          "tryp-hs"
-        ]
+        "polysemy-time": "polysemy-time"
       }
     },
     "snap-core": {
