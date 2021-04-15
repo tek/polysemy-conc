@@ -1,9 +1,9 @@
 {
   description = "Polysemy Effects for Concurrency";
 
-  inputs.tryp-hs.url = github:tek/tryp-hs;
+  inputs.hix.url = github:tek/hix;
 
-  outputs = { tryp-hs, ... }:
+  outputs = { hix, ... }:
   let
     common = { hackage, only, ... }: {
       polysemy-test = hackage "0.3.1.1" "0x0zg1kljr7a1mwmm3zrmha5inz3l2pkldnq65fvsig8f3x8rsar";
@@ -23,7 +23,7 @@
       polysemy = only "865" (hackage "1.4.0.0" "04bl0w7z35jh63jpy87sa1rrbgqhwn7c0pxsm5l3ww0pjnswkhjj");
     };
   in
-  tryp-hs.flake {
+  hix.flake {
     base = ./.;
     overrides = [common main];
     compatOverrides = [common compat];
