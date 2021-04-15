@@ -1,21 +1,5 @@
 {
   "nodes": {
-    "chronos": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1617491657,
-        "narHash": "sha256-nomb1prLVSb2o4CJJyPJBLqiVVUIcfBnIoKMIn6OzVo=",
-        "owner": "andrewthad",
-        "repo": "chronos",
-        "rev": "aa6d2b0969c4c5216ff9e45da1574e194fafefc1",
-        "type": "github"
-      },
-      "original": {
-        "owner": "andrewthad",
-        "repo": "chronos",
-        "type": "github"
-      }
-    },
     "flake-utils": {
       "locked": {
         "lastModified": 1618217525,
@@ -128,46 +112,9 @@
         "type": "github"
       }
     },
-    "polysemy-test": {
-      "inputs": {
-        "tryp-hs": "tryp-hs"
-      },
-      "locked": {
-        "lastModified": 1618267799,
-        "narHash": "sha256-en3bu6toFyOy7OHOiV/AwWlrQR9Ce560qN/z4a9Pd6E=",
-        "owner": "tek",
-        "repo": "polysemy-test",
-        "rev": "35d5e12c70887bc334aa0dacc596c15125608ba5",
-        "type": "github"
-      },
-      "original": {
-        "owner": "tek",
-        "repo": "polysemy-test",
-        "type": "github"
-      }
-    },
-    "polysemy-time": {
-      "inputs": {
-        "chronos": "chronos",
-        "polysemy-test": "polysemy-test"
-      },
-      "locked": {
-        "lastModified": 1618353423,
-        "narHash": "sha256-YOEPBl14fEu389zjXGofDtc9080nrEe1zAxalOy7JaY=",
-        "owner": "tek",
-        "repo": "polysemy-time",
-        "rev": "8a2167d1408d56ffcce86b770494ac50732533df",
-        "type": "github"
-      },
-      "original": {
-        "owner": "tek",
-        "repo": "polysemy-time",
-        "type": "github"
-      }
-    },
     "root": {
       "inputs": {
-        "polysemy-time": "polysemy-time"
+        "tryp-hs": "tryp-hs"
       }
     },
     "snap-core": {
@@ -216,11 +163,11 @@
         "thax": "thax"
       },
       "locked": {
-        "lastModified": 1618267769,
-        "narHash": "sha256-77JGnWvGC4zsIazJUcJcBII0vlolrJz8UmiUpgQzsr4=",
+        "lastModified": 1618406765,
+        "narHash": "sha256-UEyKhz4PNnnIYHe3YAMTWSNUBkoKt/5UDcXFulNwa4A=",
         "owner": "tek",
         "repo": "tryp-hs",
-        "rev": "ca6eda863c2234ab2f7438f5a707b35d5e62a3df",
+        "rev": "ce4d32939c4b025ab45fb08cc4a0718cc01d0c3c",
         "type": "github"
       },
       "original": {
