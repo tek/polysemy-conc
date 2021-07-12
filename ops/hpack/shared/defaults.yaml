@@ -5,7 +5,7 @@ dependencies:
     version: '>= 4 && < 5'
     mixin:
       - hiding (Prelude)
-  - polysemy >= 1.3 && < 1.6
+  - polysemy >= 1.3
   - text
 
 ghc-options:
