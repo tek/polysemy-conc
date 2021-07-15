@@ -87,10 +87,10 @@ execInterrupt ::
   Sem r (SignalInfo -> Sem r ())
 execInterrupt = do
   InterruptState quitSignal finishSignal _ orig _ <- atomicGet
-  putMVar quitSignal ()
-  traverse_ (uncurry processHandler) . Map.toList =<< atomicGets handlers
-  checkListeners
-  takeMVar finishSignal
+  whenM (tryPutMVar quitSignal ()) do
+    traverse_ (uncurry processHandler) . Map.toList =<< atomicGets handlers
+    checkListeners
+    takeMVar finishSignal
   embed . orig <$ putErr "interrupt handlers finished"
 
 registerHandler ::
