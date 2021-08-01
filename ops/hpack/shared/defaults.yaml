@@ -13,3 +13,4 @@ ghc-options:
   - -fspecialise-aggressively
   - -Wall
   - -Wredundant-constraints
+  - -Wunused-packages
