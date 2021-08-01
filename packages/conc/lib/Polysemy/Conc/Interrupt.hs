@@ -10,12 +10,12 @@ import qualified Data.Text.IO as Text
 import Polysemy (getInspectorT, inspect, interpretH, runT)
 import Polysemy.Async (Async, async, await, cancel)
 import Polysemy.Internal.Tactics (liftT)
-import Polysemy.Time (Seconds(Seconds))
-import System.Posix.Signals (Handler(CatchOnce, CatchInfoOnce), SignalInfo, installHandler, keyboardSignal)
+import Polysemy.Time (Seconds (Seconds))
+import System.Posix.Signals (Handler (CatchInfoOnce, CatchOnce), SignalInfo, installHandler, keyboardSignal)
 
 import qualified Polysemy.Conc.Data.Critical as Critical
 import Polysemy.Conc.Data.Critical (Critical)
-import Polysemy.Conc.Data.Interrupt (Interrupt(..))
+import Polysemy.Conc.Data.Interrupt (Interrupt (..))
 import Polysemy.Conc.Data.Race (Race)
 import qualified Polysemy.Conc.Effect.Sync as Sync
 import Polysemy.Conc.Interpreter.Sync (interpretSync)

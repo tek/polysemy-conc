@@ -34,7 +34,10 @@ library
       Polysemy.Conc.Data.Queue
       Polysemy.Conc.Data.QueueResult
       Polysemy.Conc.Data.Race
+      Polysemy.Conc.Effect.Events
+      Polysemy.Conc.Effect.Scoped
       Polysemy.Conc.Effect.Sync
+      Polysemy.Conc.Interpreter.Events
       Polysemy.Conc.Interpreter.Sync
       Polysemy.Conc.Interrupt
       Polysemy.Conc.Prelude
@@ -124,6 +127,7 @@ library
     , template-haskell
     , text
     , time
+    , unagi-chan
     , unix
   mixins:
       base hiding (Prelude)
@@ -133,6 +137,7 @@ test-suite polysemy-conc-unit
   type: exitcode-stdio-1.0
   main-is: Main.hs
   other-modules:
+      Polysemy.Conc.Test.EventsTest
       Polysemy.Conc.Test.InterruptTest
       Polysemy.Conc.Test.QueueTest
       Polysemy.Conc.Test.SyncTest
@@ -216,6 +221,7 @@ test-suite polysemy-conc-unit
     , template-haskell
     , text
     , time
+    , unagi-chan
     , unix
   mixins:
       base hiding (Prelude)

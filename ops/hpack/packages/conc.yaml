@@ -31,6 +31,7 @@ dependencies:
   - template-haskell
   - time
   - unix
+  - unagi-chan >= 0
 
 tests:
   polysemy-conc-unit:

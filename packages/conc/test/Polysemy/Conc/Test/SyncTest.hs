@@ -6,8 +6,8 @@ import Polysemy.Test (UnitTest, assertEq, runTestAuto)
 import Polysemy.Conc.Data.Race (Race)
 import qualified Polysemy.Conc.Effect.Sync as Sync
 import Polysemy.Conc.Effect.Sync (Sync)
+import Polysemy.Conc.Interpreter.Sync (interpretSync)
 import Polysemy.Conc.Race (interpretRace)
-import Polysemy.Conc.Sync (interpretSync)
 
 data Thread1 = Thread1
 data Thread2 = Thread2

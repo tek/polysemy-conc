@@ -1,7 +1,8 @@
 {-# options_haddock hide #-}
-{-# LANGUAGE NoImplicitPrelude #-}
+{-# language NoImplicitPrelude #-}
 
 module Polysemy.Conc.Prelude (
+  module Data.Kind,
   module Polysemy.Conc.Prelude,
   module GHC.Err,
   module Polysemy,
@@ -9,6 +10,7 @@ module Polysemy.Conc.Prelude (
   module Relude,
 ) where
 
+import Data.Kind (Type)
 import qualified Data.String.Interpolate as Interpolate
 import GHC.Err (undefined)
 import Language.Haskell.TH.Quote (QuasiQuoter)

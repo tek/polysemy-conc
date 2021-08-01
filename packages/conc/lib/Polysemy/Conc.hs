@@ -41,13 +41,23 @@ module Polysemy.Conc (
 
   -- ** Interpreters
   interpretInterrupt,
+
+  -- * Event Channels
+  Events,
+  publish,
+  consume,
+
+  -- ** Interpreters
+  interpretEventsChan,
 ) where
 
 import Polysemy.Conc.Data.Interrupt (Interrupt)
 import Polysemy.Conc.Data.Queue (Queue)
 import Polysemy.Conc.Data.QueueResult (QueueResult)
 import Polysemy.Conc.Data.Race (Race, race, timeout)
+import Polysemy.Conc.Effect.Events (Events, publish, consume)
 import Polysemy.Conc.Effect.Sync (Sync)
+import Polysemy.Conc.Interpreter.Events (interpretEventsChan)
 import Polysemy.Conc.Interpreter.Sync (interpretSync)
 import Polysemy.Conc.Interrupt (interpretInterrupt)
 import Polysemy.Conc.Queue (
