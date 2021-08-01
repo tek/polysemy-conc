@@ -16,11 +16,8 @@
       type-errors-pretty = jailbreak;
     };
 
-    compat8104 = { hackage, only, unbreak, jailbreak, super, ... }: {
-      polysemy = jailbreak (unbreak super.polysemy);
-    };
-
     compat = { hackage, only, unbreak, jailbreak, super, ... }: {
+      polysemy = hackage "1.5.0.0" "1xl472xqdxnp4ysyqnackpfn6wbx03rlgwmy9907bklrh557il6d";
       polysemy-test = hackage "0.3.1.7" "0j33f5zh6gyhl86w8kqh6nm02915b4n32xikxc4hwcy7p5l7cl34";
       polysemy-time = hackage "0.1.3.2" "1s06c1jwsq9ckfcq2cwwpiy5a2a0lj8j63zg4jr2kidpd2lkk6cd";
     };
@@ -31,8 +28,8 @@
   in
   hix.flake {
     base = ./.;
-    overrides = [common compat main];
-    compatOverrides = { all = compat; ghc901 = [common compat901]; ghc8104 = compat8104; };
+    overrides = [compat common main];
+    compatOverrides = { all = compat; ghc901 = [common compat901]; };
     packages.polysemy-conc = ./packages/conc;
     ghcid.easy-hls = false;
     versionFile = "ops/hpack/shared/meta.yaml";

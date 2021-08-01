@@ -2,8 +2,7 @@ name: polysemy-conc
 synopsis: Polysemy Effects for Concurrency
 description: See <https://hackage.haskell.org/package/polysemy-conc/docs/Polysemy-Conc.html>
 <<: !include shared/meta.yaml
-defaults:
-  local: shared/defaults.yaml
+<<: !include shared/extensions.yaml
 
 extra-source-files:
   - readme.md
@@ -23,15 +22,17 @@ dependencies:
     mixin:
       - hiding (Prelude)
   - containers
+  - polysemy >= 1.5
   - polysemy-time >= 0.1.2.1
   - relude >= 0.7
   - stm
   - stm-chans >= 2
   - string-interpolate >= 0.2
   - template-haskell
+  - text
   - time
+  - unagi-chan >= 0.4
   - unix
-  - unagi-chan >= 0
 
 tests:
   polysemy-conc-unit:
@@ -50,3 +51,10 @@ tests:
       - polysemy-test
       - tasty
       - tasty-hedgehog
+
+ghc-options:
+  - -flate-specialise
+  - -fspecialise-aggressively
+  - -Wall
+  - -Wredundant-constraints
+  - -Wunused-packages
