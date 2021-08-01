@@ -4,8 +4,8 @@ module Polysemy.Conc.Sync where
 import qualified Polysemy.Time as Time
 import Polysemy.Time (Time, TimeUnit)
 
-import qualified Polysemy.Conc.Data.Sync as Sync
-import Polysemy.Conc.Data.Sync (Sync)
+import qualified Polysemy.Conc.Effect.Sync as Sync
+import Polysemy.Conc.Effect.Sync (Sync)
 
 whileEmpty ::
   ∀ a r .

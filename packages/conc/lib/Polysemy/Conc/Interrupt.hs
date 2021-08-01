@@ -17,9 +17,9 @@ import qualified Polysemy.Conc.Data.Critical as Critical
 import Polysemy.Conc.Data.Critical (Critical)
 import Polysemy.Conc.Data.Interrupt (Interrupt(..))
 import Polysemy.Conc.Data.Race (Race)
-import qualified Polysemy.Conc.Data.Sync as Sync
+import qualified Polysemy.Conc.Effect.Sync as Sync
+import Polysemy.Conc.Interpreter.Sync (interpretSync)
 import Polysemy.Conc.Race (race_)
-import Polysemy.Conc.Sync (interpretSync)
 
 putErr ::
   Member (Embed IO) r =>

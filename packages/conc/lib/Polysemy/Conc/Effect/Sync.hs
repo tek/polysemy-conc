@@ -1,16 +1,16 @@
 {-# options_haddock prune #-}
 -- |Description: Sync effect
-module Polysemy.Conc.Data.Sync where
+module Polysemy.Conc.Effect.Sync where
 
 import Polysemy.Time (TimeUnit)
 
 -- |Abstracts an 'MVar'.
 --
--- For documentation on the constructors, see the module "Polysemy.Conc.Data.Sync".
+-- For documentation on the constructors, see the module "Polysemy.Conc.Effect.Sync".
 --
 -- @
 -- import Polysemy.Conc (Sync)
--- import qualified Polysemy.Conc.Data.Sync as Sync
+-- import qualified Polysemy.Conc.Effect.Sync as Sync
 --
 -- prog :: Member (Sync Int) r => Sem r Int
 -- prog = do

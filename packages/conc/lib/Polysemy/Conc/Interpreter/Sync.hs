@@ -5,8 +5,8 @@ import Control.Concurrent (isEmptyMVar)
 
 import qualified Polysemy.Conc.Data.Race as Race
 import Polysemy.Conc.Data.Race (Race)
-import qualified Polysemy.Conc.Data.Sync as Sync
-import Polysemy.Conc.Data.Sync (Sync)
+import qualified Polysemy.Conc.Effect.Sync as Sync
+import Polysemy.Conc.Effect.Sync (Sync)
 import qualified Polysemy.Conc.Race as Race
 
 -- |Interpret 'Sync' with the provided 'MVar'.

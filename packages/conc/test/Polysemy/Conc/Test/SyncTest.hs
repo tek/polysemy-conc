@@ -4,8 +4,8 @@ import Polysemy.Async (Async, asyncToIOFinal, sequenceConcurrently)
 import Polysemy.Test (UnitTest, assertEq, runTestAuto)
 
 import Polysemy.Conc.Data.Race (Race)
-import qualified Polysemy.Conc.Data.Sync as Sync
-import Polysemy.Conc.Data.Sync (Sync)
+import qualified Polysemy.Conc.Effect.Sync as Sync
+import Polysemy.Conc.Effect.Sync (Sync)
 import Polysemy.Conc.Race (interpretRace)
 import Polysemy.Conc.Sync (interpretSync)
 
