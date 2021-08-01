@@ -36,6 +36,7 @@
     compatOverrides = { all = compat; ghc901 = [common compat901]; ghc8104 = compat8104; };
     packages.polysemy-conc = ./packages/conc;
     ghci.extraArgs = ["-fplugin=Polysemy.Plugin"];
+    ghcid.easy-hls = false;
     versionFile = "ops/hpack/shared/meta.yaml";
   };
 }
