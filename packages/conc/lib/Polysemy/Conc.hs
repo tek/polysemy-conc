@@ -48,6 +48,7 @@ import Polysemy.Conc.Data.Queue (Queue)
 import Polysemy.Conc.Data.QueueResult (QueueResult)
 import Polysemy.Conc.Data.Race (Race, race, timeout)
 import Polysemy.Conc.Data.Sync (Sync)
+import Polysemy.Conc.Interpreter.Sync (interpretSync)
 import Polysemy.Conc.Interrupt (interpretInterrupt)
 import Polysemy.Conc.Queue (
   interpretQueueListReadOnlyAtomic,
@@ -59,7 +60,6 @@ import Polysemy.Conc.Queue.Result (resultToMaybe)
 import Polysemy.Conc.Queue.TB (interpretQueueTB)
 import Polysemy.Conc.Queue.TBM (interpretQueueTBM)
 import Polysemy.Conc.Race (interpretRace, race_, timeout_)
-import Polysemy.Conc.Sync (interpretSync)
 
 -- $intro
 -- This library provides an assortment of tools for concurrency-related tasks:

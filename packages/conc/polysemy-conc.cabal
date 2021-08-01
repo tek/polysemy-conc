@@ -34,7 +34,8 @@ library
       Polysemy.Conc.Data.Queue
       Polysemy.Conc.Data.QueueResult
       Polysemy.Conc.Data.Race
-      Polysemy.Conc.Data.Sync
+      Polysemy.Conc.Effect.Sync
+      Polysemy.Conc.Interpreter.Sync
       Polysemy.Conc.Interrupt
       Polysemy.Conc.Prelude
       Polysemy.Conc.Queue
