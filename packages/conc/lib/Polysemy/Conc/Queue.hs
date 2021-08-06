@@ -8,6 +8,7 @@ import qualified Polysemy.Conc.Data.Queue as Queue
 import Polysemy.Conc.Data.Queue (Queue)
 import qualified Polysemy.Conc.Data.QueueResult as QueueResult
 import Polysemy.Conc.Data.QueueResult (QueueResult)
+import Polysemy.Conc.AtomicState (interpretAtomic)
 
 -- |Reinterpret 'Queue' as 'AtomicState' with a list that cannot be written to.
 -- Useful for testing.
@@ -56,9 +57,8 @@ interpretQueueListReadOnlyAtomic ::
   Member (Embed IO) r =>
   [d] ->
   InterpreterFor (Queue d) r
-interpretQueueListReadOnlyAtomic ds sem = do
-  tv <- newTVarIO ds
-  runAtomicStateTVar tv (interpretQueueListReadOnlyAtomicWith (raiseUnder sem))
+interpretQueueListReadOnlyAtomic ds sem =
+  interpretAtomic ds (interpretQueueListReadOnlyAtomicWith (raiseUnder sem))
 {-# INLINE interpretQueueListReadOnlyAtomic #-}
 
 -- |Reinterpret 'Queue' as 'State' with a list that cannot be written to.

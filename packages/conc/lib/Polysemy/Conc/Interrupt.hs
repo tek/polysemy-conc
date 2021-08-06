@@ -9,6 +9,7 @@ import qualified Data.Set as Set
 import qualified Data.Text.IO as Text
 import Polysemy (getInspectorT, inspect, interpretH, runT)
 import Polysemy.Async (Async, async, await, cancel)
+import Polysemy.AtomicState (runAtomicStateTVar)
 import Polysemy.Internal.Tactics (liftT)
 import Polysemy.Time (Seconds (Seconds))
 import System.Posix.Signals (Handler (CatchInfoOnce, CatchOnce), SignalInfo, installHandler, keyboardSignal)

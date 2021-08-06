@@ -36,7 +36,7 @@ import Polysemy (
   reinterpret,
   runFinal,
   )
-import Polysemy.AtomicState (AtomicState, atomicGet, atomicGets, atomicModify', atomicPut, runAtomicStateTVar)
+import Polysemy.AtomicState (AtomicState, atomicGet, atomicGets, atomicModify', atomicPut)
 import Relude hiding (
   Reader,
   State,
