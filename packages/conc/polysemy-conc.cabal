@@ -28,6 +28,7 @@ source-repository head
 library
   exposed-modules:
       Polysemy.Conc
+      Polysemy.Conc.Async
       Polysemy.Conc.AtomicState
       Polysemy.Conc.Critical
       Polysemy.Conc.Data.Critical
