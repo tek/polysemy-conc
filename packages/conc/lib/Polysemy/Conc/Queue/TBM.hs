@@ -54,6 +54,15 @@ interpretQueueTBMWith queue =
       atomically (closeTBMQueue queue)
 {-# inline interpretQueueTBMWith #-}
 
+withTBMQueue ::
+  ∀ d r a .
+  Members [Resource, Embed IO] r =>
+  Int ->
+  (TBMQueue d -> Sem r a) ->
+  Sem r a
+withTBMQueue maxQueued =
+  bracket (embed (newTBMQueueIO maxQueued)) (atomically . closeTBMQueue)
+
 -- |Interpret 'Queue' with a 'TBMQueue'.
 interpretQueueTBM ::
   ∀ d r .
@@ -62,6 +71,6 @@ interpretQueueTBM ::
   Int ->
   InterpreterFor (Queue d) r
 interpretQueueTBM maxQueued sem = do
-  bracket (embed (newTBMQueueIO @d maxQueued)) (atomically . closeTBMQueue) \ queue ->
+  withTBMQueue maxQueued \ queue ->
     interpretQueueTBMWith queue sem
 {-# inline interpretQueueTBM #-}
