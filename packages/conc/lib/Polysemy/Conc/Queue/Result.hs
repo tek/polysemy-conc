@@ -10,7 +10,7 @@ closedResult ::
 closedResult = \case
   Nothing -> QueueResult.Closed
   Just d -> QueueResult.Success d
-{-# INLINE closedResult #-}
+{-# inline closedResult #-}
 
 naResult ::
   Maybe d ->
@@ -18,7 +18,7 @@ naResult ::
 naResult = \case
   Nothing -> QueueResult.NotAvailable
   Just d -> QueueResult.Success d
-{-# INLINE naResult #-}
+{-# inline naResult #-}
 
 closedNaResult ::
   Maybe (Maybe d) ->
@@ -27,7 +27,7 @@ closedNaResult = \case
   Nothing -> QueueResult.Closed
   Just Nothing -> QueueResult.NotAvailable
   Just (Just d) -> QueueResult.Success d
-{-# INLINE closedNaResult #-}
+{-# inline closedNaResult #-}
 
 closedBoolResult ::
   Maybe Bool ->
@@ -36,7 +36,7 @@ closedBoolResult = \case
   Nothing -> QueueResult.Closed
   Just False -> QueueResult.NotAvailable
   Just True -> QueueResult.Success ()
-{-# INLINE closedBoolResult #-}
+{-# inline closedBoolResult #-}
 
 -- |Turn a 'Success' into 'Just'.
 resultToMaybe :: QueueResult d -> Maybe d
@@ -44,4 +44,4 @@ resultToMaybe = \case
   QueueResult.Success d -> Just d
   QueueResult.NotAvailable -> Nothing
   QueueResult.Closed -> Nothing
-{-# INLINE resultToMaybe #-}
+{-# inline resultToMaybe #-}

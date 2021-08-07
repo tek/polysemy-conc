@@ -146,7 +146,7 @@ interpretInterruptState =
       handle <- raise (interpretInterruptState (async maT))
       result <- liftT (awaitOrKill desc handle)
       pure (join . fmap (inspect ins) <$> result)
-{-# INLINE interpretInterruptState #-}
+{-# inline interpretInterruptState #-}
 
 broadcastInterrupt ::
   Members [AtomicState InterruptState, Embed IO] r =>
@@ -169,7 +169,7 @@ originalHandler (CatchInfoOnce thunk) =
   thunk
 originalHandler _ =
   const pass
-{-# INLINE originalHandler #-}
+{-# inline originalHandler #-}
 
 installSignalHandler ::
   TVar InterruptState ->
@@ -192,4 +192,4 @@ interpretInterrupt sem = do
   runAtomicStateTVar state do
     atomicModify' \ s -> s {original = originalHandler orig}
     interpretInterruptState $ raiseUnder sem
-{-# INLINE interpretInterrupt #-}
+{-# inline interpretInterrupt #-}

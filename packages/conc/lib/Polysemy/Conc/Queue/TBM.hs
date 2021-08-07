@@ -52,7 +52,7 @@ interpretQueueTBMWith queue =
       atomically (isClosedTBMQueue queue)
     Queue.Close ->
       atomically (closeTBMQueue queue)
-{-# INLINE interpretQueueTBMWith #-}
+{-# inline interpretQueueTBMWith #-}
 
 -- |Interpret 'Queue' with a 'TBMQueue'.
 interpretQueueTBM ::
@@ -64,4 +64,4 @@ interpretQueueTBM ::
 interpretQueueTBM maxQueued sem = do
   bracket (embed (newTBMQueueIO @d maxQueued)) (atomically . closeTBMQueue) \ queue ->
     interpretQueueTBMWith queue sem
-{-# INLINE interpretQueueTBM #-}
+{-# inline interpretQueueTBM #-}

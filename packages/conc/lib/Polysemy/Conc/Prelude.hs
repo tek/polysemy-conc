@@ -64,9 +64,9 @@ import Relude hiding (
 qt :: QuasiQuoter
 qt =
   Interpolate.i
-{-# INLINE qt #-}
+{-# inline qt #-}
 
 unify :: Either a a -> a
 unify =
   either id id
-{-# INLINE unify #-}
+{-# inline unify #-}

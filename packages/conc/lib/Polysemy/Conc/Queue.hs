@@ -49,7 +49,7 @@ interpretQueueListReadOnlyAtomicWith =
       atomicGets @[d] \case
         [] -> QueueResult.Closed
         h : _ -> QueueResult.Success h
-{-# INLINE interpretQueueListReadOnlyAtomicWith #-}
+{-# inline interpretQueueListReadOnlyAtomicWith #-}
 
 -- |Variant of 'interpretQueueListReadOnlyAtomicWith' that interprets the 'AtomicState'.
 interpretQueueListReadOnlyAtomic ::
@@ -59,7 +59,7 @@ interpretQueueListReadOnlyAtomic ::
   InterpreterFor (Queue d) r
 interpretQueueListReadOnlyAtomic ds sem =
   interpretAtomic ds (interpretQueueListReadOnlyAtomicWith (raiseUnder sem))
-{-# INLINE interpretQueueListReadOnlyAtomic #-}
+{-# inline interpretQueueListReadOnlyAtomic #-}
 
 -- |Reinterpret 'Queue' as 'State' with a list that cannot be written to.
 -- Useful for testing.
@@ -100,7 +100,7 @@ interpretQueueListReadOnlyStateWith =
       gets @[d] \case
         [] -> QueueResult.Closed
         h : _ -> QueueResult.Success h
-{-# INLINE interpretQueueListReadOnlyStateWith #-}
+{-# inline interpretQueueListReadOnlyStateWith #-}
 
 -- |Variant of 'interpretQueueListReadOnlyAtomicWith' that interprets the 'State'.
 interpretQueueListReadOnlyState ::
@@ -110,4 +110,4 @@ interpretQueueListReadOnlyState ::
   InterpreterFor (Queue d) r
 interpretQueueListReadOnlyState ds sem = do
   evalState ds (interpretQueueListReadOnlyStateWith (raiseUnder sem))
-{-# INLINE interpretQueueListReadOnlyState #-}
+{-# inline interpretQueueListReadOnlyState #-}

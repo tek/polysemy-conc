@@ -20,7 +20,7 @@ interpretCritical =
       where
         run ma' s =
           Exception.catch (fmap Right <$> ma') \ se -> pure (Left se <$ s)
-{-# INLINE interpretCritical #-}
+{-# inline interpretCritical #-}
 
 -- |Interpret 'Critical' by doing nothing.
 interpretCriticalNull ::
@@ -29,4 +29,4 @@ interpretCriticalNull =
   interpretH \case
     Catch ma ->
       fmap (fmap Right) . raise . interpretCriticalNull =<< runT ma
-{-# INLINE interpretCriticalNull #-}
+{-# inline interpretCriticalNull #-}

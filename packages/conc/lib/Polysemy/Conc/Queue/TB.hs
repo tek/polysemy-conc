@@ -50,7 +50,7 @@ interpretQueueTBWith queue =
       pure False
     Queue.Close ->
       pass
-{-# INLINE interpretQueueTBWith #-}
+{-# inline interpretQueueTBWith #-}
 
 -- |Interpret 'Queue' with a 'TBQueue'.
 interpretQueueTB ::
@@ -62,4 +62,4 @@ interpretQueueTB ::
 interpretQueueTB maxQueued sem = do
   queue <- embed (newTBQueueIO @d maxQueued)
   interpretQueueTBWith queue sem
-{-# INLINE interpretQueueTB #-}
+{-# inline interpretQueueTB #-}

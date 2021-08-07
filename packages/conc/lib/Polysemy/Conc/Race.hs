@@ -17,7 +17,7 @@ biseqEither ::
   f (Either a b)
 biseqEither =
   either (fmap Left) (fmap Right)
-{-# INLINE biseqEither #-}
+{-# inline biseqEither #-}
 
 -- |Interpret 'Race' in terms of 'Async.race' and 'System.timeout'.
 -- Since this has to pass higher-order thunks as 'IO' arguments, it is interpreted in terms of 'Final IO'.
@@ -32,7 +32,7 @@ interpretRace =
       mbT <- runS mb
       s <- getInitialStateS
       pure (maybe (Left err <$ s) (fmap Right) <$> System.timeout (fromIntegral timeout) mbT)
-{-# INLINE interpretRace #-}
+{-# inline interpretRace #-}
 
 -- |Specialization of 'Race.race' for the case where both thunks return the same type, obviating the need for 'Either'.
 race_ ::
@@ -42,7 +42,7 @@ race_ ::
   Sem r a
 race_ ma mb =
   unify <$> Race.race ma mb
-{-# INLINE race_ #-}
+{-# inline race_ #-}
 
 -- |Specialization of 'Race.timeout' for the case where the thunk return the same type as the fallback, obviating the
 -- need for 'Either'.
@@ -55,4 +55,4 @@ timeout_ ::
   Sem r a
 timeout_ err interval mb =
   unify <$> Race.timeout err interval mb
-{-# INLINE timeout_ #-}
+{-# inline timeout_ #-}
