@@ -5,7 +5,7 @@ module Polysemy.Conc.Race where
 import qualified Control.Concurrent.Async as Async
 import Polysemy.Final (getInitialStateS, interpretFinal, runS)
 import qualified Polysemy.Time as Time
-import Polysemy.Time (MicroSeconds(MicroSeconds), TimeUnit)
+import Polysemy.Time (MicroSeconds (MicroSeconds), TimeUnit)
 import qualified System.Timeout as System
 
 import qualified Polysemy.Conc.Data.Race as Race

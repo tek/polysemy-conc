@@ -49,6 +49,7 @@ library
       Polysemy.Conc.Queue.TBM
       Polysemy.Conc.Queue.Timeout
       Polysemy.Conc.Race
+      Polysemy.Conc.Retry
       Polysemy.Conc.Sync
   other-modules:
       Prelude

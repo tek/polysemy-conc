@@ -31,6 +31,8 @@ module Polysemy.Conc (
   race_,
   timeout,
   timeout_,
+  retrying,
+  retryingWithError,
 
   -- ** Interpreters
   interpretRace,
@@ -76,6 +78,7 @@ import Polysemy.Conc.Queue.Result (resultToMaybe)
 import Polysemy.Conc.Queue.TB (interpretQueueTB)
 import Polysemy.Conc.Queue.TBM (interpretQueueTBM)
 import Polysemy.Conc.Race (interpretRace, race_, timeout_)
+import Polysemy.Conc.Retry (retrying, retryingWithError)
 
 -- $intro
 -- This library provides an assortment of tools for concurrency-related tasks:
