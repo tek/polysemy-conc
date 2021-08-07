@@ -47,6 +47,8 @@ scoped main =
 -- @scope@ is a callback function, allowing the user to compute the resource for each program from other effects.
 --
 -- @scopedInterpreter@ is a regular interpreter that is called with the @resource@ argument produced by @scope@.
+-- /Note/: This function will be called for each action in the program, so if the interpreter allocates any resources,
+-- they will scoped to a single action. Move them to @scope@ instead.
 runScoped ::
   ∀ resource effect r .
   (∀ x . (resource -> Sem r x) -> Sem r x) ->
