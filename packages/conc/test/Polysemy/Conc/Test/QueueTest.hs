@@ -1,19 +1,19 @@
 module Polysemy.Conc.Test.QueueTest where
 
-import Polysemy.Async (asyncToIOFinal, Async)
+import Polysemy.Async (Async, asyncToIOFinal)
 import Polysemy.Test (UnitTest, assertEq, assertJust, runTestAuto)
-import Polysemy.Time (MilliSeconds(MilliSeconds), interpretTimeGhc)
+import Polysemy.Time (MilliSeconds (MilliSeconds), interpretTimeGhc)
 import Polysemy.Time.Ghc (GhcTime)
 
 import qualified Polysemy.Conc.Data.Queue as Queue
 import Polysemy.Conc.Data.Queue (Queue)
 import qualified Polysemy.Conc.Data.QueueResult as QueueResult
-import Polysemy.Conc.Data.Race (Race)
-import Polysemy.Conc.Queue.Result (resultToMaybe)
-import Polysemy.Conc.Queue.TB (interpretQueueTB)
-import Polysemy.Conc.Queue.TBM (interpretQueueTBM)
-import Polysemy.Conc.Race (interpretRace)
 import Polysemy.Conc.Data.QueueResult (QueueResult)
+import Polysemy.Conc.Data.Race (Race)
+import Polysemy.Conc.Interpreter.Queue.TB (interpretQueueTB)
+import Polysemy.Conc.Interpreter.Queue.TBM (interpretQueueTBM)
+import Polysemy.Conc.Queue.Result (resultToMaybe)
+import Polysemy.Conc.Race (interpretRace)
 
 progSuccess ::
   Member (Queue Int) r =>

@@ -1,5 +1,5 @@
--- |Description: Queue interpreters for 'TBQueue'
-module Polysemy.Conc.Queue.TB where
+-- |Description: Queue Interpreters for 'TBQueue'
+module Polysemy.Conc.Interpreter.Queue.TB where
 
 import Control.Concurrent.STM (
   TBQueue,

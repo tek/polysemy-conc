@@ -17,6 +17,10 @@ module Polysemy.Conc (
   interpretQueueListReadOnlyState,
   interpretQueueListReadOnlyStateWith,
 
+  -- ** Combinators
+  loop,
+  loopOr,
+
   -- * MVars
   -- $mvar
   Sync,
@@ -54,14 +58,14 @@ module Polysemy.Conc (
   -- ** Interpreters
   interpretEventsChan,
 
-  -- * Combinators
+  -- * Other Combinators
   interpretAtomic,
   withAsyncBlock,
   withAsync,
   withAsync_,
 ) where
 
-import Polysemy.Conc.Async (withAsync, withAsync_, withAsyncBlock)
+import Polysemy.Conc.Async (withAsync, withAsyncBlock, withAsync_)
 import Polysemy.Conc.AtomicState (interpretAtomic)
 import Polysemy.Conc.Data.Interrupt (Interrupt)
 import Polysemy.Conc.Data.Queue (Queue)
@@ -70,18 +74,19 @@ import Polysemy.Conc.Data.Race (Race, race, timeout)
 import Polysemy.Conc.Effect.Events (Events, consume, publish, subscribe)
 import Polysemy.Conc.Effect.Sync (Sync)
 import Polysemy.Conc.Interpreter.Events (interpretEventsChan)
-import Polysemy.Conc.Interpreter.Sync (interpretSync)
-import Polysemy.Conc.Interrupt (interpretInterrupt)
-import Polysemy.Conc.Queue (
+import Polysemy.Conc.Interpreter.Queue.Pure (
   interpretQueueListReadOnlyAtomic,
   interpretQueueListReadOnlyAtomicWith,
   interpretQueueListReadOnlyState,
   interpretQueueListReadOnlyStateWith,
   )
+import Polysemy.Conc.Interpreter.Queue.TB (interpretQueueTB)
+import Polysemy.Conc.Interpreter.Queue.TBM (interpretQueueTBM)
+import Polysemy.Conc.Interpreter.Sync (interpretSync)
+import Polysemy.Conc.Interrupt (interpretInterrupt)
+import Polysemy.Conc.Queue (loop, loopOr)
 import Polysemy.Conc.Queue.Result (resultToMaybe)
-import Polysemy.Conc.Queue.TB (interpretQueueTB)
-import Polysemy.Conc.Queue.TBM (interpretQueueTBM)
-import Polysemy.Conc.Race (interpretRace, race_, timeout_, timeoutU)
+import Polysemy.Conc.Race (interpretRace, race_, timeoutU, timeout_)
 import Polysemy.Conc.Retry (retrying, retryingWithError)
 
 -- $intro

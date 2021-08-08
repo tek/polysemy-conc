@@ -40,13 +40,14 @@ library
       Polysemy.Conc.Effect.Scoped
       Polysemy.Conc.Effect.Sync
       Polysemy.Conc.Interpreter.Events
+      Polysemy.Conc.Interpreter.Queue.Pure
+      Polysemy.Conc.Interpreter.Queue.TB
+      Polysemy.Conc.Interpreter.Queue.TBM
       Polysemy.Conc.Interpreter.Sync
       Polysemy.Conc.Interrupt
       Polysemy.Conc.Prelude
       Polysemy.Conc.Queue
       Polysemy.Conc.Queue.Result
-      Polysemy.Conc.Queue.TB
-      Polysemy.Conc.Queue.TBM
       Polysemy.Conc.Queue.Timeout
       Polysemy.Conc.Race
       Polysemy.Conc.Retry

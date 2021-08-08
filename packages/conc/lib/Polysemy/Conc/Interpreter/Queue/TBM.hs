@@ -1,5 +1,5 @@
--- |Description: Queue interpreters for 'TBMQueue'
-module Polysemy.Conc.Queue.TBM where
+-- |Description: Queue Interpreters for 'TBMQueue'
+module Polysemy.Conc.Interpreter.Queue.TBM where
 
 import Control.Concurrent.STM.TBMQueue (
   TBMQueue,
@@ -13,13 +13,13 @@ import Control.Concurrent.STM.TBMQueue (
   tryWriteTBMQueue,
   writeTBMQueue,
   )
+import Polysemy.Resource (Resource, bracket)
 
 import qualified Polysemy.Conc.Data.Queue as Queue
 import Polysemy.Conc.Data.Queue (Queue)
 import Polysemy.Conc.Data.Race (Race)
 import Polysemy.Conc.Queue.Result (closedBoolResult, closedNaResult, closedResult)
 import Polysemy.Conc.Queue.Timeout (withTimeout)
-import Polysemy.Resource (bracket, Resource)
 
 -- |Interpret 'Queue' with a 'TBMQueue'.
 --
