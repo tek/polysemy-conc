@@ -207,23 +207,13 @@ test-suite polysemy-conc-unit
       ViewPatterns
   ghc-options: -flate-specialise -fspecialise-aggressively -Wall -Wredundant-constraints -Wunused-packages -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      async
-    , base ==4.*
-    , containers
-    , hedgehog
+      base ==4.*
     , polysemy >=1.5
     , polysemy-conc
     , polysemy-test
     , polysemy-time >=0.1.2.1
-    , relude >=0.7
     , stm
-    , stm-chans >=2
-    , string-interpolate >=0.2
     , tasty
-    , tasty-hedgehog
-    , template-haskell
-    , text
-    , time
     , unagi-chan >=0.4
     , unix
   mixins:

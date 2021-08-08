@@ -14,25 +14,24 @@ library:
     - Prelude
   generated-other-modules:
     - Paths_polysemy_conc
-
-dependencies:
-  - async
-  - name: base
-    version: ">= 4 && < 5"
-    mixin:
-      - hiding (Prelude)
-  - containers
-  - polysemy >= 1.5
-  - polysemy-time >= 0.1.2.1
-  - relude >= 0.7
-  - stm
-  - stm-chans >= 2
-  - string-interpolate >= 0.2
-  - template-haskell
-  - text
-  - time
-  - unagi-chan >= 0.4
-  - unix
+  dependencies:
+    - async
+    - name: base
+      version: ">= 4 && < 5"
+      mixin:
+        - hiding (Prelude)
+    - containers
+    - polysemy >= 1.5
+    - polysemy-time >= 0.1.2.1
+    - relude >= 0.7
+    - stm
+    - stm-chans >= 2
+    - string-interpolate >= 0.2
+    - template-haskell
+    - text
+    - time
+    - unagi-chan >= 0.4
+    - unix
 
 tests:
   polysemy-conc-unit:
@@ -43,14 +42,21 @@ tests:
       - -rtsopts
       - -with-rtsopts=-N
     dependencies:
-      - hedgehog
+      - name: base
+        version: ">= 4 && < 5"
+        mixin:
+          - hiding (Prelude)
       - name: polysemy-conc
         mixin:
           - hiding (Prelude)
           - (Polysemy.Conc.Prelude as Prelude)
+      - polysemy >= 1.5
       - polysemy-test
+      - polysemy-time >= 0.1.2.1
+      - stm
       - tasty
-      - tasty-hedgehog
+      - unagi-chan >= 0.4
+      - unix
 
 ghc-options:
   - -flate-specialise
