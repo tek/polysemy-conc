@@ -3,10 +3,10 @@ module Polysemy.Conc.Async where
 import qualified Control.Concurrent.Async as Base
 import Polysemy.Async (Async, async, cancel)
 import Polysemy.Resource (Resource, bracket)
+import Polysemy.Time (MilliSeconds (MilliSeconds), TimeUnit)
 
 import Polysemy.Conc.Data.Race (Race)
 import qualified Polysemy.Conc.Race as Race
-import Polysemy.Time (MilliSeconds(MilliSeconds), TimeUnit)
 
 -- |Run the first action asynchronously while the second action executes, then cancel the first action.
 -- Passes the handle into the action to allow it to await its result.

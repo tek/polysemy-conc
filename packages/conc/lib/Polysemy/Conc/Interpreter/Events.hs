@@ -11,6 +11,7 @@ import Polysemy.Conc.Effect.Scoped (Scoped, runScopedAs)
 import Polysemy.Conc.Async (withAsync_)
 import Polysemy.Resource (Resource)
 import Polysemy.Async (Async)
+import Polysemy.Conc.Data.Race (Race)
 
 -- |Interpret 'Consume' by reading from an 'OutChan'.
 -- Used internally by 'interpretEventsChan', not safe to use directly.
@@ -54,7 +55,7 @@ interpretEventsInChan inChan =
 -- duplicate to 'interpretConsumeChan'.
 interpretEventsChan ::
   ∀ e r .
-  Members [Resource, Async, Embed IO] r =>
+  Members [Resource, Race, Async, Embed IO] r =>
   InterpretersFor [Events (OutChan e) e, Scoped (EventToken (OutChan e)) (Consume e)] r
 interpretEventsChan sem = do
   (inChan, outChan) <- embed (newChan @e 64)
