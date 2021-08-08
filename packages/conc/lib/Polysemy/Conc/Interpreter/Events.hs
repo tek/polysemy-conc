@@ -8,6 +8,9 @@ import Polysemy (InterpretersFor)
 import qualified Polysemy.Conc.Effect.Events as Events
 import Polysemy.Conc.Effect.Events (EventToken (EventToken), Events, Consume)
 import Polysemy.Conc.Effect.Scoped (Scoped, runScopedAs)
+import Polysemy.Conc.Async (withAsync_)
+import Polysemy.Resource (Resource)
+import Polysemy.Async (Async)
 
 -- |Interpret 'Consume' by reading from an 'OutChan'.
 -- Used internally by 'interpretEventsChan', not safe to use directly.
@@ -51,8 +54,9 @@ interpretEventsInChan inChan =
 -- duplicate to 'interpretConsumeChan'.
 interpretEventsChan ::
   ∀ e r .
-  Member (Embed IO) r =>
+  Members [Resource, Async, Embed IO] r =>
   InterpretersFor [Events (OutChan e) e, Scoped (EventToken (OutChan e)) (Consume e)] r
 interpretEventsChan sem = do
-  (inChan, _) <- embed (newChan @e 64)
-  runScopedAs (EventToken <$> embed (dupChan inChan)) interpretConsumeChan (interpretEventsInChan inChan sem)
+  (inChan, outChan) <- embed (newChan @e 64)
+  withAsync_ (forever (embed (readChan outChan))) do
+    runScopedAs (EventToken <$> embed (dupChan inChan)) interpretConsumeChan (interpretEventsInChan inChan sem)
