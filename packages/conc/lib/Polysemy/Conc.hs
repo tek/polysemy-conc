@@ -55,9 +55,10 @@ module Polysemy.Conc (
   -- * Combinators
   interpretAtomic,
   withAsync,
+  withAsync_,
 ) where
 
-import Polysemy.Conc.Async (withAsync)
+import Polysemy.Conc.Async (withAsync, withAsync_)
 import Polysemy.Conc.AtomicState (interpretAtomic)
 import Polysemy.Conc.Data.Interrupt (Interrupt)
 import Polysemy.Conc.Data.Queue (Queue)
