@@ -40,8 +40,8 @@ race_ ::
   Sem r a ->
   Sem r a ->
   Sem r a
-race_ ma mb =
-  unify <$> Race.race ma mb
+race_ ml mr =
+  unify <$> Race.race ml mr
 {-# inline race_ #-}
 
 -- |Specialization of 'Race.timeout' for the case where the thunk return the same type as the fallback, obviating the
@@ -53,6 +53,17 @@ timeout_ ::
   u ->
   Sem r a ->
   Sem r a
-timeout_ err interval mb =
-  unify <$> Race.timeout err interval mb
+timeout_ err interval ma =
+  unify <$> Race.timeout err interval ma
 {-# inline timeout_ #-}
+
+-- |Specialization of 'Race.timeout' for unit actions.
+timeoutU ::
+  TimeUnit u =>
+  Member Race r =>
+  u ->
+  Sem r () ->
+  Sem r ()
+timeoutU =
+  timeout_ ()
+{-# inline timeoutU #-}

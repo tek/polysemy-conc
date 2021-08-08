@@ -31,6 +31,7 @@ module Polysemy.Conc (
   race_,
   timeout,
   timeout_,
+  timeoutU,
   retrying,
   retryingWithError,
 
@@ -55,11 +56,12 @@ module Polysemy.Conc (
 
   -- * Combinators
   interpretAtomic,
+  withAsyncBlock,
   withAsync,
   withAsync_,
 ) where
 
-import Polysemy.Conc.Async (withAsync, withAsync_)
+import Polysemy.Conc.Async (withAsync, withAsync_, withAsyncBlock)
 import Polysemy.Conc.AtomicState (interpretAtomic)
 import Polysemy.Conc.Data.Interrupt (Interrupt)
 import Polysemy.Conc.Data.Queue (Queue)
@@ -79,7 +81,7 @@ import Polysemy.Conc.Queue (
 import Polysemy.Conc.Queue.Result (resultToMaybe)
 import Polysemy.Conc.Queue.TB (interpretQueueTB)
 import Polysemy.Conc.Queue.TBM (interpretQueueTBM)
-import Polysemy.Conc.Race (interpretRace, race_, timeout_)
+import Polysemy.Conc.Race (interpretRace, race_, timeout_, timeoutU)
 import Polysemy.Conc.Retry (retrying, retryingWithError)
 
 -- $intro
