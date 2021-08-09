@@ -57,6 +57,7 @@ module Polysemy.Conc (
   EventToken,
   EventChan,
   EventConsumer,
+  ChanConsumer,
 
   -- ** Interpreters
   interpretEventsChan,
@@ -76,7 +77,7 @@ import Polysemy.Conc.Data.QueueResult (QueueResult)
 import Polysemy.Conc.Data.Race (Race, race, timeout)
 import Polysemy.Conc.Effect.Events (EventToken, Events, consume, publish, subscribe)
 import Polysemy.Conc.Effect.Sync (Sync)
-import Polysemy.Conc.Interpreter.Events (EventChan, EventConsumer, interpretEventsChan)
+import Polysemy.Conc.Interpreter.Events (ChanConsumer, EventChan, EventConsumer, interpretEventsChan)
 import Polysemy.Conc.Interpreter.Queue.Pure (
   interpretQueueListReadOnlyAtomic,
   interpretQueueListReadOnlyAtomicWith,
