@@ -4,21 +4,25 @@ module Polysemy.Conc.Interpreter.Events where
 
 import Control.Concurrent.Chan.Unagi.Bounded (InChan, OutChan, dupChan, newChan, readChan, tryWriteChan)
 import Polysemy (InterpretersFor)
-
-import qualified Polysemy.Conc.Effect.Events as Events
-import Polysemy.Conc.Effect.Events (EventToken (EventToken), Events, Consume)
-import Polysemy.Conc.Effect.Scoped (Scoped, runScopedAs)
-import Polysemy.Conc.Async (withAsync_)
-import Polysemy.Resource (Resource)
 import Polysemy.Async (Async)
+import Polysemy.Resource (Resource)
+
+import Polysemy.Conc.Async (withAsync_)
 import Polysemy.Conc.Data.Race (Race)
+import qualified Polysemy.Conc.Effect.Events as Events
+import Polysemy.Conc.Effect.Events (Consume, EventToken (EventToken), Events)
+import Polysemy.Conc.Effect.Scoped (Scoped, runScopedAs)
+
+-- |Convenience alias for the default 'EventToken' that uses an 'OutChan'.
+type EventChan e =
+  EventToken (OutChan e)
 
 -- |Interpret 'Consume' by reading from an 'OutChan'.
 -- Used internally by 'interpretEventsChan', not safe to use directly.
 interpretConsumeChan ::
   ∀ e r .
   Member (Embed IO) r =>
-  EventToken (OutChan e) ->
+  EventChan e ->
   InterpreterFor (Consume e) r
 interpretConsumeChan (EventToken chan) =
   interpret \case
@@ -56,7 +60,7 @@ interpretEventsInChan inChan =
 interpretEventsChan ::
   ∀ e r .
   Members [Resource, Race, Async, Embed IO] r =>
-  InterpretersFor [Events (OutChan e) e, Scoped (EventToken (OutChan e)) (Consume e)] r
+  InterpretersFor [Events (OutChan e) e, Scoped (EventChan e) (Consume e)] r
 interpretEventsChan sem = do
   (inChan, outChan) <- embed (newChan @e 64)
   withAsync_ (forever (embed (readChan outChan))) do
