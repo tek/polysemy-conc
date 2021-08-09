@@ -17,6 +17,10 @@ import Polysemy.Conc.Effect.Scoped (Scoped, runScopedAs)
 type EventChan e =
   EventToken (OutChan e)
 
+-- |Convenience alias for the consumer effect using the default implementation.
+type EventConsumer e =
+  Scoped (EventChan e) (Consume e)
+
 -- |Interpret 'Consume' by reading from an 'OutChan'.
 -- Used internally by 'interpretEventsChan', not safe to use directly.
 interpretConsumeChan ::
