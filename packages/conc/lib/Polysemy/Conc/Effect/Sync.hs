@@ -40,3 +40,6 @@ data Sync d :: Effect where
   Empty :: Sync d m Bool
 
 makeSem ''Sync
+
+newtype SyncResources a =
+  SyncResources { unSyncResources :: a }

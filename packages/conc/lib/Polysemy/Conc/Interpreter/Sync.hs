@@ -5,9 +5,11 @@ import Control.Concurrent (isEmptyMVar)
 
 import qualified Polysemy.Conc.Data.Race as Race
 import Polysemy.Conc.Data.Race (Race)
+import Polysemy.Conc.Effect.Scoped (Scoped, runScopedAs)
 import qualified Polysemy.Conc.Effect.Sync as Sync
-import Polysemy.Conc.Effect.Sync (Sync)
+import Polysemy.Conc.Effect.Sync (Sync, SyncResources (SyncResources), unSyncResources)
 import qualified Polysemy.Conc.Race as Race
+import Polysemy.Resource (Resource)
 
 -- |Interpret 'Sync' with the provided 'MVar'.
 interpretSyncWith ::
@@ -56,3 +58,20 @@ interpretSyncAs ::
 interpretSyncAs d sem = do
   var <- newMVar d
   interpretSyncWith var sem
+
+-- |Interpret 'Sync' for locally scoped use with an empty 'MVar'.
+interpretScopedSync ::
+  ∀ d r .
+  Members [Resource, Race, Embed IO] r =>
+  InterpreterFor (Scoped (SyncResources (MVar d)) (Sync d)) r
+interpretScopedSync =
+  runScopedAs (SyncResources <$> newEmptyMVar) \ r -> interpretSyncWith (unSyncResources r)
+
+-- |Interpret 'Sync' for locally scoped use with an 'MVar' containing the specified value.
+interpretScopedSyncAs ::
+  ∀ d r .
+  Members [Resource, Race, Embed IO] r =>
+  d ->
+  InterpreterFor (Scoped (SyncResources (MVar d)) (Sync d)) r
+interpretScopedSyncAs d =
+  runScopedAs (SyncResources <$> newMVar d) \ r -> interpretSyncWith (unSyncResources r)

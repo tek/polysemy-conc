@@ -27,6 +27,10 @@ module Polysemy.Conc (
 
   -- ** Interpreters
   interpretSync,
+  interpretSyncAs,
+  withSync,
+  interpretScopedSync,
+  interpretScopedSyncAs,
 
   -- * Racing
   -- $race
@@ -86,12 +90,13 @@ import Polysemy.Conc.Interpreter.Queue.Pure (
   )
 import Polysemy.Conc.Interpreter.Queue.TB (interpretQueueTB)
 import Polysemy.Conc.Interpreter.Queue.TBM (interpretQueueTBM)
-import Polysemy.Conc.Interpreter.Sync (interpretSync)
+import Polysemy.Conc.Interpreter.Sync (interpretScopedSync, interpretScopedSyncAs, interpretSync, interpretSyncAs)
 import Polysemy.Conc.Interrupt (interpretInterrupt)
 import Polysemy.Conc.Queue (loop, loopOr)
 import Polysemy.Conc.Queue.Result (resultToMaybe)
 import Polysemy.Conc.Race (interpretRace, race_, timeoutU, timeout_)
 import Polysemy.Conc.Retry (retrying, retryingWithError)
+import Polysemy.Conc.Sync (withSync)
 
 -- $intro
 -- This library provides an assortment of tools for concurrency-related tasks:
