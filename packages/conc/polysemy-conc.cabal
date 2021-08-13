@@ -39,6 +39,7 @@ library
       Polysemy.Conc.Effect.Events
       Polysemy.Conc.Effect.Scoped
       Polysemy.Conc.Effect.Sync
+      Polysemy.Conc.Events
       Polysemy.Conc.Interpreter.Events
       Polysemy.Conc.Interpreter.Queue.Pure
       Polysemy.Conc.Interpreter.Queue.TB
