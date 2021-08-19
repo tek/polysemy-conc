@@ -4,8 +4,8 @@ module Polysemy.Conc.Data.Critical where
 
 -- |An effect that catches exceptions.
 --
--- The point of this is to catch exceptions that haven't been anticipated, as a failsafe.
--- Used internally in this library.
+-- Provides the exact functionality of `Polysemy.Error.fromExceptionSem`, but pushes the dependency on @Final IO@ to the
+-- interpreter, and makes it optional.
 data Critical :: Effect where
   -- |Catch all exceptions of type @e@ in this computation.
   Catch :: Exception e => m a -> Critical m (Either e a)

@@ -68,6 +68,13 @@ module Polysemy.Conc (
   -- ** Interpreters
   interpretEventsChan,
 
+  -- * Exceptions
+  Critical,
+
+  -- ** Interpreters
+  interpretCritical,
+  interpretCriticalNull,
+
   -- * Other Combinators
   interpretAtomic,
   withAsyncBlock,
@@ -77,6 +84,8 @@ module Polysemy.Conc (
 
 import Polysemy.Conc.Async (withAsync, withAsyncBlock, withAsync_)
 import Polysemy.Conc.AtomicState (interpretAtomic)
+import Polysemy.Conc.Critical (interpretCritical, interpretCriticalNull)
+import Polysemy.Conc.Data.Critical (Critical)
 import Polysemy.Conc.Data.Interrupt (Interrupt)
 import Polysemy.Conc.Data.Queue (Queue)
 import Polysemy.Conc.Data.QueueResult (QueueResult)
