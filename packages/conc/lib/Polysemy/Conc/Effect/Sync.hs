@@ -3,6 +3,7 @@
 module Polysemy.Conc.Effect.Sync where
 
 import Polysemy.Time (TimeUnit)
+import Polysemy.Conc.Effect.Scoped (Scoped)
 
 -- |Abstracts an 'MVar'.
 --
@@ -49,3 +50,6 @@ makeSem ''Sync
 
 newtype SyncResources a =
   SyncResources { unSyncResources :: a }
+
+type ScopedSync res a =
+  Scoped (SyncResources res) (Sync a)

@@ -13,6 +13,10 @@ import qualified Polysemy.Conc.Effect.Events as Events
 import Polysemy.Conc.Effect.Events (Consume, EventToken (EventToken), Events)
 import Polysemy.Conc.Effect.Scoped (Scoped, runScopedAs)
 
+-- |Convenience alias for the default 'Events' that uses an 'OutChan'.
+type ChanEvents e =
+  Events (OutChan e) e
+
 -- |Convenience alias for the default 'EventToken' that uses an 'OutChan'.
 type EventChan e =
   EventToken (OutChan e)

@@ -24,6 +24,7 @@ module Polysemy.Conc (
   -- * MVars
   -- $mvar
   Sync,
+  ScopedSync,
 
   -- ** Interpreters
   interpretSync,
@@ -62,6 +63,7 @@ module Polysemy.Conc (
   subscribeLoop,
   EventToken,
   EventChan,
+  ChanEvents,
   EventConsumer,
   ChanConsumer,
 
@@ -91,9 +93,9 @@ import Polysemy.Conc.Data.Queue (Queue)
 import Polysemy.Conc.Data.QueueResult (QueueResult)
 import Polysemy.Conc.Data.Race (Race, race, timeout)
 import Polysemy.Conc.Effect.Events (EventToken, Events, consume, publish, subscribe)
-import Polysemy.Conc.Effect.Sync (Sync)
+import Polysemy.Conc.Effect.Sync (ScopedSync, Sync)
 import Polysemy.Conc.Events (subscribeLoop, subscribeWhile)
-import Polysemy.Conc.Interpreter.Events (ChanConsumer, EventChan, EventConsumer, interpretEventsChan)
+import Polysemy.Conc.Interpreter.Events (ChanConsumer, ChanEvents, EventChan, EventConsumer, interpretEventsChan)
 import Polysemy.Conc.Interpreter.Queue.Pure (
   interpretQueueListReadOnlyAtomic,
   interpretQueueListReadOnlyAtomicWith,
