@@ -1,5 +1,7 @@
 # Unreleased
 
+* Change `Race.timeout` to take a `Sem` for the fallback instead of a pure value.
+
 # 0.2.0.0
 * Add `read*` constructors for `Sync`
 * Add `subscribeWhile`, a combinator that consumes events until a condition is met

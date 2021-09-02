@@ -16,7 +16,7 @@ withTimeout ::
   STM (Maybe d) ->
   Sem r (QueueResult d)
 withTimeout timeout readQ =
-  Race.timeout_ QueueResult.NotAvailable timeout reader'
+  Race.timeoutAs_ QueueResult.NotAvailable timeout reader'
   where
     reader' =
       maybe QueueResult.Closed QueueResult.Success <$> atomically readQ

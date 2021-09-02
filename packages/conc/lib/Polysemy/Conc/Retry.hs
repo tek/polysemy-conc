@@ -22,7 +22,7 @@ retrying ::
   Sem r (Either e a) ->
   Sem r (Maybe a)
 retrying timeout interval action =
-  Race.timeout_ Nothing timeout (Just <$> spin)
+  Race.timeoutMaybe timeout spin
   where
     spin =
       action >>= \case
@@ -48,7 +48,7 @@ retryingWithError ::
   Sem r (Maybe (Either e a))
 retryingWithError timeout interval action =
   interpretSync @e do
-    Race.timeout_ Nothing timeout (Just <$> spin) >>= \case
+    Race.timeoutMaybe timeout spin >>= \case
       Just a -> pure (Just (Right a))
       Nothing -> fmap Left <$> Sync.takeTry
   where

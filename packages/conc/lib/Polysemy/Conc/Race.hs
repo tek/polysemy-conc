@@ -3,7 +3,7 @@
 module Polysemy.Conc.Race where
 
 import qualified Control.Concurrent.Async as Async
-import Polysemy.Final (getInitialStateS, interpretFinal, runS)
+import Polysemy.Final (interpretFinal, runS)
 import qualified Polysemy.Time as Time
 import Polysemy.Time (MicroSeconds (MicroSeconds), TimeUnit)
 import qualified System.Timeout as System
@@ -28,10 +28,10 @@ interpretRace =
   interpretFinal @IO \case
     Race.Race left right ->
       fmap (fmap biseqEither) . Async.race <$> runS left <*> runS right
-    Race.Timeout err (Time.convert -> MicroSeconds timeout) mb -> do
+    Race.Timeout ma (Time.convert -> MicroSeconds timeout) mb -> do
+      maT <- runS ma
       mbT <- runS mb
-      s <- getInitialStateS
-      pure (maybe (Left err <$ s) (fmap Right) <$> System.timeout (fromIntegral timeout) mbT)
+      pure (maybe (fmap Left <$> maT) (pure . fmap Right) =<< System.timeout (fromIntegral timeout) mbT)
 {-# inline interpretRace #-}
 
 -- |Specialization of 'Race.race' for the case where both thunks return the same type, obviating the need for 'Either'.
@@ -49,13 +49,38 @@ race_ ml mr =
 timeout_ ::
   TimeUnit u =>
   Member Race r =>
-  a ->
+  Sem r a ->
   u ->
   Sem r a ->
   Sem r a
 timeout_ err interval ma =
   unify <$> Race.timeout err interval ma
 {-# inline timeout_ #-}
+
+-- |Version of `Race.timeout` that takes a pure fallback value.
+timeoutAs ::
+  TimeUnit u =>
+  Member Race r =>
+  a ->
+  u ->
+  Sem r b ->
+  Sem r (Either a b)
+timeoutAs err =
+  Race.timeout (pure err)
+{-# inline timeoutAs #-}
+
+-- |Specialization of 'timeoutAs' for the case where the thunk return the same type as the fallback, obviating the
+-- need for 'Either'.
+timeoutAs_ ::
+  TimeUnit u =>
+  Member Race r =>
+  a ->
+  u ->
+  Sem r a ->
+  Sem r a
+timeoutAs_ err =
+  timeout_ (pure err)
+{-# inline timeoutAs_ #-}
 
 -- |Specialization of 'Race.timeout' for unit actions.
 timeoutU ::
@@ -65,5 +90,17 @@ timeoutU ::
   Sem r () ->
   Sem r ()
 timeoutU =
-  timeout_ ()
+  timeout_ pass
 {-# inline timeoutU #-}
+
+-- |Variant of 'timeout' that returns 'Maybe'.
+timeoutMaybe ::
+  TimeUnit u =>
+  Member Race r =>
+  u ->
+  Sem r a ->
+  Sem r (Maybe a)
+timeoutMaybe u ma =
+  timeoutAs_ Nothing u (Just <$> ma)
+{-# inline timeoutMaybe #-}
+

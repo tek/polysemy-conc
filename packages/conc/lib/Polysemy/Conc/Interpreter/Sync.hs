@@ -2,14 +2,13 @@
 module Polysemy.Conc.Interpreter.Sync where
 
 import Control.Concurrent (isEmptyMVar)
+import Polysemy.Resource (Resource)
 
-import qualified Polysemy.Conc.Data.Race as Race
 import Polysemy.Conc.Data.Race (Race)
 import Polysemy.Conc.Effect.Scoped (Scoped, runScopedAs)
 import qualified Polysemy.Conc.Effect.Sync as Sync
 import Polysemy.Conc.Effect.Sync (Sync, SyncResources (SyncResources), unSyncResources)
 import qualified Polysemy.Conc.Race as Race
-import Polysemy.Resource (Resource)
 
 -- |Interpret 'Sync' with the provided 'MVar'.
 interpretSyncWith ::
@@ -22,25 +21,25 @@ interpretSyncWith var =
     Sync.Block ->
       readMVar var
     Sync.Wait interval ->
-      rightToMaybe <$> Race.timeout () interval (readMVar var)
+      rightToMaybe <$> Race.timeoutAs () interval (readMVar var)
     Sync.Try ->
       tryReadMVar var
     Sync.TakeBlock ->
       takeMVar var
     Sync.TakeWait interval ->
-      rightToMaybe <$> Race.timeout () interval (takeMVar var)
+      rightToMaybe <$> Race.timeoutAs () interval (takeMVar var)
     Sync.TakeTry ->
       tryTakeMVar var
     Sync.ReadBlock ->
       readMVar var
     Sync.ReadWait interval ->
-      rightToMaybe <$> Race.timeout () interval (readMVar var)
+      rightToMaybe <$> Race.timeoutAs () interval (readMVar var)
     Sync.ReadTry ->
       tryReadMVar var
     Sync.PutBlock d ->
       putMVar var d
     Sync.PutWait interval d ->
-      Race.timeout_ False interval (True <$ putMVar var d)
+      Race.timeoutAs_ False interval (True <$ putMVar var d)
     Sync.PutTry d ->
       tryPutMVar var d
     Sync.Empty ->

@@ -11,8 +11,8 @@ import Polysemy.Time (TimeUnit)
 data Race :: Effect where
   -- |Run both programs concurrently, returning the result of the faster one.
   Race :: m a -> m b -> Race m (Either a b)
-  -- |Return the fallback value if the given program doesn't finish within the specified interval.
-  Timeout :: TimeUnit u => a -> u -> m b -> Race m (Either a b)
+  -- |Run the fallback action if the given program doesn't finish within the specified interval.
+  Timeout :: TimeUnit u => m a -> u -> m b -> Race m (Either a b)
 
 makeSem_ ''Race
 
@@ -24,12 +24,12 @@ race ::
   Sem r b ->
   Sem r (Either a b)
 
--- |Return the fallback value if the given program doesn't finish within the specified interval.
+-- |Run the fallback action if the given program doesn't finish within the specified interval.
 timeout ::
   ∀ a b u r .
   TimeUnit u =>
   Member Race r =>
-  a ->
+  Sem r a ->
   u ->
   Sem r b ->
   Sem r (Either a b)
