@@ -40,7 +40,10 @@ module Polysemy.Conc (
   race_,
   timeout,
   timeout_,
+  timeoutAs,
+  timeoutAs_,
   timeoutU,
+  timeoutMaybe,
   retrying,
   retryingWithError,
 
@@ -108,7 +111,7 @@ import Polysemy.Conc.Interpreter.Sync (interpretScopedSync, interpretScopedSyncA
 import Polysemy.Conc.Interrupt (interpretInterrupt)
 import Polysemy.Conc.Queue (loop, loopOr)
 import Polysemy.Conc.Queue.Result (resultToMaybe)
-import Polysemy.Conc.Race (interpretRace, race_, timeoutU, timeout_)
+import Polysemy.Conc.Race (interpretRace, race_, timeoutU, timeout_, timeoutMaybe, timeoutAs_, timeoutAs)
 import Polysemy.Conc.Retry (retrying, retryingWithError)
 import Polysemy.Conc.Sync (withSync)
 
