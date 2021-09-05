@@ -2,6 +2,7 @@
 
 * Change `Race.timeout` to take a `Sem` for the fallback instead of a pure value.
 * Export all `Queue` constructors from `Polysemy.Conc.Queue`.
+* Export all `Sync` constructors from `Polysemy.Conc.Sync`.
 
 # 0.2.0.0
 * Add `read*` constructors for `Sync`

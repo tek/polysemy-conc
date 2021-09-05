@@ -1,12 +1,32 @@
 -- |Description: Sync Combinators
-module Polysemy.Conc.Sync where
+module Polysemy.Conc.Sync (
+  module Polysemy.Conc.Sync,
+  module Polysemy.Conc.Effect.Sync
+) where
 
 import qualified Polysemy.Time as Time
 import Polysemy.Time (Time, TimeUnit)
 
 import Polysemy.Conc.Effect.Scoped (Scoped, scoped)
 import qualified Polysemy.Conc.Effect.Sync as Sync
-import Polysemy.Conc.Effect.Sync (Sync, SyncResources)
+import Polysemy.Conc.Effect.Sync (
+  ScopedSync,
+  Sync,
+  SyncResources,
+  block,
+  empty,
+  putBlock,
+  putTry,
+  putWait,
+  readBlock,
+  readTry,
+  readWait,
+  takeBlock,
+  takeTry,
+  takeWait,
+  try,
+  wait,
+  )
 
 -- |Run an action repeatedly until the 'Sync' variable is available.
 whileEmpty ::
