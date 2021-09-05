@@ -1,8 +1,23 @@
 -- |Description: Queue Combinators
-module Polysemy.Conc.Queue where
+module Polysemy.Conc.Queue (
+  module Polysemy.Conc.Queue,
+  module Polysemy.Conc.Data.Queue,
+) where
 
 import qualified Polysemy.Conc.Data.Queue as Queue
-import Polysemy.Conc.Data.Queue (Queue)
+import Polysemy.Conc.Data.Queue (
+  Queue,
+  close,
+  closed,
+  peek,
+  read,
+  readTimeout,
+  tryPeek,
+  tryRead,
+  tryWrite,
+  write,
+  writeTimeout,
+  )
 import qualified Polysemy.Conc.Data.QueueResult as QueueResult
 
 -- |Read from a 'Queue' repeatedly until it is closed.
