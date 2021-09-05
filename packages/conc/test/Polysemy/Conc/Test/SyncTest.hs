@@ -3,11 +3,11 @@ module Polysemy.Conc.Test.SyncTest where
 import Polysemy.Async (Async, asyncToIOFinal, sequenceConcurrently)
 import Polysemy.Test (UnitTest, assertEq, runTestAuto)
 
-import Polysemy.Conc.Data.Race (Race)
+import Polysemy.Conc.Effect.Race (Race)
 import qualified Polysemy.Conc.Effect.Sync as Sync
 import Polysemy.Conc.Effect.Sync (Sync)
+import Polysemy.Conc.Interpreter.Race (interpretRace)
 import Polysemy.Conc.Interpreter.Sync (interpretSync)
-import Polysemy.Conc.Race (interpretRace)
 
 data Thread1 = Thread1
 data Thread2 = Thread2

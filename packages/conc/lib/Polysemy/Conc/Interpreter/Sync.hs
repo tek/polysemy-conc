@@ -1,13 +1,14 @@
--- |Description: Sync interpreters
+-- |Description: Sync Interpreters
 module Polysemy.Conc.Interpreter.Sync where
 
 import Control.Concurrent (isEmptyMVar)
 import Polysemy.Resource (Resource)
 
-import Polysemy.Conc.Data.Race (Race)
-import Polysemy.Conc.Effect.Scoped (Scoped, runScopedAs)
+import Polysemy.Conc.Effect.Race (Race)
+import Polysemy.Conc.Effect.Scoped (Scoped)
 import qualified Polysemy.Conc.Effect.Sync as Sync
 import Polysemy.Conc.Effect.Sync (Sync, SyncResources (SyncResources), unSyncResources)
+import Polysemy.Conc.Interpreter.Scoped (runScopedAs)
 import qualified Polysemy.Conc.Race as Race
 
 -- |Interpret 'Sync' with the provided 'MVar'.

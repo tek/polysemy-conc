@@ -1,11 +1,12 @@
 -- |Description: Queue Combinators
 module Polysemy.Conc.Queue (
   module Polysemy.Conc.Queue,
-  module Polysemy.Conc.Data.Queue,
+  module Polysemy.Conc.Effect.Queue,
 ) where
 
-import qualified Polysemy.Conc.Data.Queue as Queue
-import Polysemy.Conc.Data.Queue (
+import qualified Polysemy.Conc.Data.QueueResult as QueueResult
+import qualified Polysemy.Conc.Effect.Queue as Queue
+import Polysemy.Conc.Effect.Queue (
   Queue,
   close,
   closed,
@@ -18,7 +19,6 @@ import Polysemy.Conc.Data.Queue (
   write,
   writeTimeout,
   )
-import qualified Polysemy.Conc.Data.QueueResult as QueueResult
 
 -- |Read from a 'Queue' repeatedly until it is closed.
 --

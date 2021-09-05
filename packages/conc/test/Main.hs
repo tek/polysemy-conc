@@ -1,5 +1,6 @@
 module Main where
 
+import Polysemy.Conc.Test.EventsTest (test_events)
 import Polysemy.Conc.Test.InterruptTest (test_interrupt)
 import Polysemy.Conc.Test.QueueTest (
   test_queueBlockTB,
@@ -23,14 +24,17 @@ tests =
       unitTest "TBM block" test_queueBlockTBM,
       unitTest "TB success" test_queueTB,
       unitTest "TB block" test_queueBlockTB
-      ],
+    ],
+    testGroup "events" [
+      unitTest "events" test_events
+    ],
     testGroup "sync" [
       unitTest "sync" test_sync
-      ],
+    ],
     testGroup "interrupt" [
       unitTest "interrupt" test_interrupt
-      ]
     ]
+  ]
 
 main :: IO ()
 main =

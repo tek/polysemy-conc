@@ -12,10 +12,10 @@ import Control.Concurrent.STM (
   writeTBQueue,
   )
 
-import qualified Polysemy.Conc.Data.Queue as Queue
-import Polysemy.Conc.Data.Queue (Queue)
+import qualified Polysemy.Conc.Effect.Queue as Queue
+import Polysemy.Conc.Effect.Queue (Queue)
 import qualified Polysemy.Conc.Data.QueueResult as QueueResult
-import Polysemy.Conc.Data.Race (Race)
+import Polysemy.Conc.Effect.Race (Race)
 import Polysemy.Conc.Queue.Result (naResult)
 import Polysemy.Conc.Queue.Timeout (withTimeout)
 

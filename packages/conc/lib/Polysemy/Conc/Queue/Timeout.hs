@@ -1,11 +1,11 @@
--- |Description: Timeout helper
+-- |Description: Timeout Helper
 module Polysemy.Conc.Queue.Timeout where
 
 import Polysemy.Time (TimeUnit)
 
 import qualified Polysemy.Conc.Data.QueueResult as QueueResult
 import Polysemy.Conc.Data.QueueResult (QueueResult)
-import Polysemy.Conc.Data.Race (Race)
+import Polysemy.Conc.Effect.Race (Race)
 import qualified Polysemy.Conc.Race as Race
 
 -- |Run an 'STM' action atomically with a time limit

@@ -8,10 +8,11 @@ import Polysemy.Async (Async)
 import Polysemy.Resource (Resource)
 
 import Polysemy.Conc.Async (withAsync_)
-import Polysemy.Conc.Data.Race (Race)
 import qualified Polysemy.Conc.Effect.Events as Events
 import Polysemy.Conc.Effect.Events (Consume, EventToken (EventToken), Events)
-import Polysemy.Conc.Effect.Scoped (Scoped, runScopedAs)
+import Polysemy.Conc.Effect.Race (Race)
+import Polysemy.Conc.Effect.Scoped (Scoped)
+import Polysemy.Conc.Interpreter.Scoped (runScopedAs)
 
 -- |Convenience alias for the default 'Events' that uses an 'OutChan'.
 type ChanEvents e =

@@ -7,8 +7,8 @@ import Polysemy.Test (UnitTest, assertJust, runTestAuto)
 import qualified Polysemy.Conc.Effect.Events as Events
 import qualified Polysemy.Conc.Effect.Sync as Sync
 import Polysemy.Conc.Interpreter.Events (interpretEventsChan)
+import Polysemy.Conc.Interpreter.Race (interpretRace)
 import Polysemy.Conc.Interpreter.Sync (interpretSync)
-import Polysemy.Conc.Race (interpretRace)
 
 test_events :: UnitTest
 test_events =

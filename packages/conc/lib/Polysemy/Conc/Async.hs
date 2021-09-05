@@ -5,7 +5,7 @@ import Polysemy.Async (Async, async, cancel)
 import Polysemy.Resource (Resource, bracket)
 import Polysemy.Time (MilliSeconds (MilliSeconds), TimeUnit)
 
-import Polysemy.Conc.Data.Race (Race)
+import Polysemy.Conc.Effect.Race (Race)
 import qualified Polysemy.Conc.Race as Race
 
 -- |Run the first action asynchronously while the second action executes, then cancel the first action.

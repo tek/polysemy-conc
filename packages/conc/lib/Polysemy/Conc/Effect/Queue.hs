@@ -1,6 +1,6 @@
 {-# options_haddock prune #-}
 -- |Description: Queue effect
-module Polysemy.Conc.Data.Queue where
+module Polysemy.Conc.Effect.Queue where
 
 import Polysemy.Time (TimeUnit)
 import Polysemy.Conc.Data.QueueResult (QueueResult)
@@ -11,7 +11,7 @@ import Polysemy.Conc.Data.QueueResult (QueueResult)
 --
 -- @
 -- import Polysemy.Conc (Queue, QueueResult)
--- import Polysemy.Conc.Data.Queue as Queue
+-- import Polysemy.Conc.Effect.Queue as Queue
 --
 -- prog :: Member (Queue Int) r => Sem r (QueueResult Int)
 -- prog = do

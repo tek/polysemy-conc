@@ -5,15 +5,15 @@ import Polysemy.Test (UnitTest, assertEq, assertJust, runTestAuto)
 import Polysemy.Time (MilliSeconds (MilliSeconds), interpretTimeGhc)
 import Polysemy.Time.Ghc (GhcTime)
 
-import qualified Polysemy.Conc.Data.Queue as Queue
-import Polysemy.Conc.Data.Queue (Queue)
 import qualified Polysemy.Conc.Data.QueueResult as QueueResult
 import Polysemy.Conc.Data.QueueResult (QueueResult)
-import Polysemy.Conc.Data.Race (Race)
+import qualified Polysemy.Conc.Effect.Queue as Queue
+import Polysemy.Conc.Effect.Queue (Queue)
+import Polysemy.Conc.Effect.Race (Race)
 import Polysemy.Conc.Interpreter.Queue.TB (interpretQueueTB)
 import Polysemy.Conc.Interpreter.Queue.TBM (interpretQueueTBM)
+import Polysemy.Conc.Interpreter.Race (interpretRace)
 import Polysemy.Conc.Queue.Result (resultToMaybe)
-import Polysemy.Conc.Race (interpretRace)
 
 progSuccess ::
   Member (Queue Int) r =>

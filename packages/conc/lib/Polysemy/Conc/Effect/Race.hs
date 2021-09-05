@@ -1,6 +1,6 @@
 {-# options_haddock prune #-}
 -- |Description: Race effect
-module Polysemy.Conc.Data.Race where
+module Polysemy.Conc.Effect.Race where
 
 import Polysemy (makeSem_)
 

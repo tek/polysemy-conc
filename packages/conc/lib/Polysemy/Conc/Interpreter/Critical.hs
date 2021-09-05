@@ -1,11 +1,11 @@
 -- |Description: Critical interpreters
-module Polysemy.Conc.Critical where
+module Polysemy.Conc.Interpreter.Critical where
 
 import qualified Control.Exception as Exception
+import Polysemy (interpretH, runT)
 import Polysemy.Final (getInitialStateS, interpretFinal, runS)
 
-import Polysemy.Conc.Data.Critical (Critical(..))
-import Polysemy (interpretH, runT)
+import Polysemy.Conc.Effect.Critical (Critical (..))
 
 -- |Interpret 'Critical' in terms of 'Final' 'IO'.
 interpretCritical ::

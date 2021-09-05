@@ -4,7 +4,7 @@ module Polysemy.Conc.Retry where
 import qualified Polysemy.Time as Time
 import Polysemy.Time (Time, TimeUnit)
 
-import Polysemy.Conc.Data.Race (Race)
+import Polysemy.Conc.Effect.Race (Race)
 import qualified Polysemy.Conc.Effect.Sync as Sync
 import Polysemy.Conc.Interpreter.Sync (interpretSync)
 import qualified Polysemy.Conc.Race as Race

@@ -30,22 +30,24 @@ library
       Polysemy.Conc
       Polysemy.Conc.Async
       Polysemy.Conc.AtomicState
-      Polysemy.Conc.Critical
-      Polysemy.Conc.Data.Critical
-      Polysemy.Conc.Data.Interrupt
-      Polysemy.Conc.Data.Queue
       Polysemy.Conc.Data.QueueResult
-      Polysemy.Conc.Data.Race
+      Polysemy.Conc.Effect.Critical
       Polysemy.Conc.Effect.Events
+      Polysemy.Conc.Effect.Interrupt
+      Polysemy.Conc.Effect.Queue
+      Polysemy.Conc.Effect.Race
       Polysemy.Conc.Effect.Scoped
       Polysemy.Conc.Effect.Sync
       Polysemy.Conc.Events
+      Polysemy.Conc.Interpreter.Critical
       Polysemy.Conc.Interpreter.Events
+      Polysemy.Conc.Interpreter.Interrupt
       Polysemy.Conc.Interpreter.Queue.Pure
       Polysemy.Conc.Interpreter.Queue.TB
       Polysemy.Conc.Interpreter.Queue.TBM
+      Polysemy.Conc.Interpreter.Race
+      Polysemy.Conc.Interpreter.Scoped
       Polysemy.Conc.Interpreter.Sync
-      Polysemy.Conc.Interrupt
       Polysemy.Conc.Prelude
       Polysemy.Conc.Queue
       Polysemy.Conc.Queue.Result

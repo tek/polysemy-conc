@@ -1,6 +1,6 @@
 {-# options_haddock prune #-}
 -- |Description: Critical effect
-module Polysemy.Conc.Data.Critical where
+module Polysemy.Conc.Effect.Critical where
 
 -- |An effect that catches exceptions.
 --

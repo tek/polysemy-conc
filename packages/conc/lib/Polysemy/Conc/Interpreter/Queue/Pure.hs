@@ -5,8 +5,8 @@ import Polysemy.AtomicState (atomicState')
 import Polysemy.State (State, evalState, get, gets, put)
 
 import Polysemy.Conc.AtomicState (interpretAtomic)
-import qualified Polysemy.Conc.Data.Queue as Queue
-import Polysemy.Conc.Data.Queue (Queue)
+import qualified Polysemy.Conc.Effect.Queue as Queue
+import Polysemy.Conc.Effect.Queue (Queue)
 import qualified Polysemy.Conc.Data.QueueResult as QueueResult
 import Polysemy.Conc.Data.QueueResult (QueueResult)
 

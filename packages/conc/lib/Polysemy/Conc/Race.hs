@@ -1,38 +1,10 @@
-{-# options_haddock prune #-}
--- |Description: Race interpreters
+-- |Description: Race Combinators
 module Polysemy.Conc.Race where
 
-import qualified Control.Concurrent.Async as Async
-import Polysemy.Final (interpretFinal, runS)
-import qualified Polysemy.Time as Time
-import Polysemy.Time (MicroSeconds (MicroSeconds), TimeUnit)
-import qualified System.Timeout as System
+import Polysemy.Time (TimeUnit)
 
-import qualified Polysemy.Conc.Data.Race as Race
-import Polysemy.Conc.Data.Race (Race)
-
-biseqEither ::
-  Functor f =>
-  Either (f a) (f b) ->
-  f (Either a b)
-biseqEither =
-  either (fmap Left) (fmap Right)
-{-# inline biseqEither #-}
-
--- |Interpret 'Race' in terms of 'Async.race' and 'System.timeout'.
--- Since this has to pass higher-order thunks as 'IO' arguments, it is interpreted in terms of 'Final IO'.
-interpretRace ::
-  Member (Final IO) r =>
-  InterpreterFor Race r
-interpretRace =
-  interpretFinal @IO \case
-    Race.Race left right ->
-      fmap (fmap biseqEither) . Async.race <$> runS left <*> runS right
-    Race.Timeout ma (Time.convert -> MicroSeconds timeout) mb -> do
-      maT <- runS ma
-      mbT <- runS mb
-      pure (maybe (fmap Left <$> maT) (pure . fmap Right) =<< System.timeout (fromIntegral timeout) mbT)
-{-# inline interpretRace #-}
+import qualified Polysemy.Conc.Effect.Race as Race
+import Polysemy.Conc.Effect.Race (Race)
 
 -- |Specialization of 'Race.race' for the case where both thunks return the same type, obviating the need for 'Either'.
 race_ ::

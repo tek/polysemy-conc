@@ -15,9 +15,9 @@ import Control.Concurrent.STM.TBMQueue (
   )
 import Polysemy.Resource (Resource, bracket)
 
-import qualified Polysemy.Conc.Data.Queue as Queue
-import Polysemy.Conc.Data.Queue (Queue)
-import Polysemy.Conc.Data.Race (Race)
+import qualified Polysemy.Conc.Effect.Queue as Queue
+import Polysemy.Conc.Effect.Queue (Queue)
+import Polysemy.Conc.Effect.Race (Race)
 import Polysemy.Conc.Queue.Result (closedBoolResult, closedNaResult, closedResult)
 import Polysemy.Conc.Queue.Timeout (withTimeout)
 
