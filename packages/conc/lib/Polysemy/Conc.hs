@@ -85,9 +85,17 @@ module Polysemy.Conc (
   withAsyncBlock,
   withAsync,
   withAsync_,
+  scheduleAsync,
+  scheduleAsyncIO,
 ) where
 
-import Polysemy.Conc.Async (withAsync, withAsyncBlock, withAsync_)
+import Polysemy.Conc.Async (
+  scheduleAsync,
+  scheduleAsyncIO,
+  withAsync,
+  withAsyncBlock,
+  withAsync_,
+  )
 import Polysemy.Conc.AtomicState (interpretAtomic)
 import Polysemy.Conc.Data.QueueResult (QueueResult)
 import Polysemy.Conc.Effect.Critical (Critical)

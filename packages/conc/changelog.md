@@ -1,5 +1,8 @@
 # Unreleased
 
+* add `scheduleAsync`, a combinator for running an action async that allows the handle to be used before the thread
+  starts
+
 # 0.3.0.0
 
 * Change `Race.timeout` to take a `Sem` for the fallback instead of a pure value.
