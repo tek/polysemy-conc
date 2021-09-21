@@ -7,7 +7,7 @@ module Polysemy.Conc.Sync (
 import qualified Polysemy.Time as Time
 import Polysemy.Time (Time, TimeUnit)
 
-import Polysemy.Conc.Effect.Scoped (Scoped, scoped)
+import Polysemy.Conc.Effect.Scoped (scoped)
 import qualified Polysemy.Conc.Effect.Sync as Sync
 import Polysemy.Conc.Effect.Sync (
   ScopedSync,
@@ -27,6 +27,7 @@ import Polysemy.Conc.Effect.Sync (
   try,
   wait,
   )
+import Polysemy.Resource (finally, Resource)
 
 -- |Run an action repeatedly until the 'Sync' variable is available.
 whileEmpty ::
@@ -59,7 +60,22 @@ whileEmptyInterval interval action =
 -- |Run an action with a locally scoped 'Sync' variable.
 withSync ::
   ∀ d res r .
-  Member (Scoped (SyncResources res) (Sync d)) r =>
+  Member (ScopedSync res d) r =>
   InterpreterFor (Sync d) r
 withSync =
   scoped @(SyncResources res)
+
+-- |Run the action @ma@ with an exclusive lock (mutex).
+-- When multiple threads call the action concurrently, only one is allowed to execute it at a time.
+-- The value @l@ is used to disambiguate the 'Sync' from other uses of the combinator.
+-- You can pass in something like @Proxy @"db-write"@.
+--
+-- /Note:/ The 'Sync' must be interpreted with an initially full @MVar@, e.g. using 'Polysemy.Conc.interpretSyncAs'.
+lock ::
+  ∀ l r a .
+  Members [Sync l, Resource] r =>
+  l ->
+  Sem r a ->
+  Sem r a
+lock l ma =
+  finally (takeBlock @l *> ma) (putTry l)

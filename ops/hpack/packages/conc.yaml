@@ -55,6 +55,7 @@ tests:
       - polysemy-time >= 0.1.2.1
       - stm
       - tasty
+      - time
       - unagi-chan >= 0.4
       - unix
 

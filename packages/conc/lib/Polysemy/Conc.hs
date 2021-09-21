@@ -30,6 +30,7 @@ module Polysemy.Conc (
   interpretSync,
   interpretSyncAs,
   withSync,
+  lock,
   interpretScopedSync,
   interpretScopedSyncAs,
 
@@ -122,7 +123,7 @@ import Polysemy.Conc.Queue (loop, loopOr)
 import Polysemy.Conc.Queue.Result (resultToMaybe)
 import Polysemy.Conc.Race (race_, timeoutAs, timeoutAs_, timeoutMaybe, timeoutU, timeout_)
 import Polysemy.Conc.Retry (retrying, retryingWithError)
-import Polysemy.Conc.Sync (withSync)
+import Polysemy.Conc.Sync (withSync, lock)
 
 -- $intro
 -- This library provides an assortment of tools for concurrency-related tasks:

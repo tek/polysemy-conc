@@ -1,6 +1,7 @@
 # Unreleased
 
-* add `scheduleAsync`, a combinator for running an action async that allows the handle to be used before the thread
+* Add `lock`, a combinator for protecting a region with a mutex.
+* Add `scheduleAsync`, a combinator for running an action async that allows the handle to be used before the thread
   starts
 
 # 0.3.0.0
