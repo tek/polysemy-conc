@@ -12,7 +12,7 @@ import Polysemy.Async (Async, async, await, cancel)
 import Polysemy.AtomicState (runAtomicStateTVar)
 import Polysemy.Internal.Tactics (liftT)
 import Polysemy.Time (Seconds (Seconds))
-import System.Posix.Signals (Handler (CatchInfoOnce, CatchOnce), SignalInfo, installHandler, keyboardSignal)
+import System.Posix.Signals (Handler (CatchInfoOnce, CatchOnce, CatchInfo), SignalInfo, installHandler, keyboardSignal)
 
 import qualified Polysemy.Conc.Effect.Critical as Critical
 import Polysemy.Conc.Effect.Critical (Critical)
@@ -175,7 +175,7 @@ installSignalHandler ::
   TVar InterruptState ->
   IO Handler
 installSignalHandler state =
-  installHandler keyboardSignal (CatchInfoOnce handler) Nothing
+  installHandler keyboardSignal (CatchInfo handler) Nothing
   where
     handler sig =
       runFinal $ embedToFinal @IO $ runAtomicStateTVar state (broadcastInterrupt sig)
