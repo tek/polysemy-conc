@@ -1,3 +1,4 @@
+-- |Description: Async Combinators
 module Polysemy.Conc.Async where
 
 import qualified Control.Concurrent.Async as Base
@@ -7,9 +8,9 @@ import Polysemy.Time (MilliSeconds (MilliSeconds), TimeUnit)
 
 import Polysemy.Conc.Effect.Race (Race)
 import qualified Polysemy.Conc.Effect.Sync as Sync
-import qualified Polysemy.Conc.Race as Race
+import Polysemy.Conc.Effect.Sync (ScopedSync, Sync)
 import Polysemy.Conc.Interpreter.Sync (interpretSync)
-import Polysemy.Conc.Effect.Sync (Sync, ScopedSync)
+import qualified Polysemy.Conc.Race as Race
 import Polysemy.Conc.Sync (withSync)
 
 -- |Run the first action asynchronously while the second action executes, then cancel the first action.

@@ -1,10 +1,10 @@
 -- |Description: Events Combinators
 module Polysemy.Conc.Events where
 
-import Polysemy.Conc.Interpreter.Events (EventConsumer)
 import qualified Polysemy.Conc.Effect.Events as Events
+import Polysemy.Conc.Interpreter.Events (EventConsumer)
 
--- |Pull repeatedly from the 'Events' channel, passing the event to the supplied callback.
+-- |Pull repeatedly from the 'Polysemy.Conc.Events' channel, passing the event to the supplied callback.
 -- Stop when the action returns @False@.
 subscribeWhile ::
   ∀ e token r .
@@ -17,7 +17,7 @@ subscribeWhile action =
     spin =
       whenM (raise . action =<< Events.consume) spin
 
--- |Pull repeatedly from the 'Events' channel, passing the event to the supplied callback.
+-- |Pull repeatedly from the 'Polysemy.Conc.Events' channel, passing the event to the supplied callback.
 subscribeLoop ::
   ∀ e token r .
   Member (EventConsumer token e) r =>

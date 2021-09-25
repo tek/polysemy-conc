@@ -38,7 +38,7 @@ closedBoolResult = \case
   Just True -> QueueResult.Success ()
 {-# inline closedBoolResult #-}
 
--- |Turn a 'Success' into 'Just'.
+-- |Turn a 'QueueResult.Success' into 'Just'.
 resultToMaybe :: QueueResult d -> Maybe d
 resultToMaybe = \case
   QueueResult.Success d -> Just d

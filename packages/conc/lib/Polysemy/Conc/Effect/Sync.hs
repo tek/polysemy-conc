@@ -51,5 +51,6 @@ makeSem ''Sync
 newtype SyncResources a =
   SyncResources { unSyncResources :: a }
 
+-- |Convenience alias.
 type ScopedSync res a =
   Scoped (SyncResources res) (Sync a)

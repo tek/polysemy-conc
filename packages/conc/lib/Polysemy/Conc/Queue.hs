@@ -1,3 +1,4 @@
+{-# options_haddock prune #-}
 -- |Description: Queue Combinators
 module Polysemy.Conc.Queue (
   module Polysemy.Conc.Queue,

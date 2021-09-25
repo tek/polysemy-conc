@@ -1,9 +1,11 @@
+{-# options_haddock prune #-}
 -- |Description: Sync Combinators
 module Polysemy.Conc.Sync (
   module Polysemy.Conc.Sync,
   module Polysemy.Conc.Effect.Sync
 ) where
 
+import Polysemy.Resource (Resource, finally)
 import qualified Polysemy.Time as Time
 import Polysemy.Time (Time, TimeUnit)
 
@@ -27,7 +29,6 @@ import Polysemy.Conc.Effect.Sync (
   try,
   wait,
   )
-import Polysemy.Resource (finally, Resource)
 
 -- |Run an action repeatedly until the 'Sync' variable is available.
 whileEmpty ::

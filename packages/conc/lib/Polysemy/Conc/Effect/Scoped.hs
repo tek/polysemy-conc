@@ -9,11 +9,11 @@ import Polysemy.Internal (send)
 -- This requires the interpreter for @effect@ to be parameterized by @resource@ and constructed for every program using
 -- @Scoped@ separately.
 --
--- An application for this is 'Polysemy.Conc.Events', in which each program using the effect 'Consume' is interpreted
--- with its own copy of the event channel; or a database transaction, in which a transaction handle is created for the
--- wrapped program and passed to the interpreter for the database effect.
+-- An application for this is 'Polysemy.Conc.Events', in which each program using the effect 'Polysemy.Conc.Consume' is
+-- interpreted with its own copy of the event channel; or a database transaction, in which a transaction handle is
+-- created for the wrapped program and passed to the interpreter for the database effect.
 --
--- Resource creation is performed by the function passed to 'runScoped'.
+-- Resource creation is performed by the function passed to 'Polysemy.Conc.Interpreter.runScoped'.
 --
 -- The constructors are not intended to be used directly; the smart constructor 'scoped' is used like a local
 -- interpreter for @effect@.

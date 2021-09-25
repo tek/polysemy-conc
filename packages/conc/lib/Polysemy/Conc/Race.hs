@@ -65,7 +65,7 @@ timeoutU =
   timeout_ pass
 {-# inline timeoutU #-}
 
--- |Variant of 'timeout' that returns 'Maybe'.
+-- |Variant of 'Race.timeout' that returns 'Maybe'.
 timeoutMaybe ::
   TimeUnit u =>
   Member Race r =>

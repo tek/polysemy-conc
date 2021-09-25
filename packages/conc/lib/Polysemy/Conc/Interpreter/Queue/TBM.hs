@@ -1,3 +1,4 @@
+{-# options_haddock prune #-}
 -- |Description: Queue Interpreters for 'TBMQueue'
 module Polysemy.Conc.Interpreter.Queue.TBM where
 

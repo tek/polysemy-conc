@@ -1,3 +1,4 @@
+-- |Description: AtomicState Interpreters
 module Polysemy.Conc.AtomicState where
 
 import Polysemy.AtomicState (runAtomicStateTVar)
