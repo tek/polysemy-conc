@@ -57,6 +57,7 @@ module Polysemy.Conc (
 
   -- ** Interpreters
   interpretInterrupt,
+  interpretInterruptOnce,
 
   -- * Event Channels
   Events,
@@ -108,7 +109,7 @@ import Polysemy.Conc.Effect.Sync (ScopedSync, Sync)
 import Polysemy.Conc.Events (subscribeLoop, subscribeWhile)
 import Polysemy.Conc.Interpreter.Critical (interpretCritical, interpretCriticalNull)
 import Polysemy.Conc.Interpreter.Events (ChanConsumer, ChanEvents, EventChan, EventConsumer, interpretEventsChan)
-import Polysemy.Conc.Interpreter.Interrupt (interpretInterrupt)
+import Polysemy.Conc.Interpreter.Interrupt (interpretInterrupt, interpretInterruptOnce)
 import Polysemy.Conc.Interpreter.Queue.Pure (
   interpretQueueListReadOnlyAtomic,
   interpretQueueListReadOnlyAtomicWith,
@@ -123,7 +124,7 @@ import Polysemy.Conc.Queue (loop, loopOr)
 import Polysemy.Conc.Queue.Result (resultToMaybe)
 import Polysemy.Conc.Race (race_, timeoutAs, timeoutAs_, timeoutMaybe, timeoutU, timeout_)
 import Polysemy.Conc.Retry (retrying, retryingWithError)
-import Polysemy.Conc.Sync (withSync, lock)
+import Polysemy.Conc.Sync (lock, withSync)
 
 -- $intro
 -- This library provides an assortment of tools for concurrency-related tasks:

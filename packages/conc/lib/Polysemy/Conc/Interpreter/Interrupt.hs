@@ -173,23 +173,44 @@ originalHandler _ =
 
 installSignalHandler ::
   TVar InterruptState ->
+  ((SignalInfo -> IO ()) -> Handler) ->
   IO Handler
-installSignalHandler state =
-  installHandler keyboardSignal (CatchInfo handler) Nothing
+installSignalHandler state consHandler =
+  installHandler keyboardSignal (consHandler handler) Nothing
   where
     handler sig =
       runFinal $ embedToFinal @IO $ runAtomicStateTVar state (broadcastInterrupt sig)
 
 -- |Interpret 'Interrupt' by installing a signal handler.
-interpretInterrupt ::
+--
+-- Takes a constructor for 'Handler'.
+interpretInterruptWith ::
   Members [Critical, Race, Async, Embed IO] r =>
+  ((SignalInfo -> IO ()) -> Handler) ->
   InterpreterFor Interrupt r
-interpretInterrupt sem = do
+interpretInterruptWith consHandler sem = do
   quitMVar <- newEmptyMVar
   finishMVar <- newEmptyMVar
   state <- newTVarIO (InterruptState quitMVar finishMVar Set.empty (const pass) Map.empty)
-  orig <- embed $ installSignalHandler state
+  orig <- embed $ installSignalHandler state consHandler
   runAtomicStateTVar state do
     atomicModify' \ s -> s {original = originalHandler orig}
     interpretInterruptState $ raiseUnder sem
-{-# inline interpretInterrupt #-}
+
+-- |Interpret 'Interrupt' by installing a signal handler.
+--
+-- Catches repeat invocations of SIGINT.
+interpretInterrupt ::
+  Members [Critical, Race, Async, Embed IO] r =>
+  InterpreterFor Interrupt r
+interpretInterrupt =
+  interpretInterruptWith CatchInfo
+
+-- |Interpret 'Interrupt' by installing a signal handler.
+--
+-- Catches only the first invocation of SIGINT.
+interpretInterruptOnce ::
+  Members [Critical, Race, Async, Embed IO] r =>
+  InterpreterFor Interrupt r
+interpretInterruptOnce =
+  interpretInterruptWith CatchInfoOnce

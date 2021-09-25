@@ -8,7 +8,7 @@ import Polysemy.Time (MilliSeconds (MilliSeconds), TimeUnit)
 import Polysemy.Conc.Effect.Race (Race)
 import qualified Polysemy.Conc.Effect.Sync as Sync
 import qualified Polysemy.Conc.Race as Race
-import Polysemy.Conc.Interpreter.Sync (interpretSync, interpretScopedSync)
+import Polysemy.Conc.Interpreter.Sync (interpretSync)
 import Polysemy.Conc.Effect.Sync (Sync, ScopedSync)
 import Polysemy.Conc.Sync (withSync)
 
