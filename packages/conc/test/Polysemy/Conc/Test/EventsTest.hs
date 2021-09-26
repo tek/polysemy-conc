@@ -25,8 +25,8 @@ test_events =
           Sync.putBlock ()
           Events.consume @Text
       Sync.takeBlock @()
-      Events.publish @(OutChan Text) ("test" :: Text)
-      Events.publish @(OutChan Int) (1 :: Int)
+      Events.publish @Text @(OutChan Text) "test"
+      Events.publish @Int @(OutChan Int) 1
       num1 <- await thread1
       num2 <- await thread2
       text1 <- await thread3
