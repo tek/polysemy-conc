@@ -1,5 +1,7 @@
 # Unreleased
 
+* Add `mask` effects.
+
 # 0.4.0.0
 
 * Add `lock`, a combinator for protecting a region with a mutex.

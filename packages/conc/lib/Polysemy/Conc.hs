@@ -66,7 +66,7 @@ module Polysemy.Conc (
   subscribe,
   subscribeWhile,
   subscribeLoop,
-  EventToken,
+  EventResource,
   EventChan,
   ChanEvents,
   EventConsumer,
@@ -81,6 +81,17 @@ module Polysemy.Conc (
   -- ** Interpreters
   interpretCritical,
   interpretCriticalNull,
+
+  -- * Masking
+  Mask,
+  UninterruptipleMask,
+  mask,
+  uninterruptibleMask,
+  restore,
+
+  -- * Interpreters
+  interpretMaskFinal,
+  interpretUninterruptibleMaskFinal,
 
   -- * Other Combinators
   interpretAtomic,
@@ -101,8 +112,9 @@ import Polysemy.Conc.Async (
 import Polysemy.Conc.AtomicState (interpretAtomic)
 import Polysemy.Conc.Data.QueueResult (QueueResult)
 import Polysemy.Conc.Effect.Critical (Critical)
-import Polysemy.Conc.Effect.Events (EventToken, Events, consume, publish, subscribe)
+import Polysemy.Conc.Effect.Events (EventResource, Events, consume, publish, subscribe)
 import Polysemy.Conc.Effect.Interrupt (Interrupt)
+import Polysemy.Conc.Effect.Mask (Mask, UninterruptipleMask, mask, restore, uninterruptibleMask)
 import Polysemy.Conc.Effect.Queue (Queue)
 import Polysemy.Conc.Effect.Race (Race, race, timeout)
 import Polysemy.Conc.Effect.Sync (ScopedSync, Sync)
@@ -110,6 +122,7 @@ import Polysemy.Conc.Events (subscribeLoop, subscribeWhile)
 import Polysemy.Conc.Interpreter.Critical (interpretCritical, interpretCriticalNull)
 import Polysemy.Conc.Interpreter.Events (ChanConsumer, ChanEvents, EventChan, EventConsumer, interpretEventsChan)
 import Polysemy.Conc.Interpreter.Interrupt (interpretInterrupt, interpretInterruptOnce)
+import Polysemy.Conc.Interpreter.Mask (interpretMaskFinal, interpretUninterruptibleMaskFinal)
 import Polysemy.Conc.Interpreter.Queue.Pure (
   interpretQueueListReadOnlyAtomic,
   interpretQueueListReadOnlyAtomicWith,
@@ -133,6 +146,7 @@ import Polysemy.Conc.Sync (lock, withSync)
 -- - [MVars](#mvar)
 -- - [Racing](#race)
 -- - [Signal handling](#signal)
+-- - [Masking](#mask)
 
 -- $queue
 -- #queue#
@@ -156,3 +170,24 @@ import Polysemy.Conc.Sync (lock, withSync)
 
 -- $signal
 -- #signal#
+
+-- $mask
+-- #mask#
+-- The two effects 'Mask' and 'UninterruptipleMask' use the 'Polysemy.Conc.Effect.Scoped' pattern, which allow an effect
+-- with resources to be constrained to a region of code.
+-- The actual effect is 'Polysemy.Conc.Effect.Mask.RestoreMask', with `mask` and 'uninterruptibleMask' only specializing
+-- 'Polysemy.Conc.Effect.scoped' to the appropriate resource type.
+--
+-- Usage is straightforward:
+--
+-- @
+-- prog :: Member (Mask resource) r
+-- prog =
+--  mask do
+--    doMaskedThing
+--    restore do
+--      doUnmaskedThing
+--    doMaskedThing
+-- @
+--
+-- The @resource@ parameter stays polymorphic; it is used to connect the resource in the interpreter to the callsite.

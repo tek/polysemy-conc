@@ -34,6 +34,7 @@ library
       Polysemy.Conc.Effect.Critical
       Polysemy.Conc.Effect.Events
       Polysemy.Conc.Effect.Interrupt
+      Polysemy.Conc.Effect.Mask
       Polysemy.Conc.Effect.Queue
       Polysemy.Conc.Effect.Race
       Polysemy.Conc.Effect.Scoped
@@ -42,6 +43,7 @@ library
       Polysemy.Conc.Interpreter.Critical
       Polysemy.Conc.Interpreter.Events
       Polysemy.Conc.Interpreter.Interrupt
+      Polysemy.Conc.Interpreter.Mask
       Polysemy.Conc.Interpreter.Queue.Pure
       Polysemy.Conc.Interpreter.Queue.TB
       Polysemy.Conc.Interpreter.Queue.TBM
@@ -147,6 +149,7 @@ test-suite polysemy-conc-unit
       Polysemy.Conc.Test.EventsTest
       Polysemy.Conc.Test.InterruptTest
       Polysemy.Conc.Test.LockTest
+      Polysemy.Conc.Test.MaskTest
       Polysemy.Conc.Test.QueueTest
       Polysemy.Conc.Test.SyncTest
       Paths_polysemy_conc
@@ -212,11 +215,13 @@ test-suite polysemy-conc-unit
       ViewPatterns
   ghc-options: -flate-specialise -fspecialise-aggressively -Wall -Wredundant-constraints -Wunused-packages -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base ==4.*
-    , polysemy >=1.5
+      async
+    , base ==4.*
+    , polysemy
     , polysemy-conc
+    , polysemy-plugin
     , polysemy-test
-    , polysemy-time >=0.1.2.1
+    , polysemy-time
     , stm
     , tasty
     , time

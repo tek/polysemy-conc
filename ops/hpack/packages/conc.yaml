@@ -50,9 +50,11 @@ tests:
         mixin:
           - hiding (Prelude)
           - (Polysemy.Conc.Prelude as Prelude)
-      - polysemy >= 1.5
+      - async
+      - polysemy
+      - polysemy-plugin
       - polysemy-test
-      - polysemy-time >= 0.1.2.1
+      - polysemy-time
       - stm
       - tasty
       - time
