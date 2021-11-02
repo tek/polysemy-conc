@@ -96,12 +96,13 @@ library
       UndecidableInstances
       UnicodeSyntax
       ViewPatterns
-  ghc-options: -flate-specialise -fspecialise-aggressively -Wall -Wredundant-constraints -Wunused-packages
+  ghc-options: -flate-specialise -fspecialise-aggressively -Wall -Wredundant-constraints
   build-depends:
       async
     , base ==4.*
+    , bytestring
     , containers
-    , polysemy >=1.5
+    , polysemy >=1.6
     , polysemy-conc
     , polysemy-resume >=0.2
     , polysemy-time >=0.1.2.1
@@ -117,6 +118,8 @@ library
       base hiding (Prelude)
     , polysemy-conc hiding (Prelude)
     , polysemy-conc (Polysemy.Conc.Prelude as Prelude)
+  if impl(ghc >= 8.10)
+    ghc-options: -Wunused-packages
   default-language: Haskell2010
 
 test-suite polysemy-process-unit
@@ -185,7 +188,7 @@ test-suite polysemy-process-unit
       UndecidableInstances
       UnicodeSyntax
       ViewPatterns
-  ghc-options: -flate-specialise -fspecialise-aggressively -Wall -Wredundant-constraints -Wunused-packages -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -flate-specialise -fspecialise-aggressively -Wall -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base ==4.*
     , bytestring
@@ -201,4 +204,6 @@ test-suite polysemy-process-unit
       base hiding (Prelude)
     , polysemy-conc hiding (Prelude)
     , polysemy-conc (Polysemy.Conc.Prelude as Prelude)
+  if impl(ghc >= 8.10)
+    ghc-options: -Wunused-packages
   default-language: Haskell2010

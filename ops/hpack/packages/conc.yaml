@@ -14,9 +14,9 @@ library:
   dependencies:
     - async
     - containers
-    - polysemy >= 1.5
+    - polysemy >= 1.6
     - polysemy-time >= 0.1.2.1
-    - relude >= 0.7
+    - relude >= 1
     - stm
     - stm-chans >= 2
     - string-interpolate >= 0.2
@@ -47,5 +47,5 @@ tests:
       - stm
       - tasty
       - time
-      - unagi-chan >= 0.4
+      - unagi-chan
       - unix
