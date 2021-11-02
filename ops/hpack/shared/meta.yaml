@@ -7,3 +7,6 @@ maintainer: "tek@tryp.io"
 copyright: "2021 Torsten Schmits"
 category: Concurrency
 build-type: Simple
+extra-source-files:
+  - readme.md
+  - changelog.md

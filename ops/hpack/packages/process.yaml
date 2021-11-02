@@ -1,21 +1,24 @@
-name: polysemy-conc
-synopsis: Polysemy Effects for Concurrency
-description: See <https://hackage.haskell.org/package/polysemy-conc/docs/Polysemy-Conc.html>
+name: polysemy-process
+synopsis: Polysemy Effects for System Processes
+description: See <https://hackage.haskell.org/package/polysemy-process/docs/Polysemy-Process.html>
 <<: !include shared/meta.yaml
 defaults:
   local: shared/defaults.yaml
 
 library:
   source-dirs: lib
-  other-modules:
-    - Prelude
   generated-other-modules:
-    - Paths_polysemy_conc
+    - Paths_polysemy_process
   dependencies:
     - async
+    - name: polysemy-conc
+      mixin:
+        - hiding (Prelude)
+        - (Polysemy.Conc.Prelude as Prelude)
     - containers
     - polysemy >= 1.5
     - polysemy-time >= 0.1.2.1
+    - polysemy-resume >= 0.2
     - relude >= 0.7
     - stm
     - stm-chans >= 2
@@ -23,11 +26,10 @@ library:
     - template-haskell
     - text
     - time
-    - unagi-chan >= 0.4
-    - unix
+    - typed-process
 
 tests:
-  polysemy-conc-unit:
+  polysemy-process-unit:
     main: Main.hs
     source-dirs: test
     ghc-options:
@@ -39,13 +41,11 @@ tests:
         mixin:
           - hiding (Prelude)
           - (Polysemy.Conc.Prelude as Prelude)
-      - async
+      - bytestring
       - polysemy
       - polysemy-plugin
+      - polysemy-process
+      - polysemy-resume
       - polysemy-test
-      - polysemy-time
-      - stm
       - tasty
-      - time
-      - unagi-chan >= 0.4
-      - unix
+      - typed-process

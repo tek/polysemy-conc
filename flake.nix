@@ -32,7 +32,11 @@
     base = ./.;
     overrides = [compat common main];
     compatOverrides = { all = compat; ghc901 = [common compat901]; };
-    packages.polysemy-conc = ./packages/conc;
+    packages = {
+      polysemy-conc = ./packages/conc;
+      polysemy-process = ./packages/process;
+    };
+    main = "polysemy-process";
     ghcid.easy-hls = false;
     versionFile = "ops/hpack/shared/meta.yaml";
   };

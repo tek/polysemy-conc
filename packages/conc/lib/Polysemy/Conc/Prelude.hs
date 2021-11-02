@@ -10,6 +10,7 @@ module Polysemy.Conc.Prelude (
   module Relude,
 ) where
 
+import Control.Exception (try)
 import Data.Kind (Type)
 import qualified Data.String.Interpolate as Interpolate
 import GHC.Err (undefined)
@@ -37,6 +38,7 @@ import Polysemy (
   runFinal,
   )
 import Polysemy.AtomicState (AtomicState, atomicGet, atomicGets, atomicModify', atomicPut)
+import Polysemy.Internal.Kind (Append)
 import Relude hiding (
   Reader,
   State,
@@ -70,3 +72,14 @@ unify :: Either a a -> a
 unify =
   either id id
 {-# inline unify #-}
+
+tryAny ::
+  Member (Embed IO) r =>
+  IO a ->
+  Sem r (Either Text a)
+tryAny =
+  embed @IO . fmap (first show) . try @SomeException
+{-# INLINE tryAny #-}
+
+type a ++ b =
+  Append a b

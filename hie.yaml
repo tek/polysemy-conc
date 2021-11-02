@@ -5,3 +5,9 @@ cradle:
 
     - path: "./packages/conc/test"
       component: "polysemy-conc:test:polysemy-conc-unit"
+
+    - path: "./packages/process/lib"
+      component: "lib:polysemy-process"
+
+    - path: "./packages/process/test"
+      component: "polysemy-process:test:polysemy-process-unit"
