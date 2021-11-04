@@ -51,6 +51,24 @@ runScopedAs resource =
   runScoped \ f -> f =<< resource
 
 -- |Variant of 'runScoped' that takes a handler instead of an interpreter.
+interpretScopedH ::
+  ∀ resource effect r .
+  (∀ x . (resource -> Sem r x) -> Sem r x) ->
+  (∀ r0 x . resource -> effect (Sem r0) x -> Sem r x) ->
+  InterpreterFor (Scoped resource effect) r
+interpretScopedH withResource scopedHandler =
+  run
+  where
+    run :: InterpreterFor (Scoped resource effect) r
+    run =
+      interpretH' \ (Weaving effect s wv ex _) -> case effect of
+        Run resource act -> do
+          x <- scopedHandler resource act
+          pure (ex (x <$ s))
+        InScope main ->
+          ex <$> withResource \ resource -> run (wv (main resource <$ s))
+
+-- |Variant of 'runScoped' that takes a handler instead of an interpreter.
 interpretScoped ::
   ∀ resource effect r .
   (∀ x . (resource -> Sem r x) -> Sem r x) ->

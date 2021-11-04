@@ -115,6 +115,7 @@ module Polysemy.Conc (
 
   -- ** Interpreters
   interpretMonitorRestart,
+  interpretMonitorPure,
   monitorClockSkew,
 
   -- * Other Combinators
@@ -149,7 +150,7 @@ import Polysemy.Conc.Interpreter.Critical (interpretCritical, interpretCriticalN
 import Polysemy.Conc.Interpreter.Events (ChanConsumer, ChanEvents, EventChan, EventConsumer, interpretEventsChan)
 import Polysemy.Conc.Interpreter.Interrupt (interpretInterrupt, interpretInterruptOnce)
 import Polysemy.Conc.Interpreter.Mask (interpretMaskFinal, interpretUninterruptibleMaskFinal)
-import Polysemy.Conc.Interpreter.Monitor (interpretMonitorRestart)
+import Polysemy.Conc.Interpreter.Monitor (interpretMonitorRestart, interpretMonitorPure)
 import Polysemy.Conc.Interpreter.Queue.Pure (
   interpretQueueListReadOnlyAtomic,
   interpretQueueListReadOnlyAtomicWith,

@@ -16,10 +16,11 @@ import Polysemy.Conc.Effect.Monitor (
   MonitorCheck (MonitorCheck),
   MonitorResource (MonitorResource),
   RestartingMonitor,
+  ScopedMonitor,
   )
 import qualified Polysemy.Conc.Effect.Race as Race
 import Polysemy.Conc.Effect.Race (Race)
-import Polysemy.Conc.Interpreter.Scoped (runScoped)
+import Polysemy.Conc.Interpreter.Scoped (runScoped, runScopedAs)
 
 newtype CancelResource =
   CancelResource { signal :: MVar () }
@@ -62,3 +63,14 @@ interpretMonitorRestart ::
   InterpreterFor (RestartingMonitor CancelResource) r
 interpretMonitorRestart check =
   runScoped (monitorRestart @t @d check) interpretMonitorCancel
+
+interpretMonitorPure' :: MonitorResource () -> InterpreterFor (Monitor action) r
+interpretMonitorPure' _ =
+  interpretH \case
+    Monitor ma ->
+      runTSimple ma
+
+-- |Run 'Monitor' as a no-op.
+interpretMonitorPure :: InterpreterFor (ScopedMonitor () action) r
+interpretMonitorPure =
+  runScopedAs (pure (MonitorResource ())) interpretMonitorPure'
