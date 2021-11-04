@@ -2,7 +2,7 @@
 module Polysemy.Conc.Interpreter.Critical where
 
 import qualified Control.Exception as Exception
-import Polysemy (interpretH, runT)
+import Polysemy (runT)
 import Polysemy.Final (getInitialStateS, interpretFinal, runS)
 
 import Polysemy.Conc.Effect.Critical (Critical (..))

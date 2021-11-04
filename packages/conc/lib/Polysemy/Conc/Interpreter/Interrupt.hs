@@ -7,12 +7,12 @@ import Control.Concurrent.Async (AsyncCancelled)
 import qualified Data.Map.Strict as Map
 import qualified Data.Set as Set
 import qualified Data.Text.IO as Text
-import Polysemy (getInspectorT, inspect, interpretH, runT)
+import Polysemy (getInspectorT, inspect, runT)
 import Polysemy.Async (Async, async, await, cancel)
 import Polysemy.AtomicState (runAtomicStateTVar)
 import Polysemy.Internal.Tactics (liftT)
 import Polysemy.Time (Seconds (Seconds))
-import System.Posix.Signals (Handler (CatchInfoOnce, CatchOnce, CatchInfo), SignalInfo, installHandler, keyboardSignal)
+import System.Posix.Signals (Handler (CatchInfo, CatchInfoOnce, CatchOnce), SignalInfo, installHandler, keyboardSignal)
 
 import qualified Polysemy.Conc.Effect.Critical as Critical
 import Polysemy.Conc.Effect.Critical (Critical)

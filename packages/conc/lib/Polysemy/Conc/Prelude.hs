@@ -28,6 +28,7 @@ import Polysemy (
   embed,
   embedToFinal,
   interpret,
+  interpretH,
   makeSem,
   pureT,
   raise,
@@ -83,3 +84,12 @@ tryAny =
 
 type a ++ b =
   Append a b
+
+leftM ::
+  Applicative m =>
+  m b ->
+  Either a b ->
+  m b
+leftM f =
+  either (const f) pure
+{-# inline leftM #-}

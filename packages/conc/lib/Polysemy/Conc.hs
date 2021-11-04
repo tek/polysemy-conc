@@ -103,6 +103,16 @@ module Polysemy.Conc (
   interpretScoped,
   interpretScopedAs,
 
+  -- * Monitoring
+  Monitor,
+  monitor,
+  withMonitor,
+  restart,
+
+  -- ** Interpreters
+  interpretMonitorRestart,
+  monitorClockSkew,
+
   -- * Other Combinators
   interpretAtomic,
   withAsyncBlock,
@@ -125,6 +135,7 @@ import Polysemy.Conc.Effect.Critical (Critical)
 import Polysemy.Conc.Effect.Events (EventResource, Events, consume, publish, subscribe)
 import Polysemy.Conc.Effect.Interrupt (Interrupt)
 import Polysemy.Conc.Effect.Mask (Mask, UninterruptipleMask, mask, restore, uninterruptibleMask)
+import Polysemy.Conc.Effect.Monitor (Monitor, monitor, restart, withMonitor)
 import Polysemy.Conc.Effect.Queue (Queue)
 import Polysemy.Conc.Effect.Race (Race, race, timeout)
 import Polysemy.Conc.Effect.Scoped (Scoped, scoped)
@@ -134,6 +145,7 @@ import Polysemy.Conc.Interpreter.Critical (interpretCritical, interpretCriticalN
 import Polysemy.Conc.Interpreter.Events (ChanConsumer, ChanEvents, EventChan, EventConsumer, interpretEventsChan)
 import Polysemy.Conc.Interpreter.Interrupt (interpretInterrupt, interpretInterruptOnce)
 import Polysemy.Conc.Interpreter.Mask (interpretMaskFinal, interpretUninterruptibleMaskFinal)
+import Polysemy.Conc.Interpreter.Monitor (interpretMonitorRestart)
 import Polysemy.Conc.Interpreter.Queue.Pure (
   interpretQueueListReadOnlyAtomic,
   interpretQueueListReadOnlyAtomicWith,
@@ -145,6 +157,7 @@ import Polysemy.Conc.Interpreter.Queue.TBM (interpretQueueTBM)
 import Polysemy.Conc.Interpreter.Race (interpretRace)
 import Polysemy.Conc.Interpreter.Scoped (interpretScoped, interpretScopedAs, runScoped, runScopedAs)
 import Polysemy.Conc.Interpreter.Sync (interpretScopedSync, interpretScopedSyncAs, interpretSync, interpretSyncAs)
+import Polysemy.Conc.Monitor (monitorClockSkew)
 import Polysemy.Conc.Queue (loop, loopOr)
 import Polysemy.Conc.Queue.Result (resultToMaybe)
 import Polysemy.Conc.Race (race_, timeoutAs, timeoutAs_, timeoutMaybe, timeoutU, timeout_)

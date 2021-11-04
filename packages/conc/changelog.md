@@ -1,6 +1,7 @@
 # Unreleased
 
 * Add `mask` effects.
+* Add 'Monitor', an effect that repeatedly checks a condition and restarts a region when it is met.
 
 # 0.4.0.0
 

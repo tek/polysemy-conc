@@ -23,6 +23,7 @@ library:
     - template-haskell
     - text
     - time
+    - torsor
     - unagi-chan >= 0.4
     - unix
 

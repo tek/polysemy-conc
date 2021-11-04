@@ -35,6 +35,7 @@ library
       Polysemy.Conc.Effect.Events
       Polysemy.Conc.Effect.Interrupt
       Polysemy.Conc.Effect.Mask
+      Polysemy.Conc.Effect.Monitor
       Polysemy.Conc.Effect.Queue
       Polysemy.Conc.Effect.Race
       Polysemy.Conc.Effect.Scoped
@@ -44,12 +45,14 @@ library
       Polysemy.Conc.Interpreter.Events
       Polysemy.Conc.Interpreter.Interrupt
       Polysemy.Conc.Interpreter.Mask
+      Polysemy.Conc.Interpreter.Monitor
       Polysemy.Conc.Interpreter.Queue.Pure
       Polysemy.Conc.Interpreter.Queue.TB
       Polysemy.Conc.Interpreter.Queue.TBM
       Polysemy.Conc.Interpreter.Race
       Polysemy.Conc.Interpreter.Scoped
       Polysemy.Conc.Interpreter.Sync
+      Polysemy.Conc.Monitor
       Polysemy.Conc.Prelude
       Polysemy.Conc.Queue
       Polysemy.Conc.Queue.Result
@@ -136,6 +139,7 @@ library
     , template-haskell
     , text
     , time
+    , torsor
     , unagi-chan >=0.4
     , unix
   mixins:
@@ -152,6 +156,7 @@ test-suite polysemy-conc-unit
       Polysemy.Conc.Test.InterruptTest
       Polysemy.Conc.Test.LockTest
       Polysemy.Conc.Test.MaskTest
+      Polysemy.Conc.Test.MonitorTest
       Polysemy.Conc.Test.QueueTest
       Polysemy.Conc.Test.SyncTest
       Paths_polysemy_conc

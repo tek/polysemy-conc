@@ -3,7 +3,7 @@
 module Polysemy.Conc.Interpreter.Mask where
 
 import qualified Control.Exception as Base
-import Polysemy (interpretH, runTSimple)
+import Polysemy (runTSimple)
 import Polysemy.Final (runS, withStrategicToFinal, withWeavingToFinal)
 
 import Polysemy.Conc.Effect.Mask (

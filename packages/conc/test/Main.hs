@@ -3,6 +3,7 @@ module Main where
 import Polysemy.Conc.Test.EventsTest (test_events)
 import Polysemy.Conc.Test.InterruptTest (test_interrupt)
 import Polysemy.Conc.Test.MaskTest (test_mask)
+import Polysemy.Conc.Test.MonitorTest (test_monitorBasic, test_monitorClockSkew)
 import Polysemy.Conc.Test.QueueTest (
   test_queueBlockTB,
   test_queueBlockTBM,
@@ -37,6 +38,10 @@ tests =
     ],
     testGroup "mask" [
       unitTest "mask" test_mask
+    ],
+    testGroup "monitor" [
+      unitTest "basic" test_monitorBasic,
+      unitTest "clock skew" test_monitorClockSkew
     ]
   ]
 
