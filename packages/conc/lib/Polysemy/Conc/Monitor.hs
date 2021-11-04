@@ -29,18 +29,17 @@ clockSkewConfig i t =
 -- Can be used to detect that the operating system suspended and resumed.
 monitorClockSkew ::
   ∀ t d diff r .
-  Ord diff =>
   Torsor t diff =>
   TimeUnit diff =>
   Members [AtomicState (Maybe t), Time t d, Embed IO] r =>
   ClockSkewConfig ->
   MonitorCheck r
 monitorClockSkew (ClockSkewConfig interval tolerance) =
-  MonitorCheck (convert interval) \ signal -> do
+  MonitorCheck interval \ signal -> do
     atomicGet >>= \case
       Just prev -> do
         now <- Time.now @t @d
-        when (minus (difference now prev) (convert tolerance) > convert interval) (void (embed @IO (tryPutMVar signal ())))
+        when (minus (convert (difference now prev)) tolerance > interval) (void (embed @IO (tryPutMVar signal ())))
         atomicPut (Just now)
       Nothing -> do
         now <- Time.now @t @d

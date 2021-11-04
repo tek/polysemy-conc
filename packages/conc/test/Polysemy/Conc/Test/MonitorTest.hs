@@ -6,7 +6,15 @@ import Data.Time (UTCTime)
 import Polysemy.Async (async, asyncToIOFinal, await)
 import Polysemy.Test (UnitTest, assertEq, assertJust, runTestAuto)
 import qualified Polysemy.Time as Time
-import Polysemy.Time (Hours (Hours), MilliSeconds (MilliSeconds), Minutes (Minutes), NanoSeconds (NanoSeconds), Time, interpretTimeGhc, interpretTimeGhcConstantNow)
+import Polysemy.Time (
+  Hours (Hours),
+  MilliSeconds (MilliSeconds),
+  Minutes (Minutes),
+  NanoSeconds (NanoSeconds),
+  Time,
+  interpretTimeGhc,
+  interpretTimeGhcConstantNow,
+  )
 
 import Polysemy.Conc.AtomicState (interpretAtomic)
 import qualified Polysemy.Conc.Effect.Monitor as Monitor
