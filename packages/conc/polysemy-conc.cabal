@@ -130,6 +130,7 @@ library
       async
     , base ==4.*
     , containers
+    , data-default
     , polysemy >=1.6
     , polysemy-time >=0.1.2.1
     , relude >=1

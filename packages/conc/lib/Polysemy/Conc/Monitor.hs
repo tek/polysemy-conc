@@ -1,10 +1,11 @@
 module Polysemy.Conc.Monitor where
 
 import qualified Polysemy.Time as Time
-import Polysemy.Time (NanoSeconds, Time, TimeUnit, convert)
+import Polysemy.Time (NanoSeconds, Time, TimeUnit, convert, Minutes (Minutes), Seconds (Seconds))
 import Torsor (Torsor, difference, minus)
 
 import Polysemy.Conc.Effect.Monitor (MonitorCheck (MonitorCheck))
+import Data.Default (Default (def))
 
 -- |Config for 'monitorClockSkew'.
 data ClockSkewConfig =
@@ -23,6 +24,10 @@ clockSkewConfig ::
   ClockSkewConfig
 clockSkewConfig i t =
   ClockSkewConfig (convert i) (convert t)
+
+instance Default ClockSkewConfig where
+  def =
+    clockSkewConfig (Minutes 1) (Seconds 5)
 
 -- |Check for 'Polysemy.Conc.Effect.Monitor' that checks every @interval@ whether the difference between the current
 -- time and the time at the last check is larger than @interval@ + @tolerance@.
