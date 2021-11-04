@@ -108,6 +108,10 @@ module Polysemy.Conc (
   monitor,
   withMonitor,
   restart,
+  Restart,
+  RestartingMonitor,
+  MonitorResource (MonitorResource),
+  ScopedMonitor,
 
   -- ** Interpreters
   interpretMonitorRestart,
@@ -135,7 +139,7 @@ import Polysemy.Conc.Effect.Critical (Critical)
 import Polysemy.Conc.Effect.Events (EventResource, Events, consume, publish, subscribe)
 import Polysemy.Conc.Effect.Interrupt (Interrupt)
 import Polysemy.Conc.Effect.Mask (Mask, UninterruptipleMask, mask, restore, uninterruptibleMask)
-import Polysemy.Conc.Effect.Monitor (Monitor, monitor, restart, withMonitor)
+import Polysemy.Conc.Effect.Monitor (Monitor, MonitorResource (MonitorResource), Restart, RestartingMonitor, monitor, restart, withMonitor, ScopedMonitor)
 import Polysemy.Conc.Effect.Queue (Queue)
 import Polysemy.Conc.Effect.Race (Race, race, timeout)
 import Polysemy.Conc.Effect.Scoped (Scoped, scoped)
