@@ -1,3 +1,5 @@
+{-# options_haddock prune #-}
+-- |Description: Process Interpreters, Internal
 module Polysemy.Process.Interpreter.Process where
 
 import Polysemy.Async (Async)

@@ -1,14 +1,18 @@
+{-# options_haddock prune #-}
+-- |Description: Process Interpreters for stdpipes, Internal
 module Polysemy.Process.Interpreter.ProcessIOE where
 
 import Control.Concurrent.STM.TBMQueue (TBMQueue)
 import Data.ByteString (hGetSome, hPut)
 import Polysemy (InterpretersFor, insertAt)
 import Polysemy.Async (Async)
-import Polysemy.Conc (Queue, Race, withAsync_)
+import Polysemy.Conc.Async (withAsync_)
 import qualified Polysemy.Conc.Data.QueueResult as QueueResult
+import qualified Polysemy.Conc.Effect.Queue as Queue
+import Polysemy.Conc.Effect.Queue (Queue)
+import Polysemy.Conc.Effect.Race (Race)
 import Polysemy.Conc.Effect.Scoped (Scoped)
 import Polysemy.Conc.Interpreter.Queue.TBM (interpretQueueTBMWith, withTBMQueue)
-import qualified Polysemy.Conc.Queue as Queue
 import Polysemy.Resource (Resource)
 import Polysemy.Resume (interpretResumable, stop, type (!!))
 import Prelude hiding (fromException)
