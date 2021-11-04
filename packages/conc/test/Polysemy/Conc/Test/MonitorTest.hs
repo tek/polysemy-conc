@@ -16,7 +16,7 @@ import Polysemy.Conc.Effect.Sync (Sync)
 import Polysemy.Conc.Interpreter.Monitor (interpretMonitorRestart)
 import Polysemy.Conc.Interpreter.Race (interpretRace)
 import Polysemy.Conc.Interpreter.Sync (interpretSync)
-import Polysemy.Conc.Monitor (monitorClockSkew)
+import Polysemy.Conc.Monitor (clockSkewConfig, monitorClockSkew)
 
 prog ::
   Members [Monitor Restart, Time t d, AtomicState Int, Sync ()] r =>
@@ -73,7 +73,7 @@ test_monitorClockSkew =
   interpretSync @(Proxy 1) $
   interpretSync @(Proxy 2) $
   interpretSync @(Proxy 3) $
-  interpretMonitorRestart (monitorClockSkew (MilliSeconds 1) (Minutes 30)) do
+  interpretMonitorRestart (monitorClockSkew (clockSkewConfig (MilliSeconds 1) (Minutes 30))) do
     h <- async (Monitor.restart progSkew)
     _ <- Sync.takeBlock @(Proxy "start")
     Time.adjust (Hours 1)

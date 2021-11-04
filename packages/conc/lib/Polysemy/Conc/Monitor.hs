@@ -1,31 +1,46 @@
 module Polysemy.Conc.Monitor where
 
-import Polysemy.Time (TimeUnit, convert, Time)
+import qualified Polysemy.Time as Time
+import Polysemy.Time (NanoSeconds, Time, TimeUnit, convert)
+import Torsor (Torsor, difference, minus)
 
 import Polysemy.Conc.Effect.Monitor (MonitorCheck (MonitorCheck))
-import qualified Polysemy.Time as Time
-import Torsor (minus, difference, Torsor)
+
+-- |Config for 'monitorClockSkew'.
+data ClockSkewConfig =
+  ClockSkewConfig {
+    interval :: NanoSeconds,
+    tolerance :: NanoSeconds
+  }
+  deriving (Eq, Show)
+
+-- |Smart constructor for 'ClockSkewConfig' that takes arbitrary 'TimeUnit's.
+clockSkewConfig ::
+  TimeUnit u1 =>
+  TimeUnit u2 =>
+  u1 ->
+  u2 ->
+  ClockSkewConfig
+clockSkewConfig i t =
+  ClockSkewConfig (convert i) (convert t)
 
 -- |Check for 'Polysemy.Conc.Effect.Monitor' that checks every @interval@ whether the difference between the current
 -- time and the time at the last check is larger than @interval@ + @tolerance@.
 -- Can be used to detect that the operating system suspended and resumed.
 monitorClockSkew ::
-  ∀ t d diff u1 u2 r .
+  ∀ t d diff r .
   Ord diff =>
   Torsor t diff =>
-  TimeUnit u1 =>
-  TimeUnit u2 =>
   TimeUnit diff =>
   Members [AtomicState (Maybe t), Time t d, Embed IO] r =>
-  u1 ->
-  u2 ->
+  ClockSkewConfig ->
   MonitorCheck r
-monitorClockSkew interval (convert -> tolerance) =
+monitorClockSkew (ClockSkewConfig interval tolerance) =
   MonitorCheck (convert interval) \ signal -> do
     atomicGet >>= \case
       Just prev -> do
         now <- Time.now @t @d
-        when (minus (difference now prev) tolerance > convert interval) (void (embed @IO (tryPutMVar signal ())))
+        when (minus (difference now prev) (convert tolerance) > convert interval) (void (embed @IO (tryPutMVar signal ())))
         atomicPut (Just now)
       Nothing -> do
         now <- Time.now @t @d
