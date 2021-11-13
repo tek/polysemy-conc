@@ -2,6 +2,7 @@
 -- |Description: Process Effect, Internal
 module Polysemy.Process.Effect.Process where
 
+import Polysemy (makeSem_)
 import Polysemy.Conc.Effect.Scoped (Scoped, scoped)
 import Polysemy.Resume (type (!!))
 
@@ -11,6 +12,7 @@ import Polysemy.Resume (type (!!))
 --
 -- @
 -- import Polysemy.Resume
+-- import Polysemy.Conc
 -- import Polysemy.Process
 -- import qualified System.Process.Typed as System
 --
@@ -31,7 +33,26 @@ data Process i o e :: Effect where
   RecvError :: Process i o e m e
   Send :: i -> Process i o e m ()
 
-makeSem ''Process
+makeSem_ ''Process
+
+-- |Obtain a chunk of stdout.
+recv ::
+  ∀ i o e r .
+  Member (Process i o e) r =>
+  Sem r o
+
+-- |Obtain a chunk of stderr.
+recvError ::
+  ∀ i o e r .
+  Member (Process i o e) r =>
+  Sem r e
+
+-- |Send data to stdin.
+send ::
+  ∀ i o e r .
+  Member (Process i o e) r =>
+  i ->
+  Sem r ()
 
 -- |Create a scoped resource for 'Process'.
 withProcess ::

@@ -1,11 +1,13 @@
+{-# options_haddock prune #-}
+-- |Description: Monitor Implementations, Internal
 module Polysemy.Conc.Monitor where
 
+import Data.Default (Default (def))
 import qualified Polysemy.Time as Time
-import Polysemy.Time (NanoSeconds, Time, TimeUnit, convert, Minutes (Minutes), Seconds (Seconds))
+import Polysemy.Time (Minutes (Minutes), NanoSeconds, Seconds (Seconds), Time, TimeUnit, convert)
 import Torsor (Torsor, difference, minus)
 
 import Polysemy.Conc.Effect.Monitor (MonitorCheck (MonitorCheck))
-import Data.Default (Default (def))
 
 -- |Config for 'monitorClockSkew'.
 data ClockSkewConfig =

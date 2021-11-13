@@ -53,7 +53,7 @@ monitorRestart (MonitorCheck interval check) run = do
       void (embedFinal @IO (tryTakeMVar sig))
       leftM (spin sig) =<< errorToIOFinal @MonitorCancel (fromExceptionSem @MonitorCancel (raise (run res)))
 
--- |Interpret @'Scoped' 'Monitor'@ with the 'Restart' strategy.
+-- |Interpret @'Polysemy.Conc.Scoped' 'Monitor'@ with the 'Polysemy.Conc.Restart' strategy.
 -- This takes a check action that may put an 'MVar' when the scoped region should be restarted.
 -- The check is executed in a loop, with an interval given in 'MonitorCheck'.
 interpretMonitorRestart ::

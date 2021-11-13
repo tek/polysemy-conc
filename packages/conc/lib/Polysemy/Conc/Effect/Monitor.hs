@@ -2,10 +2,12 @@
 -- |Description: Monitor Effect, Internal
 module Polysemy.Conc.Effect.Monitor where
 
+import Polysemy (makeSem_)
 import Polysemy.Time (NanoSeconds)
 
 import Polysemy.Conc.Effect.Scoped (Scoped, scoped)
 
+-- |Marker type for the restarting action for 'Monitor'.
 data Restart =
   Restart
   deriving (Eq, Show)
@@ -17,7 +19,14 @@ data Restart =
 data Monitor (action :: Type) :: Effect where
   Monitor :: m a -> Monitor action m a
 
-makeSem ''Monitor
+makeSem_ ''Monitor
+
+-- |Mark a region as being subject to intervention by a monitoring program.
+monitor ::
+  ∀ action r a .
+  Member (Monitor action) r =>
+  Sem r a ->
+  Sem r a
 
 -- |Marker type for a 'Scoped' 'Monitor'.
 newtype MonitorResource a =

@@ -7,7 +7,6 @@ module Polysemy.Conc (
   -- $queue
   Queue,
   QueueResult,
-  resultToMaybe,
 
   -- ** Interpreters
   interpretQueueTBM,
@@ -18,6 +17,7 @@ module Polysemy.Conc (
   interpretQueueListReadOnlyStateWith,
 
   -- ** Combinators
+  resultToMaybe,
   loop,
   loopOr,
 
