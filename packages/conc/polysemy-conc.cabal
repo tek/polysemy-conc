@@ -51,6 +51,7 @@ library
       Polysemy.Conc.Interpreter.Queue.TBM
       Polysemy.Conc.Interpreter.Race
       Polysemy.Conc.Interpreter.Scoped
+      Polysemy.Conc.Interpreter.Stack
       Polysemy.Conc.Interpreter.Sync
       Polysemy.Conc.Monitor
       Polysemy.Conc.Prelude
