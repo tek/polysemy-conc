@@ -132,7 +132,7 @@ library
     , containers
     , data-default
     , polysemy >=1.6
-    , polysemy-time >=0.1.2.1
+    , polysemy-time >=0.1.4
     , relude >=1
     , stm
     , stm-chans >=2

@@ -18,7 +18,7 @@ library:
         - (Polysemy.Conc.Prelude as Prelude)
     - containers
     - polysemy >= 1.6
-    - polysemy-time >= 0.1.2.1
+    - polysemy-time >= 0.1.4
     - polysemy-resume >= 0.2
     - relude >= 0.7
     - stm
