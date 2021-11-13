@@ -1,7 +1,10 @@
 # Unreleased
 
+# 0.5.0.0
+
 * Add `mask` effects.
-* Add 'Monitor', an effect that repeatedly checks a condition and restarts a region when it is met.
+* Add `Monitor`, an effect that repeatedly checks a condition and restarts a region when it is met.
+* Add interpreter combinators for `Scoped`.
 * Add a runner for the default `Conc` stack.
 
 # 0.4.0.0
