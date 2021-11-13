@@ -6,13 +6,15 @@ import Polysemy.Internal (Sem (Sem, runSem), liftSem)
 import Polysemy.Internal.Union (Weaving (Weaving), decomp, hoist, injWeaving)
 
 import Polysemy.Conc.Effect.Scoped (Scoped (InScope, Run))
+import Polysemy (Tactical)
+import Polysemy.Internal.Tactics (runTactics)
 
 interpretH' ::
   ∀ e r .
   (∀ x . Weaving e (Sem (e : r)) x -> Sem r x) ->
   InterpreterFor e r
-interpretH' h sem =
-  Sem \ k -> runSem sem $ decomp >>> \case
+interpretH' h (Sem m) =
+  Sem \ k -> m $ decomp >>> \case
     Right wav -> runSem (h wav) k
     Left g -> k $ hoist (interpretH' h) g
 
@@ -50,21 +52,20 @@ runScopedAs ::
 runScopedAs resource =
   runScoped \ f -> f =<< resource
 
--- |Variant of 'runScoped' that takes a handler instead of an interpreter.
+-- |Variant of 'runScoped' that takes a higher-order handler instead of an interpreter.
 interpretScopedH ::
   ∀ resource effect r .
   (∀ x . (resource -> Sem r x) -> Sem r x) ->
-  (∀ r0 x . resource -> effect (Sem r0) x -> Sem r x) ->
+  (∀ r0 x . resource -> effect (Sem r0) x -> Tactical effect (Sem r0) r x) ->
   InterpreterFor (Scoped resource effect) r
 interpretScopedH withResource scopedHandler =
   run
   where
     run :: InterpreterFor (Scoped resource effect) r
     run =
-      interpretH' \ (Weaving effect s wv ex _) -> case effect of
-        Run resource act -> do
-          x <- scopedHandler resource act
-          pure (ex (x <$ s))
+      interpretH' \ (Weaving effect s wv ex ins) -> case effect of
+        Run resource act ->
+          ex <$> runTactics s (raise . run . wv) ins (run . wv) (scopedHandler resource act)
         InScope main ->
           ex <$> withResource \ resource -> run (wv (main resource <$ s))
 
