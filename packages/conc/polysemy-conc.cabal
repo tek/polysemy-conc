@@ -12,7 +12,7 @@ category:       Concurrency
 homepage:       https://github.com/tek/polysemy-conc#readme
 bug-reports:    https://github.com/tek/polysemy-conc/issues
 author:         Torsten Schmits
-maintainer:     tek@tryp.io
+maintainer:     haskell@tryp.io
 copyright:      2021 Torsten Schmits
 license:        BSD-2-Clause-Patent
 license-file:   LICENSE

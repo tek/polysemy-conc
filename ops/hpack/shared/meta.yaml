@@ -3,7 +3,7 @@ github: tek/polysemy-conc
 license: BSD-2-Clause-Patent
 license-file: LICENSE
 author: "Torsten Schmits"
-maintainer: "tek@tryp.io"
+maintainer: "haskell@tryp.io"
 copyright: "2021 Torsten Schmits"
 category: Concurrency
 build-type: Simple
