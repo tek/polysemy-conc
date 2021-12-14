@@ -12,7 +12,7 @@ import Polysemy.Async (Async, async, await, cancel)
 import Polysemy.AtomicState (runAtomicStateTVar)
 import Polysemy.Internal.Tactics (liftT)
 import Polysemy.Time (Seconds (Seconds))
-import System.Posix.Signals (Handler (CatchInfo, CatchInfoOnce, CatchOnce), SignalInfo, installHandler, keyboardSignal)
+import System.Posix.Signals (Handler (CatchInfo, CatchInfoOnce, CatchOnce, Catch), SignalInfo, installHandler, keyboardSignal)
 
 import qualified Polysemy.Conc.Effect.Critical as Critical
 import Polysemy.Conc.Effect.Critical (Critical)
@@ -166,6 +166,10 @@ originalHandler :: Handler -> (SignalInfo -> IO ())
 originalHandler (CatchOnce thunk) =
   (const thunk)
 originalHandler (CatchInfoOnce thunk) =
+  thunk
+originalHandler (Catch thunk) =
+  (const thunk)
+originalHandler (CatchInfo thunk) =
   thunk
 originalHandler _ =
   const pass
