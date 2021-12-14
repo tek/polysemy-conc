@@ -218,3 +218,21 @@ interpretInterruptOnce ::
   InterpreterFor Interrupt r
 interpretInterruptOnce =
   interpretInterruptWith CatchInfoOnce
+
+-- |Eliminate 'Interrupt' without interpreting.
+interpretInterruptNull ::
+  InterpreterFor Interrupt r
+interpretInterruptNull =
+  interpretH \case
+    Register _ _ ->
+      pureT ()
+    Unregister _ ->
+      pureT ()
+    WaitQuit ->
+      pureT ()
+    Quit ->
+      pureT ()
+    Interrupted ->
+      pureT False
+    KillOnQuit _ _ ->
+      pureT Nothing

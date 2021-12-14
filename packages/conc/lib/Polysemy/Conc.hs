@@ -58,6 +58,7 @@ module Polysemy.Conc (
   -- ** Interpreters
   interpretInterrupt,
   interpretInterruptOnce,
+  interpretInterruptNull,
 
   -- * Event Channels
   Events,
@@ -162,7 +163,7 @@ import Polysemy.Conc.Effect.Sync (ScopedSync, Sync)
 import Polysemy.Conc.Events (subscribeLoop, subscribeWhile)
 import Polysemy.Conc.Interpreter.Critical (interpretCritical, interpretCriticalNull)
 import Polysemy.Conc.Interpreter.Events (ChanConsumer, ChanEvents, EventChan, EventConsumer, interpretEventsChan)
-import Polysemy.Conc.Interpreter.Interrupt (interpretInterrupt, interpretInterruptOnce)
+import Polysemy.Conc.Interpreter.Interrupt (interpretInterrupt, interpretInterruptNull, interpretInterruptOnce)
 import Polysemy.Conc.Interpreter.Mask (interpretMaskFinal, interpretUninterruptibleMaskFinal)
 import Polysemy.Conc.Interpreter.Monitor (interpretMonitorPure, interpretMonitorRestart)
 import Polysemy.Conc.Interpreter.Queue.Pure (
