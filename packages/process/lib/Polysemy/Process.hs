@@ -8,13 +8,14 @@ module Polysemy.Process (
   recv,
   recvError,
   send,
+  withProcess,
 
   -- * Interpreters
   interpretProcessNative,
   interpretProcessIOE,
 ) where
 
-import Polysemy.Process.Effect.Process (Process, recv, recvError, send)
+import Polysemy.Process.Effect.Process (Process, recv, recvError, send, withProcess)
 import Polysemy.Process.Interpreter.Process (interpretProcessNative)
 import Polysemy.Process.Interpreter.ProcessIOE (interpretProcessIOE)
 

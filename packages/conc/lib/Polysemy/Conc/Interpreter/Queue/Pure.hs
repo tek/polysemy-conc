@@ -105,7 +105,6 @@ interpretQueueListReadOnlyStateWith =
 -- |Variant of 'interpretQueueListReadOnlyAtomicWith' that interprets the 'State'.
 interpretQueueListReadOnlyState ::
   ∀ d r .
-  Member (Embed IO) r =>
   [d] ->
   InterpreterFor (Queue d) r
 interpretQueueListReadOnlyState ds sem = do
