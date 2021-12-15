@@ -5,7 +5,7 @@ cabal-version: 2.2
 -- see: https://github.com/sol/hpack
 
 name:           polysemy-process
-version:        0.5.0.0
+version:        0.5.1.0
 synopsis:       Polysemy Effects for System Processes
 description:    See <https://hackage.haskell.org/package/polysemy-process/docs/Polysemy-Process.html>
 category:       Concurrency
