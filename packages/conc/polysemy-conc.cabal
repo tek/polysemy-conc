@@ -131,17 +131,16 @@ library
       async
     , base ==4.*
     , containers
-    , data-default
+    , data-default >=0.2
     , polysemy >=1.6
     , polysemy-time >=0.1.4
-    , relude >=1
+    , relude >=0.7
     , stm
     , stm-chans >=2
-    , string-interpolate >=0.2
     , template-haskell
     , text
     , time
-    , torsor
+    , torsor >=0.1
     , unagi-chan >=0.4
     , unix
   mixins:
@@ -228,7 +227,7 @@ test-suite polysemy-conc-unit
     , base ==4.*
     , polysemy
     , polysemy-conc
-    , polysemy-plugin
+    , polysemy-plugin >=0.4
     , polysemy-test
     , polysemy-time
     , stm

@@ -1,4 +1,6 @@
 {-# options_haddock prune #-}
+{-# language CPP #-}
+
 -- |Description: Process Interpreters for stdpipes, Internal
 module Polysemy.Process.Interpreter.ProcessIOE where
 
@@ -33,6 +35,10 @@ import qualified Polysemy.Process.Effect.Process as Process
 import Polysemy.Process.Effect.Process (Process)
 import Polysemy.Process.Interpreter.Process (interpretProcessNative)
 
+#if !MIN_VERSION_relude(1,0,0)
+import System.IO (BufferMode (NoBuffering), hSetBuffering)
+#endif
+
 newtype In a =
   In { unIn :: a }
   deriving (Eq, Show)
@@ -63,10 +69,10 @@ readQueue ::
   Handle ->
   Sem r ()
 readQueue discardWhenFull handle = do
-  embed @IO (hSetBuffering handle NoBuffering)
+  void $ tryAny (hSetBuffering handle NoBuffering)
   tryAny (hGetSome handle 4096) >>= traverse_ \ msg -> do
-      if discardWhenFull then void (Queue.tryWrite (In msg)) else Queue.write (In msg)
-      readQueue discardWhenFull handle
+    if discardWhenFull then void (Queue.tryWrite (In msg)) else Queue.write (In msg)
+    readQueue discardWhenFull handle
 
 writeQueue ::
   ∀ r .
@@ -74,7 +80,7 @@ writeQueue ::
   Handle ->
   Sem r ()
 writeQueue handle = do
-  embed @IO (hSetBuffering handle NoBuffering)
+  void $ tryAny (hSetBuffering handle NoBuffering)
   spin
   where
     spin =

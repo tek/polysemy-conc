@@ -12,9 +12,7 @@ module Polysemy.Conc.Prelude (
 
 import Control.Exception (try)
 import Data.Kind (Type)
-import qualified Data.String.Interpolate as Interpolate
 import GHC.Err (undefined)
-import Language.Haskell.TH.Quote (QuasiQuoter)
 import Polysemy (
   Effect,
   EffectRow,
@@ -63,11 +61,6 @@ import Relude hiding (
   traceShow,
   undefined,
   )
-
-qt :: QuasiQuoter
-qt =
-  Interpolate.i
-{-# inline qt #-}
 
 unify :: Either a a -> a
 unify =

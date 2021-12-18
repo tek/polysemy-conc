@@ -12,7 +12,7 @@ import Polysemy.Async (Async, async, await, cancel)
 import Polysemy.AtomicState (runAtomicStateTVar)
 import Polysemy.Internal.Tactics (liftT)
 import Polysemy.Time (Seconds (Seconds))
-import System.Posix.Signals (Handler (CatchInfo, CatchInfoOnce, CatchOnce, Catch), SignalInfo, installHandler, keyboardSignal)
+import System.Posix.Signals (Handler (Catch, CatchInfo, CatchInfoOnce, CatchOnce), SignalInfo, installHandler, keyboardSignal)
 
 import qualified Polysemy.Conc.Effect.Critical as Critical
 import Polysemy.Conc.Effect.Critical (Critical)
@@ -80,7 +80,7 @@ processHandler ::
   IO () ->
   Sem r ()
 processHandler name thunk = do
-  putErr [qt|processing interrupt handler: #{name}|]
+  putErr ("processing interrupt handler: " <> name)
   embed thunk
 
 execInterrupt ::
@@ -117,9 +117,9 @@ awaitOrKill desc handle = do
       Nothing <$ Sync.wait @() (Seconds 1)
     kill = do
       onQuit desc do
-        putErr [qt|killing #{desc}|]
+        putErr ("killing " <> desc)
         cancel handle
-        putErr [qt|killed #{desc}|]
+        putErr ("killed " <> desc)
         Sync.putBlock ()
         pure Nothing
 

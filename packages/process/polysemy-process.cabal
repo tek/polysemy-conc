@@ -109,7 +109,6 @@ library
     , relude >=0.7
     , stm
     , stm-chans >=2
-    , string-interpolate >=0.2
     , template-haskell
     , text
     , time
