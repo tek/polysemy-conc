@@ -101,7 +101,6 @@ library
       async
     , base ==4.*
     , bytestring
-    , containers
     , polysemy >=1.6
     , polysemy-conc
     , polysemy-resume >=0.2
