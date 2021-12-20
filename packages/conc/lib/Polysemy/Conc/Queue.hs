@@ -20,6 +20,7 @@ import Polysemy.Conc.Effect.Queue (
   write,
   writeTimeout,
   )
+import Polysemy.Conc.Queue.Result (resultToMaybe)
 
 -- |Read from a 'Queue' repeatedly until it is closed.
 --
@@ -48,3 +49,11 @@ loop ::
   Sem r ()
 loop action =
   loopOr (pure True) \ d -> True <$ action d
+
+-- |Read from a 'queue' and convert the result to 'Maybe', returning 'Nothing' if there is no element available or the
+-- queue has been closed.
+readMaybe ::
+  Member (Queue d) r =>
+  Sem r (Maybe d)
+readMaybe =
+  resultToMaybe <$> read
