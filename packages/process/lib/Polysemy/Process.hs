@@ -12,12 +12,20 @@ module Polysemy.Process (
 
   -- * Interpreters
   interpretProcessNative,
-  interpretProcessIOE,
+  interpretProcessByteString,
+  interpretProcessByteStringLines,
+  interpretProcessText,
+  interpretProcessTextLines,
 ) where
 
 import Polysemy.Process.Effect.Process (Process, recv, recvError, send, withProcess)
 import Polysemy.Process.Interpreter.Process (interpretProcessNative)
-import Polysemy.Process.Interpreter.ProcessIOE (interpretProcessIOE)
+import Polysemy.Process.Interpreter.ProcessStd (
+  interpretProcessByteString,
+  interpretProcessByteStringLines,
+  interpretProcessText,
+  interpretProcessTextLines,
+  )
 
 -- $intro
 -- This library provides an abstraction of a system process in the effect 'Process', whose constructors represent the

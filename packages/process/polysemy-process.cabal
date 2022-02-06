@@ -30,8 +30,10 @@ library
       Polysemy.Process
       Polysemy.Process.Data.ProcessError
       Polysemy.Process.Effect.Process
+      Polysemy.Process.Effect.ProcessOutput
       Polysemy.Process.Interpreter.Process
-      Polysemy.Process.Interpreter.ProcessIOE
+      Polysemy.Process.Interpreter.ProcessOutput
+      Polysemy.Process.Interpreter.ProcessStd
   other-modules:
       Paths_polysemy_process
   autogen-modules:

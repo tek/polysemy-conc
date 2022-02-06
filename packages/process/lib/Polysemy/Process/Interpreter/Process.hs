@@ -1,4 +1,5 @@
 {-# options_haddock prune #-}
+
 -- |Description: Process Interpreters, Internal
 module Polysemy.Process.Interpreter.Process where
 
@@ -11,11 +12,7 @@ import Polysemy.Resource (Resource, bracket)
 import Polysemy.Resume (type (!!))
 import Prelude hiding (fromException)
 import qualified System.Process.Typed as System
-import System.Process.Typed (
-  ProcessConfig,
-  startProcess,
-  stopProcess,
-  )
+import System.Process.Typed (ProcessConfig, startProcess, stopProcess)
 
 import Polysemy.Process.Effect.Process (Process)
 
