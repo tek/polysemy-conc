@@ -3,6 +3,7 @@
 * Allow `Process` to emit custom chunks constructed by an interpreter of `ProcessOutput` instead of `ByteString`s
   containing whatever the `Handle` produced.
 * Rename stdio interpreters.
+* Add helper `resolveExecutable` that looks up names in `$PATH` and ensures the files are executable.
 
 # 0.5.0.0
 

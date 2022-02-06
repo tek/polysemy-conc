@@ -16,10 +16,24 @@ module Polysemy.Process (
   interpretProcessByteStringLines,
   interpretProcessText,
   interpretProcessTextLines,
+  interpretProcessOutputId,
+  interpretProcessOutputLines,
+  interpretProcessOutputText,
+  interpretProcessOutputTextLines,
+
+  -- * Tools
+  resolveExecutable,
 ) where
 
 import Polysemy.Process.Effect.Process (Process, recv, recvError, send, withProcess)
+import Polysemy.Process.Executable (resolveExecutable)
 import Polysemy.Process.Interpreter.Process (interpretProcessNative)
+import Polysemy.Process.Interpreter.ProcessOutput (
+  interpretProcessOutputId,
+  interpretProcessOutputLines,
+  interpretProcessOutputText,
+  interpretProcessOutputTextLines,
+  )
 import Polysemy.Process.Interpreter.ProcessStd (
   interpretProcessByteString,
   interpretProcessByteStringLines,
