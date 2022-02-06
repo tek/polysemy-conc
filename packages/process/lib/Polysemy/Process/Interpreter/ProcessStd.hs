@@ -33,13 +33,18 @@ import System.Process.Typed (
 import Polysemy.Process.Data.ProcessError (ProcessError (Terminated))
 import qualified Polysemy.Process.Effect.Process as Process
 import Polysemy.Process.Effect.Process (Process)
+import qualified Polysemy.Process.Effect.ProcessOutput as ProcessOutput
+import Polysemy.Process.Effect.ProcessOutput (ProcessOutput)
 import Polysemy.Process.Interpreter.Process (interpretProcessNative)
+import Polysemy.Process.Interpreter.ProcessOutput (
+  interpretProcessOutputId,
+  interpretProcessOutputLines,
+  interpretProcessOutputText,
+  interpretProcessOutputTextLines,
+  )
 
 #if !MIN_VERSION_relude(1,0,0)
 import System.IO (BufferMode (NoBuffering), hSetBuffering)
-import Polysemy.Process.Effect.ProcessOutput (ProcessOutput)
-import qualified Polysemy.Process.Effect.ProcessOutput as ProcessOutput
-import Polysemy.Process.Interpreter.ProcessOutput (interpretProcessOutputId, interpretProcessOutputLines, interpretProcessOutputText, interpretProcessOutputTextLines)
 #endif
 
 newtype In a =

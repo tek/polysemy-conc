@@ -1,6 +1,6 @@
 cabal-version: 2.2
 
--- This file has been generated from package.yaml by hpack version 0.34.4.
+-- This file has been generated from package.yaml by hpack version 0.34.6.
 --
 -- see: https://github.com/sol/hpack
 
@@ -127,6 +127,8 @@ test-suite polysemy-process-unit
   main-is: Main.hs
   other-modules:
       Polysemy.Process.Test.ProcessTest
+      Paths_polysemy_process
+  autogen-modules:
       Paths_polysemy_process
   hs-source-dirs:
       test

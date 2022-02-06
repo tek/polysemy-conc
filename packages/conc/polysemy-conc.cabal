@@ -1,6 +1,6 @@
 cabal-version: 2.2
 
--- This file has been generated from package.yaml by hpack version 0.34.4.
+-- This file has been generated from package.yaml by hpack version 0.34.6.
 --
 -- see: https://github.com/sol/hpack
 
@@ -160,6 +160,8 @@ test-suite polysemy-conc-unit
       Polysemy.Conc.Test.MonitorTest
       Polysemy.Conc.Test.QueueTest
       Polysemy.Conc.Test.SyncTest
+      Paths_polysemy_conc
+  autogen-modules:
       Paths_polysemy_conc
   hs-source-dirs:
       test
