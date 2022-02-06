@@ -105,8 +105,8 @@ library
     , base ==4.*
     , bytestring
     , exon >=0.2.0.1
-    , path >=0.8
-    , path-io >=1.6.3
+    , path >=0.7
+    , path-io >=1.6.2
     , polysemy >=1.6
     , polysemy-conc
     , polysemy-resume >=0.2
