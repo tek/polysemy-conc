@@ -1,9 +1,14 @@
+{-# options_haddock prune #-}
+
+-- |Description: ProcessOutput Interpreters, Internal
 module Polysemy.Process.Interpreter.ProcessOutput where
 
-import Polysemy.Process.Effect.ProcessOutput (ProcessOutput (Chunk))
 import qualified Data.ByteString as ByteString
 import Data.Foldable (foldr')
 
+import Polysemy.Process.Effect.ProcessOutput (ProcessOutput (Chunk))
+
+-- |Interpret 'ProcessOutput' by immediately emitting raw 'ByteString's without accumulation.
 interpretProcessOutputId :: InterpreterFor (ProcessOutput ByteString) r
 interpretProcessOutputId =
   interpret \case
@@ -22,6 +27,7 @@ splitLines buffer new =
     folder a (z, Just r) =
       (a : z, Just r)
 
+-- |Interpret 'ProcessOutput' by emitting individual 'ByteString' lines of output.
 interpretProcessOutputLines :: InterpreterFor (ProcessOutput ByteString) r
 interpretProcessOutputLines =
   interpret \case
@@ -29,6 +35,7 @@ interpretProcessOutputLines =
       pure (splitLines buffer new)
 {-# inline interpretProcessOutputLines #-}
 
+-- |Interpret 'ProcessOutput' by immediately emitting 'Text' without accumulation.
 interpretProcessOutputText :: InterpreterFor (ProcessOutput Text) r
 interpretProcessOutputText =
   interpret \case
@@ -36,6 +43,7 @@ interpretProcessOutputText =
       pure ([decodeUtf8 (buffer <> new)], "")
 {-# inline interpretProcessOutputText #-}
 
+-- |Interpret 'ProcessOutput' by emitting individual 'Text' lines of output.
 interpretProcessOutputTextLines :: InterpreterFor (ProcessOutput Text) r
 interpretProcessOutputTextLines =
   interpret \case

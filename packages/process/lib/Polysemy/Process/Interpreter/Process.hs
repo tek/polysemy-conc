@@ -155,6 +155,8 @@ scope discard qSize =
   withAsync_ (outputQueue @Out @o @err discard SystemProcess.readStdout) .
   withAsync_ (inputQueue @err SystemProcess.writeStdin)
 
+-- |Interpret 'Process' with a system process resource whose file descriptors are connected to three 'TBMQueue's,
+-- deferring decoding of stdout and stderr to the interpreters of two 'ProcessOutput' effects.
 interpretProcess ::
   ∀ resource err o e r .
   Member (Scoped resource (SystemProcess !! err)) r =>

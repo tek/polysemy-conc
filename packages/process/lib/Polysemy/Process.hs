@@ -5,22 +5,22 @@ module Polysemy.Process (
 
   -- * Effects
   -- ** Process
-  Process,
+  Process (..),
   recv,
   recvError,
   send,
   withProcess,
 
+  -- ** ProcessOutput
+  ProcessOutput,
+
   -- ** SystemProcess
   SystemProcess,
-  readStdout,
-  readStderr,
-  writeStdin,
-  pid,
-  signal,
-  wait,
   withSystemProcess,
-  interrupt,
+
+  -- ** Pty
+  Pty,
+  withPty,
 
   -- * Interpreters
   -- ** Process
@@ -33,6 +33,8 @@ module Polysemy.Process (
   interpretProcessByteStringLines,
   interpretProcessText,
   interpretProcessTextLines,
+
+  -- ** ProcessOutput
   interpretProcessOutputId,
   interpretProcessOutputLines,
   interpretProcessOutputText,
@@ -43,21 +45,18 @@ module Polysemy.Process (
   interpretSystemProcessNativeSingle,
   interpretSystemProcessNative,
 
+  -- ** Pty
+  interpretPty,
+
   -- * Tools
   resolveExecutable,
 ) where
 
-import Polysemy.Process.Effect.Process (Process, recv, recvError, send, withProcess)
+import Polysemy.Process.Effect.Process (Process (..), recv, recvError, send, withProcess)
+import Polysemy.Process.Effect.ProcessOutput (ProcessOutput)
+import Polysemy.Process.Effect.Pty (Pty, withPty)
 import Polysemy.Process.Effect.SystemProcess (
-  SystemProcess,
-  interrupt,
-  pid,
-  readStderr,
-  readStdout,
-  signal,
-  wait,
-  withSystemProcess,
-  writeStdin,
+  SystemProcess, withSystemProcess
   )
 import Polysemy.Process.Executable (resolveExecutable)
 import Polysemy.Process.Interpreter.Process (
@@ -79,6 +78,7 @@ import Polysemy.Process.Interpreter.ProcessStdio (
   interpretProcessTextLinesNative,
   interpretProcessTextNative,
   )
+import Polysemy.Process.Interpreter.Pty (interpretPty)
 import Polysemy.Process.Interpreter.SystemProcess (
   interpretSystemProcessNative,
   interpretSystemProcessNativeSingle,
@@ -89,4 +89,13 @@ import Polysemy.Process.Interpreter.SystemProcess (
 -- This library provides an abstraction of a system process in the effect 'Process', whose constructors represent the
 -- three standard file descriptors.
 --
--- The values produced by the constructors are chunks of the process' output when using the default interpreter.
+-- An intermediate effect, 'SystemProcess', is more concretely tied to the functionality of the "System.Process"
+-- library.
+-- See "Polysemy.Process.SystemProcess" for its constructors.
+--
+-- The utility effect 'ProcessOutput' takes care of decoding the process output, getting called by the 'Process'
+-- interpreters whenever a chunk was read, while accumulating chunks until they were decoded successfully.
+-- See "Polysemy.Process.ProcessOutput" for its constructors.
+--
+-- The effect 'Pty' abstracts pseudo terminals.
+-- See "Polysemy.Process.Pty" for its constructors.

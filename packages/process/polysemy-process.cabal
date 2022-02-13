@@ -42,6 +42,9 @@ library
       Polysemy.Process.Interpreter.ProcessStdio
       Polysemy.Process.Interpreter.Pty
       Polysemy.Process.Interpreter.SystemProcess
+      Polysemy.Process.ProcessOutput
+      Polysemy.Process.Pty
+      Polysemy.Process.SystemProcess
   other-modules:
       Paths_polysemy_process
   autogen-modules:
