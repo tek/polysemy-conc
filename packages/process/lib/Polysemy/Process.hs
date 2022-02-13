@@ -3,15 +3,27 @@ module Polysemy.Process (
   -- * Introduction
   -- $intro
 
-  -- * Effect
+  -- * Effects
+  -- ** Process
   Process,
   recv,
   recvError,
   send,
   withProcess,
 
+  -- ** SystemProcess
+  SystemProcess,
+  readStdout,
+  readStderr,
+  writeStdin,
+  pid,
+  signal,
+  wait,
+  withSystemProcess,
+  interrupt,
   -- * Interpreters
   interpretProcessNative,
+  -- ** Process
   interpretProcessByteString,
   interpretProcessByteStringLines,
   interpretProcessText,
@@ -21,11 +33,27 @@ module Polysemy.Process (
   interpretProcessOutputText,
   interpretProcessOutputTextLines,
 
+  -- ** SystemProcess
+  interpretSystemProcessWithProcess,
+  interpretSystemProcessNativeSingle,
+  interpretSystemProcessNative,
+
   -- * Tools
   resolveExecutable,
 ) where
 
 import Polysemy.Process.Effect.Process (Process, recv, recvError, send, withProcess)
+import Polysemy.Process.Effect.SystemProcess (
+  SystemProcess,
+  interrupt,
+  pid,
+  readStderr,
+  readStdout,
+  signal,
+  wait,
+  withSystemProcess,
+  writeStdin,
+  )
 import Polysemy.Process.Executable (resolveExecutable)
 import Polysemy.Process.Interpreter.Process (interpretProcessNative)
 import Polysemy.Process.Interpreter.ProcessOutput (
@@ -39,6 +67,10 @@ import Polysemy.Process.Interpreter.ProcessStd (
   interpretProcessByteStringLines,
   interpretProcessText,
   interpretProcessTextLines,
+import Polysemy.Process.Interpreter.SystemProcess (
+  interpretSystemProcessNative,
+  interpretSystemProcessNativeSingle,
+  interpretSystemProcessWithProcess,
   )
 
 -- $intro

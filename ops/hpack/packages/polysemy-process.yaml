@@ -23,13 +23,15 @@ library:
     - polysemy-time >= 0.1.4
     - polysemy-resume >= 0.2
     - posix-pty >= 0.2
+    - process
     - relude >= 0.7
     - stm
     - stm-chans >= 2
     - template-haskell
     - text
     - time
-    - typed-process
+    - typed-process >= 0.2.8
+    - unix
 
 tests:
   polysemy-process-unit:

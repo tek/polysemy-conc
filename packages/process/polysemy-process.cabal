@@ -31,14 +31,17 @@ library
       Polysemy.Process.Data.ProcessError
       Polysemy.Process.Data.PtyError
       Polysemy.Process.Data.PtyResources
+      Polysemy.Process.Data.SystemProcessError
       Polysemy.Process.Effect.Process
       Polysemy.Process.Effect.ProcessOutput
       Polysemy.Process.Effect.Pty
+      Polysemy.Process.Effect.SystemProcess
       Polysemy.Process.Executable
       Polysemy.Process.Interpreter.Process
       Polysemy.Process.Interpreter.ProcessOutput
       Polysemy.Process.Interpreter.ProcessStd
       Polysemy.Process.Interpreter.Pty
+      Polysemy.Process.Interpreter.SystemProcess
   other-modules:
       Paths_polysemy_process
   autogen-modules:
@@ -116,13 +119,14 @@ library
     , polysemy-resume >=0.2
     , polysemy-time >=0.1.4
     , posix-pty >=0.2
+    , process
     , relude >=0.7
     , stm
     , stm-chans >=2
     , template-haskell
     , text
     , time
-    , typed-process
+    , typed-process >=0.2.8
   mixins:
       base hiding (Prelude)
     , polysemy-conc hiding (Prelude)

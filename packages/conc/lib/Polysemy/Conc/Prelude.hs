@@ -75,6 +75,22 @@ tryAny =
   embed @IO . fmap (first show) . try @SomeException
 {-# INLINE tryAny #-}
 
+tryMaybe ::
+  Member (Embed IO) r =>
+  IO a ->
+  Sem r (Maybe a)
+tryMaybe =
+  embed @IO . fmap rightToMaybe . try @SomeException
+{-# inline tryMaybe #-}
+
+ignoreException ::
+  Member (Embed IO) r =>
+  IO () ->
+  Sem r ()
+ignoreException =
+  void . embed @IO . try @SomeException
+{-# inline ignoreException #-}
+
 type a ++ b =
   Append a b
 
