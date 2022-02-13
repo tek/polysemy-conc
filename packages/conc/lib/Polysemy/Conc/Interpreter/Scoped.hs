@@ -1,13 +1,17 @@
 {-# options_haddock prune #-}
+
 -- |Description: Scoped Interpreters, Internal
 module Polysemy.Conc.Interpreter.Scoped where
 
+import Polysemy (Tactical, insertAt)
 import Polysemy.Internal (Sem (Sem, runSem), liftSem)
+import Polysemy.Internal.Index (InsertAtIndex)
+import Polysemy.Internal.Tactics (liftT, runTactics)
 import Polysemy.Internal.Union (Weaving (Weaving), decomp, hoist, injWeaving)
+import Polysemy.Resume (Stop, runStop, type (!!))
+import Polysemy.Resume.Data.Resumable (Resumable (Resumable))
 
 import Polysemy.Conc.Effect.Scoped (Scoped (InScope, Run))
-import Polysemy (Tactical)
-import Polysemy.Internal.Tactics (runTactics)
 
 interpretH' ::
   ∀ e r .
@@ -76,17 +80,7 @@ interpretScoped ::
   (∀ r0 x . resource -> effect (Sem r0) x -> Sem r x) ->
   InterpreterFor (Scoped resource effect) r
 interpretScoped withResource scopedHandler =
-  run
-  where
-    run :: InterpreterFor (Scoped resource effect) r
-    run =
-      interpretH' \ (Weaving effect s wv ex _) -> case effect of
-        Run resource act -> do
-          x <- scopedHandler resource act
-          pure (ex (x <$ s))
-        InScope main ->
-          ex <$> withResource \ resource -> run (wv (main resource <$ s))
-
+  interpretScopedH withResource \ r e -> liftT (scopedHandler r e)
 
 -- |Variant of 'interpretScoped' in which the resource allocator is a plain action.
 interpretScopedAs ::
@@ -96,3 +90,46 @@ interpretScopedAs ::
   InterpreterFor (Scoped resource effect) r
 interpretScopedAs resource =
   interpretScoped \ f -> f =<< resource
+
+-- |Combined higher-order interpreter for 'Scoped' and 'Resumable'.
+-- This allows 'Stop' to be sent from within the resource allocator so that the consumer receives it.
+interpretScopedResumableH ::
+  ∀ resource effect err r .
+  (∀ x . (resource -> Sem (Stop err : r) x) -> Sem (Stop err : r) x) ->
+  (∀ r0 x . resource -> effect (Sem r0) x -> Tactical effect (Sem r0) (Stop err : r) x) ->
+  InterpreterFor (Scoped resource effect !! err) r
+interpretScopedResumableH withResource scopedHandler =
+  run
+  where
+    run :: InterpreterFor (Scoped resource effect !! err) r
+    run =
+      interpretH' \ (Weaving (Resumable inner) s' dist' ex' ins') ->
+        case inner of
+          Weaving effect s dist ex ins -> do
+            let
+              handleScoped = \case
+                Run resource act ->
+                  scopedHandler resource act
+                InScope main ->
+                  raise (withResource \ resource -> Compose <$> raise (run (dist' (dist (main resource <$ s) <$ s'))))
+              tac =
+                runTactics
+                (Compose (s <$ s'))
+                (raise . raise . run . fmap Compose . dist' . fmap dist . getCompose)
+                (ins <=< ins' . getCompose)
+                (raise . run . fmap Compose . dist' . fmap dist . getCompose)
+                (handleScoped effect)
+              exFinal = ex' . \case
+                Right (Compose a) -> Right . ex <$> a
+                Left err -> Left err <$ s'
+            exFinal <$> runStop tac
+
+-- |Combined interpreter for 'Scoped' and 'Resumable'.
+-- This allows 'Stop' to be sent from within the resource allocator so that the consumer receives it.
+interpretScopedResumable ::
+  ∀ resource effect err r .
+  (∀ x . (resource -> Sem (Stop err : r) x) -> Sem (Stop err : r) x) ->
+  (∀ r0 x . resource -> effect (Sem r0) x -> Sem (Stop err : r) x) ->
+  InterpreterFor (Scoped resource effect !! err) r
+interpretScopedResumable withResource scopedHandler =
+  interpretScopedResumableH withResource \ r e -> liftT (scopedHandler r e)

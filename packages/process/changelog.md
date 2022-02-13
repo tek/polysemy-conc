@@ -5,6 +5,7 @@
 * Rename stdio interpreters.
 * Add helper `resolveExecutable` that looks up names in `$PATH` and ensures the files are executable.
 * Add effect `Pty` for interacting with pseudo terminals.
+* Add low-level process abstraction effect, `SystemProcess`.
 
 # 0.5.0.0
 

@@ -1,4 +1,5 @@
 {-# options_haddock prune #-}
+
 -- |Description: Scoped Effect, Internal
 module Polysemy.Conc.Effect.Scoped where
 

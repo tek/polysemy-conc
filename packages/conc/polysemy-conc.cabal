@@ -126,13 +126,14 @@ library
       UndecidableInstances
       UnicodeSyntax
       ViewPatterns
-  ghc-options: -flate-specialise -fspecialise-aggressively -Wall -Wredundant-constraints
+  ghc-options: -Wall -Wredundant-constraints -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Widentities
   build-depends:
       async
     , base ==4.*
     , containers
     , data-default >=0.2
     , polysemy >=1.6
+    , polysemy-resume >=0.2
     , polysemy-time >=0.1.4
     , relude >=0.7
     , stm
@@ -159,6 +160,7 @@ test-suite polysemy-conc-unit
       Polysemy.Conc.Test.MaskTest
       Polysemy.Conc.Test.MonitorTest
       Polysemy.Conc.Test.QueueTest
+      Polysemy.Conc.Test.ScopedTest
       Polysemy.Conc.Test.SyncTest
       Paths_polysemy_conc
   autogen-modules:
@@ -223,13 +225,14 @@ test-suite polysemy-conc-unit
       UndecidableInstances
       UnicodeSyntax
       ViewPatterns
-  ghc-options: -flate-specialise -fspecialise-aggressively -Wall -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -Wall -Wredundant-constraints -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Widentities -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       async
     , base ==4.*
     , polysemy
     , polysemy-conc
-    , polysemy-plugin >=0.4
+    , polysemy-plugin
+    , polysemy-resume
     , polysemy-test
     , polysemy-time
     , stm

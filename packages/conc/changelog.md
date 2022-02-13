@@ -1,5 +1,7 @@
 # Unreleased
 
+* Add `Resumable` support for `Scoped`.
+
 # 0.5.0.0
 
 * Add `mask` effects.

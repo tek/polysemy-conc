@@ -104,6 +104,8 @@ module Polysemy.Conc (
   interpretScoped,
   interpretScopedH,
   interpretScopedAs,
+  interpretScopedResumable,
+  interpretScopedResumableH,
 
   -- * Monitoring
   Monitor,
@@ -175,7 +177,15 @@ import Polysemy.Conc.Interpreter.Queue.Pure (
 import Polysemy.Conc.Interpreter.Queue.TB (interpretQueueTB)
 import Polysemy.Conc.Interpreter.Queue.TBM (interpretQueueTBM)
 import Polysemy.Conc.Interpreter.Race (interpretRace)
-import Polysemy.Conc.Interpreter.Scoped (interpretScoped, interpretScopedAs, interpretScopedH, runScoped, runScopedAs)
+import Polysemy.Conc.Interpreter.Scoped (
+  interpretScoped,
+  interpretScopedAs,
+  interpretScopedH,
+  runScoped,
+  runScopedAs,
+  interpretScopedResumable,
+  interpretScopedResumableH,
+  )
 import Polysemy.Conc.Interpreter.Stack (ConcStack, runConc)
 import Polysemy.Conc.Interpreter.Sync (interpretScopedSync, interpretScopedSyncAs, interpretSync, interpretSyncAs)
 import Polysemy.Conc.Monitor (ClockSkewConfig (ClockSkewConfig), clockSkewConfig, monitorClockSkew)
