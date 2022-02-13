@@ -133,3 +133,120 @@ interpretScopedResumable ::
   InterpreterFor (Scoped resource effect !! err) r
 interpretScopedResumable withResource scopedHandler =
   interpretScopedResumableH withResource \ r e -> liftT (scopedHandler r e)
+
+interpretScopedWithH ::
+  ∀ extra resource effect r r1 .
+  r1 ~ (extra ++ r) =>
+  InsertAtIndex 1 '[Scoped resource effect] r1 r (Scoped resource effect : r1) extra =>
+  (∀ x . (resource -> Sem r1 x) -> Sem r x) ->
+  (∀ m x . resource -> effect m x -> Tactical effect m r1 x) ->
+  InterpreterFor (Scoped resource effect) r
+interpretScopedWithH withResource scopedHandler =
+  interpretH' \case
+    Weaving (InScope main) s wv ex _ ->
+      ex <$> withResource \ resource -> inScope (insertAt @1 @extra (wv (main resource <$ s)))
+    _ ->
+      error "top level Run"
+  where
+    inScope :: InterpreterFor (Scoped resource effect) r1
+    inScope =
+      interpretH' \case
+        Weaving (Run resource act) s wv ex ins ->
+          ex <$> runTactics s (raise . inScope . wv) ins (inScope . wv) (scopedHandler resource act)
+        _ ->
+          error "nested InScope"
+
+interpretScopedWith ::
+  ∀ extra resource effect r r1 .
+  r1 ~ (extra ++ r) =>
+  InsertAtIndex 1 '[Scoped resource effect] r1 r (Scoped resource effect : r1) extra =>
+  (∀ x . (resource -> Sem r1 x) -> Sem r x) ->
+  (∀ m x . resource -> effect m x -> Sem r1 x) ->
+  InterpreterFor (Scoped resource effect) r
+interpretScopedWith withResource scopedHandler =
+  interpretScopedWithH @extra withResource \ r e -> liftT (scopedHandler r e)
+
+interpretScopedWith_ ::
+  ∀ extra effect r r1 .
+  r1 ~ (extra ++ r) =>
+  InsertAtIndex 1 '[Scoped () effect] r1 r (Scoped () effect : r1) extra =>
+  (∀ x . Sem r1 x -> Sem r x) ->
+  (∀ m x . effect m x -> Sem r1 x) ->
+  InterpreterFor (Scoped () effect) r
+interpretScopedWith_ withResource scopedHandler =
+  interpretScopedWithH @extra (\ f -> withResource (f ())) \ () e -> liftT (scopedHandler e)
+
+interpretScopedResumableWithH ::
+  ∀ extra resource effect err r r1 .
+  r1 ~ ((extra ++ '[Stop err]) ++ r) =>
+  InsertAtIndex 1 '[Scoped resource effect !! err] r1 r (Scoped resource effect !! err : r1) (extra ++ '[Stop err]) =>
+  (∀ x . (resource -> Sem r1 x) -> Sem (Stop err : r) x) ->
+  (∀ r0 x . resource -> effect (Sem r0) x -> Tactical effect (Sem r0) r1 x) ->
+  InterpreterFor (Scoped resource effect !! err) r
+interpretScopedResumableWithH withResource scopedHandler =
+  run
+  where
+    run :: InterpreterFor (Scoped resource effect !! err) r
+    run =
+      interpretH' \ (Weaving (Resumable inner) s' dist' ex' ins') ->
+        case inner of
+          Weaving effect s dist ex ins -> do
+            let
+              handleScoped = \case
+                Run _ _ ->
+                  error "top level Run"
+                InScope main ->
+                  raise (withResource \ resource -> Compose <$> inScope (insertAt @1 @(extra ++ '[Stop err]) (dist' (dist (main resource <$ s) <$ s'))))
+              tac =
+                runTactics
+                (Compose (s <$ s'))
+                (raise . raise . run . fmap Compose . dist' . fmap dist . getCompose)
+                (ins <=< ins' . getCompose)
+                (raise . run . fmap Compose . dist' . fmap dist . getCompose)
+                (handleScoped effect)
+              exFinal = ex' . \case
+                Right (Compose a) -> Right . ex <$> a
+                Left err -> Left err <$ s'
+            exFinal <$> runStop tac
+    inScope :: InterpreterFor (Scoped resource effect !! err) r1
+    inScope =
+      interpretH' \ (Weaving (Resumable inner) s' dist' ex' ins') ->
+        case inner of
+          Weaving effect s dist ex ins -> do
+            let
+              handleScoped = \case
+                Run resource act ->
+                  scopedHandler resource act
+                InScope _ ->
+                  error "nested InScope"
+              tac =
+                runTactics
+                (Compose (s <$ s'))
+                (raise . inScope . fmap Compose . dist' . fmap dist . getCompose)
+                (ins <=< ins' . getCompose)
+                (inScope . fmap Compose . dist' . fmap dist . getCompose)
+                (handleScoped effect)
+              exFinal = ex' . \case
+                Right (Compose a) -> Right . ex <$> a
+                Left err -> Left err <$ s'
+            exFinal <$> runStop (raise tac)
+
+interpretScopedResumableWith ::
+  ∀ extra resource effect err r r1 .
+  r1 ~ ((extra ++ '[Stop err]) ++ r) =>
+  InsertAtIndex 1 '[Scoped resource effect !! err] r1 r (Scoped resource effect !! err : r1) (extra ++ '[Stop err]) =>
+  (∀ x . (resource -> Sem r1 x) -> Sem (Stop err : r) x) ->
+  (∀ r0 x . resource -> effect (Sem r0) x -> Sem r1 x) ->
+  InterpreterFor (Scoped resource effect !! err) r
+interpretScopedResumableWith withResource scopedHandler =
+  interpretScopedResumableWithH @extra withResource \ r e -> liftT (scopedHandler r e)
+
+interpretScopedResumableWith_ ::
+  ∀ extra effect err r r1 .
+  r1 ~ ((extra ++ '[Stop err]) ++ r) =>
+  InsertAtIndex 1 '[Scoped () effect !! err] r1 r (Scoped () effect !! err : r1) (extra ++ '[Stop err]) =>
+  (∀ x . Sem r1 x -> Sem (Stop err : r) x) ->
+  (∀ r0 x . effect (Sem r0) x -> Sem r1 x) ->
+  InterpreterFor (Scoped () effect !! err) r
+interpretScopedResumableWith_ withResource scopedHandler =
+  interpretScopedResumableWith @extra (\ f -> withResource (f ())) (const scopedHandler)

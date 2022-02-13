@@ -1,6 +1,7 @@
 # Unreleased
 
 * Add `Resumable` support for `Scoped`.
+* Add `Scoped` interpreters that allow the allocator to interpret additional effects used by the handler.
 
 # 0.5.0.0
 
