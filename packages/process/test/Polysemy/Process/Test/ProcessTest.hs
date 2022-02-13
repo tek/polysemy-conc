@@ -4,14 +4,15 @@ module Polysemy.Process.Test.ProcessTest where
 
 import Polysemy.Async (asyncToIOFinal)
 import Polysemy.Conc.Interpreter.Race (interpretRace)
-import Polysemy.Resume (resuming)
+import Polysemy.Resume (resumeHoistError)
 import Polysemy.Test (UnitTest, runTestAuto, (===))
 import qualified System.Process.Typed as Process
 import System.Process.Typed (ProcessConfig)
 
+import Polysemy.Process.Data.ProcessError (ProcessError)
 import qualified Polysemy.Process.Effect.Process as Process
 import Polysemy.Process.Effect.Process (withProcess)
-import Polysemy.Process.Interpreter.ProcessStd (interpretProcessByteString, interpretProcessTextLines)
+import Polysemy.Process.Interpreter.ProcessStdio (interpretProcessByteStringNative, interpretProcessTextLinesNative)
 
 config :: ProcessConfig () () ()
 config =
@@ -27,18 +28,18 @@ message =
 
 test_process :: UnitTest
 test_process =
-  runTestAuto $ interpretRace $ asyncToIOFinal $ interpretProcessByteString True 10 config do
-    withProcess do
-      response <- resuming (pure . show) do
+  runTestAuto $ interpretRace $ asyncToIOFinal $ interpretProcessByteStringNative True 10 config do
+    response <- resumeHoistError @ProcessError show do
+      withProcess do
         Process.send message
         Process.recv
-      message === response
+    message === response
 
 test_processLines :: UnitTest
 test_processLines =
-  runTestAuto $ interpretRace $ asyncToIOFinal $ interpretProcessTextLines True 10 config do
-    withProcess do
-      response <- resuming (pure . pure . show) do
+  runTestAuto $ interpretRace $ asyncToIOFinal $ interpretProcessTextLinesNative True 10 config do
+    response <- resumeHoistError @ProcessError show do
+      withProcess do
         Process.send message
         replicateM 4 Process.recv
-      messageLines === response
+    messageLines === response

@@ -21,9 +21,14 @@ module Polysemy.Process (
   wait,
   withSystemProcess,
   interrupt,
+
   -- * Interpreters
-  interpretProcessNative,
   -- ** Process
+  interpretProcessByteStringNative,
+  interpretProcessByteStringLinesNative,
+  interpretProcessTextNative,
+  interpretProcessTextLinesNative,
+  interpretProcess,
   interpretProcessByteString,
   interpretProcessByteStringLines,
   interpretProcessText,
@@ -55,18 +60,25 @@ import Polysemy.Process.Effect.SystemProcess (
   writeStdin,
   )
 import Polysemy.Process.Executable (resolveExecutable)
-import Polysemy.Process.Interpreter.Process (interpretProcessNative)
+import Polysemy.Process.Interpreter.Process (
+  interpretProcess,
+  interpretProcessByteString,
+  interpretProcessByteStringLines,
+  interpretProcessText,
+  interpretProcessTextLines,
+  )
 import Polysemy.Process.Interpreter.ProcessOutput (
   interpretProcessOutputId,
   interpretProcessOutputLines,
   interpretProcessOutputText,
   interpretProcessOutputTextLines,
   )
-import Polysemy.Process.Interpreter.ProcessStd (
-  interpretProcessByteString,
-  interpretProcessByteStringLines,
-  interpretProcessText,
-  interpretProcessTextLines,
+import Polysemy.Process.Interpreter.ProcessStdio (
+  interpretProcessByteStringLinesNative,
+  interpretProcessByteStringNative,
+  interpretProcessTextLinesNative,
+  interpretProcessTextNative,
+  )
 import Polysemy.Process.Interpreter.SystemProcess (
   interpretSystemProcessNative,
   interpretSystemProcessNativeSingle,
