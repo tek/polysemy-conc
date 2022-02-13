@@ -1,9 +1,12 @@
+{-# options_haddock prune #-}
+
+-- |Description: Executable helpers, Internal
 module Polysemy.Process.Executable where
 
 import Exon (exon)
 import Path (Abs, File, Path, Rel, toFilePath)
 import qualified Path.IO as Path
-import Path.IO (getPermissions, executable)
+import Path.IO (executable, getPermissions)
 
 checkExecutable ::
   Member (Embed IO) r =>

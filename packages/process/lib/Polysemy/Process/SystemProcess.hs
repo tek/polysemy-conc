@@ -1,3 +1,5 @@
+{-# options_haddock prune #-}
+
 -- |The effect 'SystemProcess' is a low-level abstraction of a native system process.
 module Polysemy.Process.SystemProcess (
   module Polysemy.Process.Effect.SystemProcess,

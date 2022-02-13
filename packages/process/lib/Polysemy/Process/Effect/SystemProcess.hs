@@ -1,3 +1,6 @@
+{-# options_haddock prune #-}
+
+-- |Description: SystemProcess Effect, Internal
 module Polysemy.Process.Effect.SystemProcess where
 
 import Polysemy.Conc.Effect.Scoped (Scoped, scoped)
@@ -10,11 +13,17 @@ import System.Process (Pid)
 -- |Low-level interface for a process, operating on raw chunks of bytes.
 -- Interface is modeled after "System.Process".
 data SystemProcess :: Effect where
+  -- |Read a chunk from stdout.
   ReadStdout :: SystemProcess m ByteString
+  -- |Read a chunk from stderr.
   ReadStderr :: SystemProcess m ByteString
+  -- |Write a 'ByteString' to stdin.
   WriteStdin :: ByteString -> SystemProcess m ()
+  -- |Obtain the process ID.
   Pid :: SystemProcess m Pid
+  -- |Send a 'System.Posix.Signal' to the process.
   Signal :: Signal -> SystemProcess m ()
+  -- |Wait for the process to terminate, returning its exit code.
   Wait :: SystemProcess m ExitCode
 
 makeSem ''SystemProcess

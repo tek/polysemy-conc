@@ -1,3 +1,6 @@
+{-# options_haddock prune #-}
+
+-- |Description: Process Interpreters for stdio, Internal
 module Polysemy.Process.Interpreter.ProcessStdio where
 
 import Polysemy.Async (Async)
@@ -18,6 +21,7 @@ import Polysemy.Process.Interpreter.Process (
   )
 import Polysemy.Process.Interpreter.SystemProcess (PipesProcess, interpretSystemProcessNative)
 
+-- |Interpret 'Process' as a native 'Polysemy.Process.SystemProcess', producing unaccumulated chunks of 'ByteString'.
 interpretProcessByteStringNative ::
   Members [Resource, Race, Async, Embed IO] r =>
   -- |Whether to discard output chunks if the queue is full.
@@ -32,6 +36,7 @@ interpretProcessByteStringNative discard qSize conf =
   interpretProcessByteString @PipesProcess @SystemProcessError discard qSize .
   raiseUnder
 
+-- |Interpret 'Process' as a native 'Polysemy.Process.SystemProcess', producing lines of 'ByteString'.
 interpretProcessByteStringLinesNative ::
   Members [Resource, Race, Async, Embed IO] r =>
   -- |Whether to discard output chunks if the queue is full.
@@ -46,6 +51,7 @@ interpretProcessByteStringLinesNative discard qSize conf =
   interpretProcessByteStringLines @PipesProcess @SystemProcessError discard qSize .
   raiseUnder
 
+-- |Interpret 'Process' as a native 'Polysemy.Process.SystemProcess', producing unaccumulated chunks of 'Text'.
 interpretProcessTextNative ::
   Members [Resource, Race, Async, Embed IO] r =>
   -- |Whether to discard output chunks if the queue is full.
@@ -60,6 +66,7 @@ interpretProcessTextNative discard qSize conf =
   interpretProcessText @PipesProcess @SystemProcessError discard qSize .
   raiseUnder
 
+-- |Interpret 'Process' as a native 'Polysemy.Process.SystemProcess', producing lines of 'Text'.
 interpretProcessTextLinesNative ::
   Members [Resource, Race, Async, Embed IO] r =>
   -- |Whether to discard output chunks if the queue is full.

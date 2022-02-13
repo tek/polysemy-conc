@@ -17,7 +17,7 @@ data QueueResult d =
   |
   -- |The queue was closed by the user.
   Closed
-  deriving (Eq, Show, Ord, Functor, Generic)
+  deriving stock (Eq, Show, Ord, Functor, Generic)
 
 instance Semigroup d => Semigroup (QueueResult d) where
   Success d1 <> Success d2 = Success (d1 <> d2)

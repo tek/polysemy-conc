@@ -1,3 +1,5 @@
+{-# options_haddock prune #-}
+
 -- |Description: Pty Effect, Internal
 module Polysemy.Process.Effect.Pty where
 

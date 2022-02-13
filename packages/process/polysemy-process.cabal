@@ -111,8 +111,7 @@ library
       ViewPatterns
   ghc-options: -Wall -Wredundant-constraints -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Widentities
   build-depends:
-      async
-    , base ==4.*
+      base ==4.*
     , bytestring
     , exon >=0.2.0.1
     , path >=0.7
@@ -120,15 +119,10 @@ library
     , polysemy >=1.6
     , polysemy-conc
     , polysemy-resume >=0.2
-    , polysemy-time >=0.1.4
     , posix-pty >=0.2
     , process
     , relude >=0.7
-    , stm
     , stm-chans >=2
-    , template-haskell
-    , text
-    , time
     , typed-process >=0.2.6
     , unix
   mixins:
@@ -210,7 +204,6 @@ test-suite polysemy-process-unit
   ghc-options: -Wall -Wredundant-constraints -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Widentities -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base ==4.*
-    , bytestring
     , polysemy
     , polysemy-conc
     , polysemy-plugin

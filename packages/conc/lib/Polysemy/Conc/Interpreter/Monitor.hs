@@ -1,4 +1,5 @@
 {-# options_haddock prune #-}
+
 -- |Description: Monitor Interpreters, Internal
 module Polysemy.Conc.Interpreter.Monitor where
 
@@ -27,7 +28,8 @@ newtype CancelResource =
 
 data MonitorCancel =
   MonitorCancel
-  deriving (Eq, Show, Exception)
+  deriving stock (Eq, Show)
+  deriving anyclass (Exception)
 
 interpretMonitorCancel ::
   Members [Race, Async, Final IO] r =>

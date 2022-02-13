@@ -1,5 +1,8 @@
--- |The utility effect 'ProcessOutput' takes care of decoding process output, getting called by the 'Process'
--- interpreters whenever a chunk was read, while accumulating chunks until they were decoded successfully.
+{-# options_haddock prune #-}
+
+-- |The utility effect 'ProcessOutput' takes care of decoding process output, getting called by the
+-- 'Polysemy.Process.Process' interpreters whenever a chunk was read, while accumulating chunks until they were decoded
+-- successfully.
 module Polysemy.Process.ProcessOutput (
   module Polysemy.Process.Effect.ProcessOutput,
   module Polysemy.Process.Interpreter.ProcessOutput,

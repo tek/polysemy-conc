@@ -1,3 +1,5 @@
+{-# options_haddock prune #-}
+
 -- |Description: ProcessOutput effect, Internal.
 module Polysemy.Process.Effect.ProcessOutput where
 

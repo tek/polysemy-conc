@@ -8,7 +8,7 @@ import Polysemy.Conc.Effect.Scoped (Scoped, scoped)
 -- |Marker for the 'Scoped' resource for 'Events'.
 newtype EventResource resource =
   EventResource { unEventToken :: resource }
-  deriving (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic)
 
 -- |An event publisher that can be consumed from multiple threads.
 data Events (resource :: Type) (e :: Type) :: Effect where

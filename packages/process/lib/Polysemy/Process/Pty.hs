@@ -1,3 +1,5 @@
+{-# options_haddock prune #-}
+
 -- |The effect 'Pty' abstracts pseudo terminals.
 module Polysemy.Process.Pty (
   module Polysemy.Process.Effect.Pty,
