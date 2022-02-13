@@ -10,7 +10,7 @@ import Polysemy.Conc.Effect.Scoped (Scoped, scoped)
 -- |Marker type for the restarting action for 'Monitor'.
 data Restart =
   Restart
-  deriving (Eq, Show)
+  deriving stock (Eq, Show)
 
 -- |Mark a region as being subject to intervention by a monitoring program.
 -- This can mean that a thread is repeatedly checking a condition and cancelling this region when it is unmet.

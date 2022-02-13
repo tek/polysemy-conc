@@ -15,7 +15,7 @@ data ClockSkewConfig =
     interval :: NanoSeconds,
     tolerance :: NanoSeconds
   }
-  deriving (Eq, Show)
+  deriving stock (Eq, Show)
 
 -- |Smart constructor for 'ClockSkewConfig' that takes arbitrary 'TimeUnit's.
 clockSkewConfig ::

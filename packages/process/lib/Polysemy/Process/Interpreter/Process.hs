@@ -34,15 +34,15 @@ import Polysemy.Process.Interpreter.ProcessOutput (
 
 newtype In a =
   In { unIn :: a }
-  deriving (Eq, Show)
+  deriving stock (Eq, Show)
 
 newtype Out a =
   Out { unOut :: a }
-  deriving (Eq, Show)
+  deriving stock (Eq, Show)
 
 newtype Err a =
   Err { unErr :: a }
-  deriving (Eq, Show)
+  deriving stock (Eq, Show)
 
 data ProcessQueues o e =
   ProcessQueues {
