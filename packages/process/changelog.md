@@ -4,6 +4,7 @@
   containing whatever the `Handle` produced.
 * Rename stdio interpreters.
 * Add helper `resolveExecutable` that looks up names in `$PATH` and ensures the files are executable.
+* Add effect `Pty` for interacting with pseudo terminals.
 
 # 0.5.0.0
 

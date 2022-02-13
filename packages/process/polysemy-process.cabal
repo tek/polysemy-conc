@@ -29,12 +29,16 @@ library
   exposed-modules:
       Polysemy.Process
       Polysemy.Process.Data.ProcessError
+      Polysemy.Process.Data.PtyError
+      Polysemy.Process.Data.PtyResources
       Polysemy.Process.Effect.Process
       Polysemy.Process.Effect.ProcessOutput
+      Polysemy.Process.Effect.Pty
       Polysemy.Process.Executable
       Polysemy.Process.Interpreter.Process
       Polysemy.Process.Interpreter.ProcessOutput
       Polysemy.Process.Interpreter.ProcessStd
+      Polysemy.Process.Interpreter.Pty
   other-modules:
       Paths_polysemy_process
   autogen-modules:
@@ -111,6 +115,7 @@ library
     , polysemy-conc
     , polysemy-resume >=0.2
     , polysemy-time >=0.1.4
+    , posix-pty >=0.2
     , relude >=0.7
     , stm
     , stm-chans >=2
