@@ -30,7 +30,7 @@ library:
     - template-haskell
     - text
     - time
-    - typed-process >= 0.2.8
+    - typed-process >= 0.2.6
     - unix
 
 tests:
