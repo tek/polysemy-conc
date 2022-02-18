@@ -8,12 +8,12 @@ import Data.ByteString (hGetSome, hPut)
 import Polysemy.Conc.Effect.Scoped (Scoped)
 import Polysemy.Conc.Interpreter.Scoped (runScoped)
 import Polysemy.Resource (Resource, bracket)
-import Polysemy.Resume (Stop, interpretResumable, stopNote, type (!!))
+import Polysemy.Resume (Stop, interpretResumable, stop, stopNote, type (!!))
 import Prelude hiding (fromException)
 import qualified System.Posix as Signal
 import System.Process (Pid, getPid)
-import qualified System.Process.Typed as System
 import System.Process.Typed (
+  Process,
   ProcessConfig,
   createPipe,
   getStderr,
@@ -38,7 +38,7 @@ import System.IO (BufferMode (NoBuffering), hSetBuffering)
 #endif
 
 type PipesProcess =
-  System.Process Handle Handle Handle
+  Process Handle Handle Handle
 
 processWithPipes :: ProcessConfig () () () -> ProcessConfig Handle Handle Handle
 processWithPipes =
@@ -68,6 +68,21 @@ withProcess config use =
     unbuffer h =
       void $ tryMaybe (hSetBuffering h NoBuffering)
 
+startOpaque ::
+  Member (Embed IO) r =>
+  ProcessConfig i o e ->
+  Sem r (Process i o e)
+startOpaque =
+  startProcess
+
+withProcessOpaque ::
+  Members [Resource, Embed IO] r =>
+  ProcessConfig i o e ->
+  (Process i o e -> Sem r a) ->
+  Sem r a
+withProcessOpaque config =
+  bracket (startOpaque config) (tryAny . stopProcess)
+
 terminate ::
   Member (Stop SystemProcessError) r =>
   Text ->
@@ -86,7 +101,7 @@ tryStop msg =
 
 processId ::
   Members [Stop SystemProcessError, Embed IO] r =>
-  System.Process i o e ->
+  Process i o e ->
   Sem r Pid
 processId process =
   terminate "getPid returned Nothing" =<< embed (getPid (unsafeProcessHandle process))
@@ -95,7 +110,7 @@ processId process =
 interpretSystemProcessWithProcess ::
   ∀ r .
   Member (Embed IO) r =>
-  System.Process Handle Handle Handle ->
+  Process Handle Handle Handle ->
   InterpreterFor (SystemProcess !! SystemProcessError) r
 interpretSystemProcessWithProcess process =
   interpretResumable \case
@@ -132,3 +147,45 @@ interpretSystemProcessNative ::
   InterpreterFor (Scoped PipesProcess (SystemProcess !! SystemProcessError)) r
 interpretSystemProcessNative config =
   runScoped (withProcess config) interpretSystemProcessWithProcess
+
+-- |Interpret 'SystemProcess' with a concrete 'System.Process' with connected pipes.
+interpretSystemProcessWithProcessOpaque ::
+  ∀ i o e r .
+  Member (Embed IO) r =>
+  Process i o e ->
+  InterpreterFor (SystemProcess !! SystemProcessError) r
+interpretSystemProcessWithProcessOpaque process =
+  interpretResumable \case
+    SystemProcess.Pid ->
+      processId process
+    SystemProcess.Signal sig -> do
+      pid <- processId process
+      tryStop "signal failed" (Signal.signalProcess sig pid)
+    SystemProcess.ReadStdout ->
+      stop SystemProcessError.NoPipes
+    SystemProcess.ReadStderr ->
+      stop SystemProcessError.NoPipes
+    SystemProcess.WriteStdin _ ->
+      stop SystemProcessError.NoPipes
+    SystemProcess.Wait ->
+      tryStop "wait failed" (waitExitCode process)
+
+-- |Interpret 'SystemProcess' as a single global 'System.Process' that's started immediately.
+interpretSystemProcessNativeOpaqueSingle ::
+  ∀ i o e r .
+  Members [Resource, Embed IO] r =>
+  ProcessConfig i o e ->
+  InterpreterFor (SystemProcess !! SystemProcessError) r
+interpretSystemProcessNativeOpaqueSingle config sem =
+  withProcessOpaque config \ process ->
+    interpretSystemProcessWithProcessOpaque process sem
+
+-- |Interpret 'SystemProcess' as a scoped 'System.Process' that's started wherever 'Polysemy.Process.withSystemProcess'
+-- is called and terminated when the wrapped action finishes.
+interpretSystemProcessNativeOpaque ::
+  ∀ i o e r .
+  Members [Resource, Embed IO] r =>
+  ProcessConfig i o e ->
+  InterpreterFor (Scoped (Process i o e) (SystemProcess !! SystemProcessError)) r
+interpretSystemProcessNativeOpaque config =
+  runScoped (withProcessOpaque config) interpretSystemProcessWithProcessOpaque

@@ -44,6 +44,9 @@ module Polysemy.Process (
   interpretSystemProcessWithProcess,
   interpretSystemProcessNativeSingle,
   interpretSystemProcessNative,
+  interpretSystemProcessWithProcessOpaque,
+  interpretSystemProcessNativeOpaqueSingle,
+  interpretSystemProcessNativeOpaque,
 
   -- ** Pty
   interpretPty,
@@ -56,7 +59,8 @@ import Polysemy.Process.Effect.Process (Process (..), recv, recvError, send, wit
 import Polysemy.Process.Effect.ProcessOutput (ProcessOutput)
 import Polysemy.Process.Effect.Pty (Pty, withPty)
 import Polysemy.Process.Effect.SystemProcess (
-  SystemProcess, withSystemProcess
+  SystemProcess,
+  withSystemProcess,
   )
 import Polysemy.Process.Executable (resolveExecutable)
 import Polysemy.Process.Interpreter.Process (
@@ -81,8 +85,11 @@ import Polysemy.Process.Interpreter.ProcessStdio (
 import Polysemy.Process.Interpreter.Pty (interpretPty)
 import Polysemy.Process.Interpreter.SystemProcess (
   interpretSystemProcessNative,
+  interpretSystemProcessNativeOpaque,
+  interpretSystemProcessNativeOpaqueSingle,
   interpretSystemProcessNativeSingle,
   interpretSystemProcessWithProcess,
+  interpretSystemProcessWithProcessOpaque,
   )
 
 -- $intro

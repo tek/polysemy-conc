@@ -7,4 +7,6 @@ module Polysemy.Process.Data.SystemProcessError where
 data SystemProcessError =
   -- |The process terminated.
   Terminated Text
+  |
+  NoPipes
   deriving stock (Eq, Show)
