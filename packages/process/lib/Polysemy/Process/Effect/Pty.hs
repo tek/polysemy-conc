@@ -23,6 +23,8 @@ data Pty :: Effect where
   Handle :: Pty m Handle
   -- |Set the size of the terminal.
   Resize :: Rows -> Cols -> Pty m ()
+  -- |Get the size of the terminal.
+  Size :: Pty m (Rows, Cols)
 
 makeSem ''Pty
 

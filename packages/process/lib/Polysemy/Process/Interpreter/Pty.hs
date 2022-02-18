@@ -6,27 +6,27 @@ module Polysemy.Process.Interpreter.Pty where
 import Polysemy.Conc.Effect.Scoped (Scoped)
 import Polysemy.Conc.Interpreter.Scoped (interpretScopedResumable)
 import Polysemy.Resource (Resource, bracket)
-import Polysemy.Resume (Stop, type (!!), stopNote)
-import System.Posix.Pty (resizePty, createPty, closePty)
+import Polysemy.Resume (Stop, stopEitherWith, stopNote, type (!!))
+import System.Posix (closeFd, fdToHandle, openPseudoTerminal)
+import System.Posix.Pty (closePty, createPty, ptyDimensions, resizePty)
 
-import Polysemy.Process.Data.PtyError (PtyError (CreationFailed))
-import Polysemy.Process.Data.PtyResources (PtyResources (PtyResources, primary, secondary, handle, pty))
-import Polysemy.Process.Effect.Pty (Pty (Handle, Resize))
-import System.Posix (openPseudoTerminal, fdToHandle, closeFd)
+import Polysemy.Process.Data.PtyError (PtyError (PtyError))
+import Polysemy.Process.Data.PtyResources (PtyResources (PtyResources, handle, primary, pty, secondary))
+import Polysemy.Process.Effect.Pty (Cols (Cols), Pty (Handle, Resize, Size), Rows (Rows))
 
 tryStop ::
   Members [Stop PtyError, Embed IO] r =>
   IO a ->
   Sem r a
 tryStop =
-  stopNote CreationFailed <=< tryMaybe
+  stopEitherWith PtyError <=< tryAny
 
 acquirePty ::
   Member (Embed IO) r =>
   Sem (Stop PtyError : r) PtyResources
 acquirePty = do
   (primary, secondary) <- tryStop openPseudoTerminal
-  pty <- stopNote CreationFailed =<< tryStop (createPty secondary)
+  pty <- stopNote (PtyError "no pty returned") =<< tryStop (createPty secondary)
   handle <- tryStop (fdToHandle secondary)
   pure PtyResources {..}
 
@@ -35,8 +35,8 @@ releasePty ::
   PtyResources ->
   Sem r ()
 releasePty PtyResources {primary, pty} = do
-  embed (closePty pty)
-  embed (closeFd primary)
+  ignoreException (closePty pty)
+  ignoreException (closeFd primary)
 
 withPty ::
   Members [Resource, Embed IO] r =>
@@ -53,5 +53,7 @@ interpretPty =
   interpretScopedResumable withPty \ PtyResources {..} -> \case
     Handle ->
       pure handle
-    Resize rows cols ->
-      embed (resizePty pty (fromIntegral rows, fromIntegral cols))
+    Resize rows cols -> do
+      tryStop (resizePty pty (fromIntegral rows, fromIntegral cols))
+    Size ->
+      bimap Rows Cols <$> tryStop (ptyDimensions pty)

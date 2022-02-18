@@ -6,5 +6,5 @@ module Polysemy.Process.Pty (
   module Polysemy.Process.Interpreter.Pty,
 ) where
 
-import Polysemy.Process.Effect.Pty (Pty (..), handle, resize, withPty)
+import Polysemy.Process.Effect.Pty (Pty (..), handle, resize, size, withPty)
 import Polysemy.Process.Interpreter.Pty (interpretPty)
