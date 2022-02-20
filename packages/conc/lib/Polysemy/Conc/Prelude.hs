@@ -73,7 +73,7 @@ tryAny ::
   Sem r (Either Text a)
 tryAny =
   embed @IO . fmap (first show) . try @SomeException
-{-# INLINE tryAny #-}
+{-# inline tryAny #-}
 
 tryMaybe ::
   Member (Embed IO) r =>

@@ -3,7 +3,6 @@
 -- |Description: Executable helpers, Internal
 module Polysemy.Process.Executable where
 
-import Exon (exon)
 import Path (Abs, File, Path, Rel, toFilePath)
 import qualified Path.IO as Path
 import Path.IO (executable, getPermissions)
@@ -23,7 +22,7 @@ checkExecutable name path =
       Left (message "a readable file")
   where
     message what =
-      [exon|specified path for `#{name}` is not #{what}: #{pathText}|]
+      "specified path for `" <> name <> "` is not " <> what <> ": " <> pathText
     pathText =
       toText (toFilePath path)
 
@@ -43,7 +42,7 @@ resolveExecutable exe = \case
       Right (Just path) ->
         Right path
       _ ->
-        Left [exon|could not find executable `#{name}` in `$PATH`.|]
+        Left ("could not find executable `" <> name <> "` in `$PATH`.")
   where
     name =
       toText (toFilePath exe)
