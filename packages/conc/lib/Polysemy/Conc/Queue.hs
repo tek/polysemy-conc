@@ -38,7 +38,7 @@ loopOr na action =
       Queue.read >>= \case
         QueueResult.Success d -> whenM (action d) spin
         QueueResult.NotAvailable -> whenM na spin
-        QueueResult.Closed -> pass
+        QueueResult.Closed -> unit
 
 -- |Read from a 'Queue' repeatedly until it is closed.
 --
@@ -50,7 +50,7 @@ loop ::
 loop action =
   loopOr (pure True) \ d -> True <$ action d
 
--- |Read from a 'queue' and convert the result to 'Maybe', returning 'Nothing' if there is no element available or the
+-- |Read from a 'Queue' and convert the result to 'Maybe', returning 'Nothing' if there is no element available or the
 -- queue has been closed.
 readMaybe ::
   Member (Queue d) r =>

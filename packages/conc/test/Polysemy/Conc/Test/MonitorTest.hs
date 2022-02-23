@@ -2,8 +2,8 @@
 
 module Polysemy.Conc.Test.MonitorTest where
 
+import Control.Concurrent (MVar, putMVar)
 import Data.Time (UTCTime)
-import Polysemy.Async (async, asyncToIOFinal, await)
 import Polysemy.Test (UnitTest, assertEq, assertJust, runTestAuto)
 import qualified Polysemy.Time as Time
 import Polysemy.Time (
@@ -43,7 +43,7 @@ checker ::
   MVar () ->
   Sem r ()
 checker signal =
-  Sync.takeBlock *> putMVar signal ()
+  Sync.takeBlock *> embed (putMVar signal ())
 
 test_monitorBasic :: UnitTest
 test_monitorBasic =

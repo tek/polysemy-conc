@@ -2,8 +2,8 @@
 
 module Polysemy.Conc.Test.ScopedTest where
 
-import Polysemy (Tactical)
-import Polysemy.Resume (Stop, (!!), stop)
+import Control.Concurrent.STM (TVar, atomically, newTVarIO, readTVarIO, writeTVar)
+import Polysemy.Resume (Stop, stop, (!!))
 import Polysemy.Test (UnitTest, runTestAuto, (===))
 
 import Polysemy.Conc.Effect.Scoped (scoped)
@@ -39,16 +39,16 @@ interpretF ::
   InterpreterFor F r
 interpretF tv =
   interpret \ F -> do
-    atomically (writeTVar tv 7)
+    embed (atomically (writeTVar tv 7))
     pure 5
 
 scope ::
   Member (Embed IO) r =>
   (TVar Int -> Sem (F : r) a) ->
   Sem r a
-scope run = do
-  tv <- newTVarIO 20
-  interpretF tv (run tv)
+scope use = do
+  tv <- embed (newTVarIO 20)
+  interpretF tv (use tv)
 
 test_scopedWith :: UnitTest
 test_scopedWith =
@@ -78,16 +78,16 @@ interpretFR ::
   InterpreterFor F r
 interpretFR tv =
   interpret \ F -> do
-    atomically (writeTVar tv 7)
+    embed (atomically (writeTVar tv 7))
     pure 5
 
 scopeR ::
   Member (Embed IO) r =>
   (TVar Int -> Sem (F : Stop Int : r) a) ->
   Sem (Stop Int : r) a
-scopeR run = do
-  tv <- newTVarIO 20
-  _ <- interpretF tv (run tv)
+scopeR use = do
+  tv <- embed (newTVarIO 20)
+  _ <- interpretF tv (use tv)
   stop . (50 +) =<< embed (readTVarIO tv)
 
 test_scopedResumableWith :: UnitTest

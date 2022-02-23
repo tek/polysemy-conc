@@ -12,6 +12,7 @@ import Polysemy.Conc.Test.QueueTest (
   test_queueTBM,
   test_queueTimeoutTBM,
   )
+import Polysemy.Conc.Test.ScopedTest (test_scopedResumableWith, test_scopedWith)
 import Polysemy.Conc.Test.SyncTest (test_sync)
 import Polysemy.Test (unitTest)
 import Test.Tasty (TestTree, defaultMain, testGroup)
@@ -42,6 +43,10 @@ tests =
     testGroup "monitor" [
       unitTest "basic" test_monitorBasic,
       unitTest "clock skew" test_monitorClockSkew
+    ],
+    testGroup "scoped" [
+      unitTest "scopedWith" test_scopedWith,
+      unitTest "scopedResumableWith" test_scopedResumableWith
     ]
   ]
 

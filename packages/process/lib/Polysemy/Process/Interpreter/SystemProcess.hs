@@ -1,5 +1,4 @@
 {-# options_haddock prune #-}
-{-# language CPP #-}
 
 -- |Description: SystemProcess Interpreters, Internal
 module Polysemy.Process.Interpreter.SystemProcess where
@@ -7,9 +6,9 @@ module Polysemy.Process.Interpreter.SystemProcess where
 import Data.ByteString (hGetSome, hPut)
 import Polysemy.Conc.Effect.Scoped (Scoped)
 import Polysemy.Conc.Interpreter.Scoped (runScoped)
-import Polysemy.Resource (Resource, bracket)
 import Polysemy.Resume (Stop, interpretResumable, stop, stopNote, type (!!))
 import Prelude hiding (fromException)
+import System.IO (BufferMode (NoBuffering), Handle, hSetBuffering)
 import qualified System.Posix as Signal
 import System.Process (Pid, getPid)
 import System.Process.Typed (
@@ -32,10 +31,6 @@ import qualified Polysemy.Process.Data.SystemProcessError as SystemProcessError
 import Polysemy.Process.Data.SystemProcessError (SystemProcessError)
 import qualified Polysemy.Process.Effect.SystemProcess as SystemProcess
 import Polysemy.Process.Effect.SystemProcess (SystemProcess)
-
-#if !MIN_VERSION_relude(1,0,0)
-import System.IO (BufferMode (NoBuffering), hSetBuffering)
-#endif
 
 type PipesProcess =
   Process Handle Handle Handle

@@ -2,8 +2,6 @@
 module Polysemy.Conc.Async where
 
 import qualified Control.Concurrent.Async as Base
-import Polysemy.Async (Async, async, cancel)
-import Polysemy.Resource (Resource, bracket)
 import Polysemy.Time (MilliSeconds (MilliSeconds), TimeUnit)
 
 import Polysemy.Conc.Effect.Race (Race)
@@ -92,7 +90,7 @@ scheduleAsync mb f =
       raise mb
     f h (Sync.putBlock ())
 
--- |Variant of 'scheduleAsync' that directly interprets the 'MVar' used for signalling.
+-- |Variant of 'scheduleAsync' that directly interprets the 'Control.Concurrent.MVar' used for signalling.
 scheduleAsyncIO ::
   ∀ b r a .
   Members [Resource, Async, Race, Embed IO] r =>

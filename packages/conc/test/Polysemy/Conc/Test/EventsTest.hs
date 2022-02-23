@@ -1,7 +1,6 @@
 module Polysemy.Conc.Test.EventsTest where
 
 import Control.Concurrent.Chan.Unagi.Bounded (OutChan)
-import Polysemy.Async (async, asyncToIOFinal, await)
 import Polysemy.Test (UnitTest, assertJust, runTestAuto)
 
 import qualified Polysemy.Conc.Effect.Events as Events

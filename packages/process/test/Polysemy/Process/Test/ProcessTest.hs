@@ -2,7 +2,6 @@
 
 module Polysemy.Process.Test.ProcessTest where
 
-import Polysemy.Async (asyncToIOFinal)
 import Polysemy.Conc.Interpreter.Race (interpretRace)
 import Polysemy.Resume (resumeHoistError)
 import Polysemy.Test (UnitTest, runTestAuto, (===))

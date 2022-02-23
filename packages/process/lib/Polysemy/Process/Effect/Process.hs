@@ -3,11 +3,9 @@
 -- |Description: Process Effect, Internal
 module Polysemy.Process.Effect.Process where
 
-import Polysemy (makeSem_, InterpretersFor)
 import Polysemy.Conc.Effect.Scoped (Scoped, scoped)
-import Polysemy.Resume (type (!!), interpretResumable, restop)
-import Polysemy.Output (Output (Output))
-import Polysemy.Input (Input (Input))
+import Polysemy.Resume (interpretResumable, restop, type (!!))
+import Prelude hiding (send)
 
 -- |Abstraction of a process with stdin/stdout/stderr.
 --

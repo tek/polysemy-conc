@@ -1,6 +1,9 @@
 {-# options_haddock prune #-}
+
 -- |Description: Critical effect
 module Polysemy.Conc.Effect.Critical where
+
+import Prelude hiding (catch, run)
 
 -- |An effect that catches exceptions.
 --

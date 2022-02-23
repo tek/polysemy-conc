@@ -1,8 +1,18 @@
 -- |Description: Sync Interpreters
 module Polysemy.Conc.Interpreter.Sync where
 
-import Control.Concurrent (isEmptyMVar)
-import Polysemy.Resource (Resource)
+import Control.Concurrent (
+  MVar,
+  isEmptyMVar,
+  newEmptyMVar,
+  newMVar,
+  putMVar,
+  readMVar,
+  takeMVar,
+  tryPutMVar,
+  tryReadMVar,
+  tryTakeMVar,
+  )
 
 import Polysemy.Conc.Effect.Race (Race)
 import Polysemy.Conc.Effect.Scoped (Scoped)
@@ -20,29 +30,29 @@ interpretSyncWith ::
 interpretSyncWith var =
   interpret \case
     Sync.Block ->
-      readMVar var
+      embed (readMVar var)
     Sync.Wait interval ->
-      rightToMaybe <$> Race.timeoutAs () interval (readMVar var)
+      rightToMaybe <$> Race.timeoutAs () interval (embed (readMVar var))
     Sync.Try ->
-      tryReadMVar var
+      embed (tryReadMVar var)
     Sync.TakeBlock ->
-      takeMVar var
+      embed (takeMVar var)
     Sync.TakeWait interval ->
-      rightToMaybe <$> Race.timeoutAs () interval (takeMVar var)
+      rightToMaybe <$> Race.timeoutAs () interval (embed (takeMVar var))
     Sync.TakeTry ->
-      tryTakeMVar var
+      embed (tryTakeMVar var)
     Sync.ReadBlock ->
-      readMVar var
+      embed (readMVar var)
     Sync.ReadWait interval ->
-      rightToMaybe <$> Race.timeoutAs () interval (readMVar var)
+      rightToMaybe <$> Race.timeoutAs () interval (embed (readMVar var))
     Sync.ReadTry ->
-      tryReadMVar var
+      embed (tryReadMVar var)
     Sync.PutBlock d ->
-      putMVar var d
+      embed (putMVar var d)
     Sync.PutWait interval d ->
-      Race.timeoutAs_ False interval (True <$ putMVar var d)
+      Race.timeoutAs_ False interval (True <$ embed (putMVar var d))
     Sync.PutTry d ->
-      tryPutMVar var d
+      embed (tryPutMVar var d)
     Sync.Empty ->
       embed (isEmptyMVar var)
 
@@ -52,7 +62,7 @@ interpretSync ::
   Members [Race, Embed IO] r =>
   InterpreterFor (Sync d) r
 interpretSync sem = do
-  var <- newEmptyMVar
+  var <- embed newEmptyMVar
   interpretSyncWith var sem
 
 -- |Interpret 'Sync' with an 'MVar' containing the specified value.
@@ -62,7 +72,7 @@ interpretSyncAs ::
   d ->
   InterpreterFor (Sync d) r
 interpretSyncAs d sem = do
-  var <- newMVar d
+  var <- embed (newMVar d)
   interpretSyncWith var sem
 
 -- |Interpret 'Sync' for locally scoped use with an empty 'MVar'.
@@ -71,7 +81,7 @@ interpretScopedSync ::
   Members [Resource, Race, Embed IO] r =>
   InterpreterFor (Scoped (SyncResources (MVar d)) (Sync d)) r
 interpretScopedSync =
-  runScopedAs (SyncResources <$> newEmptyMVar) \ r -> interpretSyncWith (unSyncResources r)
+  runScopedAs (SyncResources <$> embed newEmptyMVar) \ r -> interpretSyncWith (unSyncResources r)
 
 -- |Interpret 'Sync' for locally scoped use with an 'MVar' containing the specified value.
 interpretScopedSyncAs ::
@@ -80,4 +90,4 @@ interpretScopedSyncAs ::
   d ->
   InterpreterFor (Scoped (SyncResources (MVar d)) (Sync d)) r
 interpretScopedSyncAs d =
-  runScopedAs (SyncResources <$> newMVar d) \ r -> interpretSyncWith (unSyncResources r)
+  runScopedAs (SyncResources <$> embed (newMVar d)) \ r -> interpretSyncWith (unSyncResources r)

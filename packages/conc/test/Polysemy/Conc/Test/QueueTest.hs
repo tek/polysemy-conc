@@ -1,9 +1,9 @@
 module Polysemy.Conc.Test.QueueTest where
 
-import Polysemy.Async (Async, asyncToIOFinal)
 import Polysemy.Test (UnitTest, assertEq, assertJust, runTestAuto)
 import Polysemy.Time (MilliSeconds (MilliSeconds), interpretTimeGhc)
 import Polysemy.Time.Ghc (GhcTime)
+import Prelude hiding (run)
 
 import qualified Polysemy.Conc.Data.QueueResult as QueueResult
 import Polysemy.Conc.Data.QueueResult (QueueResult)

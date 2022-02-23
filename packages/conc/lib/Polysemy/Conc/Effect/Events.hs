@@ -1,8 +1,8 @@
 {-# options_haddock prune #-}
+
 -- |Description: Events/Consume Effects, Internal
 module Polysemy.Conc.Effect.Events where
 
-import Polysemy (makeSem_)
 import Polysemy.Conc.Effect.Scoped (Scoped, scoped)
 
 -- |Marker for the 'Scoped' resource for 'Events'.

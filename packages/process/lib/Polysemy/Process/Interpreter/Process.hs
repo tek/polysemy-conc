@@ -4,8 +4,6 @@
 module Polysemy.Process.Interpreter.Process where
 
 import Control.Concurrent.STM.TBMQueue (TBMQueue)
-import Polysemy (InterpretersFor)
-import Polysemy.Async (Async)
 import Polysemy.Conc.Async (withAsync_)
 import qualified Polysemy.Conc.Data.QueueResult as QueueResult
 import qualified Polysemy.Conc.Effect.Queue as Queue
@@ -14,7 +12,6 @@ import Polysemy.Conc.Effect.Race (Race)
 import Polysemy.Conc.Effect.Scoped (Scoped)
 import Polysemy.Conc.Interpreter.Queue.TBM (interpretQueueTBMWith, withTBMQueue)
 import Polysemy.Conc.Interpreter.Scoped (interpretScopedResumableWith_)
-import Polysemy.Resource (Resource)
 import Polysemy.Resume (Stop, resumeOr, stop, type (!!))
 import Prelude hiding (fromException)
 
@@ -136,7 +133,7 @@ inputQueue writeChunk =
         QueueResult.Success (In msg) ->
           resumeOr @err (writeChunk msg) (const spin) (const (Queue.close @(In ByteString)))
         _ ->
-          pass
+          unit
 
 type ScopeEffects o e err =
   [Queue (In ByteString), Queue (Out o), Queue (Err e), SystemProcess !! err]

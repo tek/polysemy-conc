@@ -1,7 +1,7 @@
 module Polysemy.Conc.Test.InterruptTest where
 
-import Control.Concurrent.STM (modifyTVar)
-import Polysemy.Async (asyncToIOFinal)
+import Control.Concurrent (MVar, newEmptyMVar, putMVar, takeMVar)
+import Control.Concurrent.STM (TVar, atomically, modifyTVar, newTVarIO, readTVarIO)
 import Polysemy.Test (UnitTest, assertEq, runTestAuto)
 import System.Posix (Handler (CatchInfoOnce), SignalInfo, installHandler, keyboardSignal, raiseSignal)
 
@@ -18,8 +18,8 @@ handler mv tv _ = do
 test_interrupt :: UnitTest
 test_interrupt = do
   runTestAuto do
-    tv <- newTVarIO 0
-    mv <- newEmptyMVar
+    tv <- embed (newTVarIO 0)
+    mv <- embed newEmptyMVar
     embed (installHandler keyboardSignal (CatchInfoOnce (handler mv tv)) Nothing)
     asyncToIOFinal $ interpretCritical $ interpretRace $ interpretInterrupt do
       Interrupt.register "test 1" do
@@ -27,6 +27,6 @@ test_interrupt = do
       Interrupt.register "test 2" do
         atomically (modifyTVar tv (9 +))
       embed (raiseSignal keyboardSignal)
-    takeMVar mv
-    result <- readTVarIO tv
+    embed (takeMVar mv)
+    result <- embed (readTVarIO tv)
     assertEq @_ @IO 17 result

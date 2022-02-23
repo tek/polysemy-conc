@@ -1,7 +1,6 @@
 module Polysemy.Conc.Test.LockTest where
 
 import Data.Time (Day, UTCTime)
-import Polysemy.Async (asyncToIOFinal, sequenceConcurrently)
 import Polysemy.Test (UnitTest, assertEq, runTestAuto)
 import qualified Polysemy.Time as Time
 import Polysemy.Time (MicroSeconds (MicroSeconds), interpretTimeGhc)

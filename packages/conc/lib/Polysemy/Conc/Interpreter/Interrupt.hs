@@ -1,18 +1,25 @@
 {-# options_haddock prune #-}
+
 -- |Description: Interrupt interpreters
 module Polysemy.Conc.Interpreter.Interrupt where
 
+import Control.Concurrent (MVar, newEmptyMVar, readMVar, takeMVar, tryPutMVar, tryReadMVar)
 import qualified Control.Concurrent.Async as A
 import Control.Concurrent.Async (AsyncCancelled)
+import Control.Concurrent.STM (TVar, newTVarIO)
 import qualified Data.Map.Strict as Map
 import qualified Data.Set as Set
 import qualified Data.Text.IO as Text
-import Polysemy (getInspectorT, inspect, runT)
-import Polysemy.Async (Async, async, await, cancel)
-import Polysemy.AtomicState (runAtomicStateTVar)
 import Polysemy.Internal.Tactics (liftT)
 import Polysemy.Time (Seconds (Seconds))
-import System.Posix.Signals (Handler (Catch, CatchInfo, CatchInfoOnce, CatchOnce), SignalInfo, installHandler, keyboardSignal)
+import Prelude hiding (Catch)
+import System.IO (stderr)
+import System.Posix.Signals (
+  Handler (Catch, CatchInfo, CatchInfoOnce, CatchOnce),
+  SignalInfo,
+  installHandler,
+  keyboardSignal,
+  )
 
 import qualified Polysemy.Conc.Effect.Critical as Critical
 import Polysemy.Conc.Effect.Critical (Critical)
@@ -51,7 +58,7 @@ waitQuit ::
   Sem r ()
 waitQuit = do
   mv <- atomicGets quit
-  readMVar mv
+  embed (readMVar mv)
 
 checkListeners ::
   Members [AtomicState InterruptState, Embed IO] r =>
@@ -59,7 +66,7 @@ checkListeners ::
 checkListeners =
   whenM (atomicGets (Set.null . listeners)) do
     fin <- atomicGets finished
-    void (tryPutMVar fin ())
+    void (embed (tryPutMVar fin ()))
 
 onQuit ::
   Members [AtomicState InterruptState, Embed IO] r =>
@@ -88,10 +95,10 @@ execInterrupt ::
   Sem r (SignalInfo -> Sem r ())
 execInterrupt = do
   InterruptState quitSignal finishSignal _ orig _ <- atomicGet
-  whenM (tryPutMVar quitSignal ()) do
+  whenM (embed (tryPutMVar quitSignal ())) do
     traverse_ (uncurry processHandler) . Map.toList =<< atomicGets handlers
     checkListeners
-    takeMVar finishSignal
+    embed (takeMVar finishSignal)
   embed . orig <$ putErr "interrupt handlers finished"
 
 registerHandler ::
@@ -139,7 +146,7 @@ interpretInterruptState =
         putErr "manual interrupt"
         void execInterrupt
     Interrupted ->
-      liftT . fmap isJust . tryReadMVar =<< atomicGets quit
+      liftT . fmap isJust . embed . tryReadMVar =<< atomicGets quit
     KillOnQuit desc ma -> do
       maT <- runT ma
       ins <- getInspectorT
@@ -172,7 +179,7 @@ originalHandler (Catch thunk) =
 originalHandler (CatchInfo thunk) =
   thunk
 originalHandler _ =
-  const pass
+  const unit
 {-# inline originalHandler #-}
 
 installSignalHandler ::
@@ -193,9 +200,9 @@ interpretInterruptWith ::
   ((SignalInfo -> IO ()) -> Handler) ->
   InterpreterFor Interrupt r
 interpretInterruptWith consHandler sem = do
-  quitMVar <- newEmptyMVar
-  finishMVar <- newEmptyMVar
-  state <- newTVarIO (InterruptState quitMVar finishMVar Set.empty (const pass) Map.empty)
+  quitMVar <- embed newEmptyMVar
+  finishMVar <- embed newEmptyMVar
+  state <- embed (newTVarIO (InterruptState quitMVar finishMVar Set.empty (const unit) Map.empty))
   orig <- embed $ installSignalHandler state consHandler
   runAtomicStateTVar state do
     atomicModify' \ s -> s {original = originalHandler orig}

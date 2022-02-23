@@ -1,7 +1,9 @@
 {-# options_haddock prune #-}
+
 -- |Description: Queue Interpreters for 'TBMQueue'
 module Polysemy.Conc.Interpreter.Queue.TBM where
 
+import Control.Concurrent.STM (atomically)
 import Control.Concurrent.STM.TBMQueue (
   TBMQueue,
   closeTBMQueue,
@@ -14,7 +16,6 @@ import Control.Concurrent.STM.TBMQueue (
   tryWriteTBMQueue,
   writeTBMQueue,
   )
-import Polysemy.Resource (Resource, bracket)
 
 import qualified Polysemy.Conc.Effect.Queue as Queue
 import Polysemy.Conc.Effect.Queue (Queue)
@@ -33,26 +34,26 @@ interpretQueueTBMWith ::
 interpretQueueTBMWith queue =
   interpret \case
     Queue.Read ->
-      atomically (closedResult <$> readTBMQueue queue)
+      embed (atomically (closedResult <$> readTBMQueue queue))
     Queue.TryRead ->
-      atomically (closedNaResult <$> tryReadTBMQueue queue)
+      embed (atomically (closedNaResult <$> tryReadTBMQueue queue))
     Queue.ReadTimeout timeout ->
       withTimeout timeout (readTBMQueue queue)
     Queue.Peek ->
-      atomically (closedResult <$> peekTBMQueue queue)
+      embed (atomically (closedResult <$> peekTBMQueue queue))
     Queue.TryPeek ->
-      atomically (closedNaResult <$> tryPeekTBMQueue queue)
+      embed (atomically (closedNaResult <$> tryPeekTBMQueue queue))
     Queue.Write d ->
-      atomically (writeTBMQueue queue d)
+      embed (atomically (writeTBMQueue queue d))
     Queue.TryWrite d ->
-      atomically (closedBoolResult <$> tryWriteTBMQueue queue d)
+      embed (atomically (closedBoolResult <$> tryWriteTBMQueue queue d))
     Queue.WriteTimeout timeout d ->
       withTimeout timeout do
         ifM (isClosedTBMQueue queue) (pure Nothing) (Just <$> writeTBMQueue queue d)
     Queue.Closed ->
-      atomically (isClosedTBMQueue queue)
+      embed (atomically (isClosedTBMQueue queue))
     Queue.Close ->
-      atomically (closeTBMQueue queue)
+      embed (atomically (closeTBMQueue queue))
 {-# inline interpretQueueTBMWith #-}
 
 withTBMQueue ::
@@ -62,7 +63,7 @@ withTBMQueue ::
   (TBMQueue d -> Sem r a) ->
   Sem r a
 withTBMQueue maxQueued =
-  bracket (embed (newTBMQueueIO maxQueued)) (atomically . closeTBMQueue)
+  bracket (embed (newTBMQueueIO maxQueued)) (embed . atomically . closeTBMQueue)
 
 -- |Interpret 'Queue' with a 'TBMQueue'.
 interpretQueueTBM ::

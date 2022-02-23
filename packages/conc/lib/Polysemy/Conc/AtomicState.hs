@@ -1,7 +1,7 @@
 -- |Description: AtomicState Interpreters
 module Polysemy.Conc.AtomicState where
 
-import Polysemy.AtomicState (runAtomicStateTVar)
+import Control.Concurrent.STM (newTVarIO)
 
 -- |Convenience wrapper around 'runAtomicStateTVar' that creates a new 'TVar'.
 interpretAtomic ::
@@ -10,6 +10,6 @@ interpretAtomic ::
   a ->
   InterpreterFor (AtomicState a) r
 interpretAtomic initial sem = do
-  tv <- newTVarIO initial
+  tv <- embed (newTVarIO initial)
   runAtomicStateTVar tv sem
 {-# inline interpretAtomic #-}

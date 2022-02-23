@@ -1,14 +1,11 @@
 -- |Description: Pure Queue Interpreters
 module Polysemy.Conc.Interpreter.Queue.Pure where
 
-import Polysemy.AtomicState (atomicState')
-import Polysemy.State (State, evalState, get, gets, put)
-
 import Polysemy.Conc.AtomicState (interpretAtomic)
-import qualified Polysemy.Conc.Effect.Queue as Queue
-import Polysemy.Conc.Effect.Queue (Queue)
 import qualified Polysemy.Conc.Data.QueueResult as QueueResult
 import Polysemy.Conc.Data.QueueResult (QueueResult)
+import qualified Polysemy.Conc.Effect.Queue as Queue
+import Polysemy.Conc.Effect.Queue (Queue)
 
 -- |Reinterpret 'Queue' as 'AtomicState' with a list that cannot be written to.
 -- Useful for testing.
@@ -29,7 +26,7 @@ interpretQueueListReadOnlyAtomicWith =
     Queue.TryPeek ->
       peek
     Queue.Write _ ->
-      pass
+      unit
     Queue.TryWrite _ ->
       pure QueueResult.NotAvailable
     Queue.WriteTimeout _ _ ->
@@ -80,7 +77,7 @@ interpretQueueListReadOnlyStateWith =
     Queue.TryPeek ->
       peek
     Queue.Write _ ->
-      pass
+      unit
     Queue.TryWrite _ ->
       pure QueueResult.NotAvailable
     Queue.WriteTimeout _ _ ->

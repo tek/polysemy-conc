@@ -1,11 +1,9 @@
 {-# options_haddock prune #-}
+
 -- |Description: Events/Consume Interpreters, Internal
 module Polysemy.Conc.Interpreter.Events where
 
 import Control.Concurrent.Chan.Unagi.Bounded (InChan, OutChan, dupChan, newChan, readChan, tryWriteChan)
-import Polysemy (InterpretersFor)
-import Polysemy.Async (Async)
-import Polysemy.Resource (Resource)
 
 import Polysemy.Conc.Async (withAsync_)
 import qualified Polysemy.Conc.Effect.Events as Events

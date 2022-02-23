@@ -7,24 +7,22 @@ defaults:
 
 library:
   source-dirs: lib
-  generated-other-modules:
-    - Paths_polysemy_process
   dependencies:
-    - name: polysemy-conc
-      mixin:
-        - hiding (Prelude)
-        - (Polysemy.Conc.Prelude as Prelude)
-    - bytestring
+    - polysemy-conc
+    - incipit-core >= 0.1.0.1
     - path >= 0.7
     - path-io >= 1.6.2
     - polysemy >= 1.6
-    - polysemy-resume >= 0.2
+    - polysemy-resume >= 0.3
     - posix-pty >= 0.2
     - process
-    - relude >= 0.7
     - stm-chans >= 2
     - typed-process >= 0.2.6
     - unix
+  when:
+    condition: false
+    generated-other-modules:
+      - Paths_polysemy_process
 
 tests:
   polysemy-process-unit:
@@ -35,10 +33,8 @@ tests:
       - -rtsopts
       - -with-rtsopts=-N
     dependencies:
-      - name: polysemy-conc
-        mixin:
-          - hiding (Prelude)
-          - (Polysemy.Conc.Prelude as Prelude)
+      - incipit-core
+      - polysemy-conc
       - polysemy
       - polysemy-plugin
       - polysemy-process
@@ -46,3 +42,7 @@ tests:
       - polysemy-test
       - tasty
       - typed-process
+    when:
+      condition: false
+      generated-other-modules:
+        - Paths_polysemy_process

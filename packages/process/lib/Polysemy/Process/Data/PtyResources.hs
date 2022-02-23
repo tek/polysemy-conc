@@ -3,6 +3,7 @@
 -- |Description: PtyResources ADT, Internal
 module Polysemy.Process.Data.PtyResources where
 
+import System.IO (Handle)
 import System.Posix (Fd)
 import System.Posix.Pty (Pty)
 

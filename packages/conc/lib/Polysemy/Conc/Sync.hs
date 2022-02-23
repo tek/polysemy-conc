@@ -5,7 +5,6 @@ module Polysemy.Conc.Sync (
   module Polysemy.Conc.Effect.Sync
 ) where
 
-import Polysemy.Resource (Resource, finally)
 import qualified Polysemy.Time as Time
 import Polysemy.Time (Time, TimeUnit)
 

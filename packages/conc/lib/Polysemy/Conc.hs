@@ -181,10 +181,10 @@ import Polysemy.Conc.Interpreter.Scoped (
   interpretScoped,
   interpretScopedAs,
   interpretScopedH,
-  runScoped,
-  runScopedAs,
   interpretScopedResumable,
   interpretScopedResumableH,
+  runScoped,
+  runScopedAs,
   )
 import Polysemy.Conc.Interpreter.Stack (ConcStack, runConc)
 import Polysemy.Conc.Interpreter.Sync (interpretScopedSync, interpretScopedSyncAs, interpretSync, interpretSyncAs)
@@ -209,7 +209,7 @@ import Polysemy.Conc.Sync (lock, withSync)
 
 -- $mvar
 -- #mvar#
--- An 'MVar' is abstracted as 'Sync' since it can be used to synchronize threads.
+-- An 'Control.Concurrent.MVar' is abstracted as 'Sync' since it can be used to synchronize threads.
 
 -- $race
 -- #race#

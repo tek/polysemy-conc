@@ -3,11 +3,8 @@
 -- |Description: Monitor Interpreters, Internal
 module Polysemy.Conc.Interpreter.Monitor where
 
+import Control.Concurrent (MVar, newEmptyMVar, readMVar, tryTakeMVar)
 import qualified Control.Exception as Base
-import Polysemy (embedFinal, runTSimple)
-import Polysemy.Async (Async)
-import Polysemy.Error (errorToIOFinal, fromExceptionSem)
-import Polysemy.Resource (Resource)
 import qualified Polysemy.Time as Time
 import Polysemy.Time (Time)
 
@@ -38,7 +35,7 @@ interpretMonitorCancel ::
 interpretMonitorCancel (MonitorResource CancelResource {..}) =
   interpretH \case
     Monitor ma ->
-      leftM (Base.throw MonitorCancel) =<< Race.race (embedFinal @IO (readMVar signal)) (runTSimple ma)
+      either (const (Base.throw MonitorCancel)) pure =<< Race.race (embedFinal @IO (readMVar signal)) (runTSimple ma)
 
 monitorRestart ::
   ∀ t d r a .
@@ -46,14 +43,14 @@ monitorRestart ::
   MonitorCheck r ->
   (MonitorResource CancelResource -> Sem r a) ->
   Sem r a
-monitorRestart (MonitorCheck interval check) run = do
+monitorRestart (MonitorCheck interval check) use = do
   sig <- embedFinal @IO newEmptyMVar
   withAsync_ (Time.loop_ @t @d interval (check sig)) (spin sig)
   where
     spin sig = do
       let res = (MonitorResource (CancelResource sig))
       void (embedFinal @IO (tryTakeMVar sig))
-      leftM (spin sig) =<< errorToIOFinal @MonitorCancel (fromExceptionSem @MonitorCancel (raise (run res)))
+      either (const (spin sig)) pure =<< errorToIOFinal @MonitorCancel (fromExceptionSem @MonitorCancel (raise (use res)))
 
 -- |Interpret @'Polysemy.Conc.Scoped' 'Monitor'@ with the 'Polysemy.Conc.Restart' strategy.
 -- This takes a check action that may put an 'MVar' when the scoped region should be restarted.

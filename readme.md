@@ -1,8 +1,10 @@
 # About
 
-This library provides a few convenience [polysemy] effects for using STM queues, MVars, signal handling and racing.
+These Haskell libraries provide [Polysemy] effects for using STM queues, MVars, signal handling, racing, system
+processes and pseudo terminals.
 
-Please visit [hackage] for documentation.
+Please visit Hackage for documentation on [polysemy-conc] and [polysemy-process].
 
-[polysemy]: https://hackage.haskell.org/package/polysemy
-[hackage]: https://hackage.haskell.org/package/polysemy-conc
+[Polysemy]: https://hackage.haskell.org/package/polysemy
+[polysemy-conc]: https://hackage.haskell.org/package/polysemy-conc
+[polysemy-process]: https://hackage.haskell.org/package/polysemy-process

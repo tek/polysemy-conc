@@ -5,7 +5,7 @@ module Polysemy.Conc.Effect.Sync where
 import Polysemy.Time (TimeUnit)
 import Polysemy.Conc.Effect.Scoped (Scoped)
 
--- |Abstracts an 'MVar'.
+-- |Abstracts an 'Control.Concurrent.MVar'.
 --
 -- For documentation on the constructors, see the module "Polysemy.Conc.Effect.Sync".
 --

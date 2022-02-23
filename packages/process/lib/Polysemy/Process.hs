@@ -55,6 +55,8 @@ module Polysemy.Process (
   resolveExecutable,
 ) where
 
+import Prelude hiding (send)
+
 import Polysemy.Process.Effect.Process (Process (..), recv, recvError, send, withProcess)
 import Polysemy.Process.Effect.ProcessOutput (ProcessOutput)
 import Polysemy.Process.Effect.Pty (Pty, withPty)

@@ -1,8 +1,9 @@
 {-# options_haddock prune #-}
+
 -- |Description: Monitor Implementations, Internal
 module Polysemy.Conc.Monitor where
 
-import Data.Default (Default (def))
+import Control.Concurrent (tryPutMVar)
 import qualified Polysemy.Time as Time
 import Polysemy.Time (Minutes (Minutes), NanoSeconds, Seconds (Seconds), Time, TimeUnit, convert)
 import Torsor (Torsor, difference, minus)

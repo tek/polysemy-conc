@@ -62,7 +62,7 @@ timeoutU ::
   Sem r () ->
   Sem r ()
 timeoutU =
-  timeout_ pass
+  timeout_ unit
 {-# inline timeoutU #-}
 
 -- |Variant of 'Race.timeout' that returns 'Maybe'.

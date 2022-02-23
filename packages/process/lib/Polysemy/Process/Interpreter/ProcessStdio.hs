@@ -3,10 +3,8 @@
 -- |Description: Process Interpreters for stdio, Internal
 module Polysemy.Process.Interpreter.ProcessStdio where
 
-import Polysemy.Async (Async)
 import Polysemy.Conc.Effect.Race (Race)
 import Polysemy.Conc.Effect.Scoped (Scoped)
-import Polysemy.Resource (Resource)
 import Polysemy.Resume (type (!!))
 import System.Process.Typed (ProcessConfig)
 
@@ -28,7 +26,7 @@ interpretProcessByteStringNative ::
   Bool ->
   -- |Maximum number of chunks allowed to be queued for each of the three standard pipes.
   Int ->
-  -- |Basic config. The pipes will be changed to 'Handle' by the interpreter.
+  -- |Basic config. The pipes will be changed to 'System.IO.Handle' by the interpreter.
   ProcessConfig () () () ->
   InterpreterFor (Scoped () (Process ByteString ByteString ByteString) !! ProcessError) r
 interpretProcessByteStringNative discard qSize conf =
@@ -43,7 +41,7 @@ interpretProcessByteStringLinesNative ::
   Bool ->
   -- |Maximum number of chunks allowed to be queued for each of the three standard pipes.
   Int ->
-  -- |Basic config. The pipes will be changed to 'Handle' by the interpreter.
+  -- |Basic config. The pipes will be changed to 'System.IO.Handle' by the interpreter.
   ProcessConfig () () () ->
   InterpreterFor (Scoped () (Process ByteString ByteString ByteString) !! ProcessError) r
 interpretProcessByteStringLinesNative discard qSize conf =
@@ -58,7 +56,7 @@ interpretProcessTextNative ::
   Bool ->
   -- |Maximum number of chunks allowed to be queued for each of the three standard pipes.
   Int ->
-  -- |Basic config. The pipes will be changed to 'Handle' by the interpreter.
+  -- |Basic config. The pipes will be changed to 'System.IO.Handle' by the interpreter.
   ProcessConfig () () () ->
   InterpreterFor (Scoped () (Process ByteString Text Text) !! ProcessError) r
 interpretProcessTextNative discard qSize conf =
@@ -73,7 +71,7 @@ interpretProcessTextLinesNative ::
   Bool ->
   -- |Maximum number of chunks allowed to be queued for each of the three standard pipes.
   Int ->
-  -- |Basic config. The pipes will be changed to 'Handle' by the interpreter.
+  -- |Basic config. The pipes will be changed to 'System.IO.Handle' by the interpreter.
   ProcessConfig () () () ->
   InterpreterFor (Scoped () (Process ByteString Text Text) !! ProcessError) r
 interpretProcessTextLinesNative discard qSize conf =

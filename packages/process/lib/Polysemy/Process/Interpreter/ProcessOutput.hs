@@ -4,7 +4,6 @@
 module Polysemy.Process.Interpreter.ProcessOutput where
 
 import qualified Data.ByteString as ByteString
-import Data.Foldable (foldr')
 
 import Polysemy.Process.Effect.ProcessOutput (ProcessOutput (Chunk))
 

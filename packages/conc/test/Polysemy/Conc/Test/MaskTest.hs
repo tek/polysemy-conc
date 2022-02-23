@@ -5,10 +5,10 @@ module Polysemy.Conc.Test.MaskTest where
 import qualified Control.Concurrent.Async as Base
 import Control.Concurrent.Async (asyncThreadId)
 import Control.Exception (throwTo)
-import Polysemy (embedFinal)
-import Polysemy.Async (Async, async, asyncToIOFinal, await)
-import Polysemy.Error (fromExceptionSem, runError)
+import GHC.Stack (withFrozenCallStack)
 import Polysemy.Test (Hedgehog, UnitTest, assertEq, evalLeft, runTestAuto)
+import qualified Polysemy.Time as Time
+import Polysemy.Time (MilliSeconds (MilliSeconds), interpretTimeGhc)
 import System.IO.Error (userError)
 
 import Polysemy.Conc.AtomicState (interpretAtomic)
@@ -17,8 +17,6 @@ import qualified Polysemy.Conc.Effect.Sync as Sync
 import Polysemy.Conc.Interpreter.Mask (interpretUninterruptibleMaskFinal)
 import Polysemy.Conc.Interpreter.Race (interpretRace)
 import Polysemy.Conc.Interpreter.Sync (interpretSync)
-import qualified Polysemy.Time as Time
-import Polysemy.Time (interpretTimeGhc, MilliSeconds (MilliSeconds))
 
 kill ::
   Member (Final IO) r =>

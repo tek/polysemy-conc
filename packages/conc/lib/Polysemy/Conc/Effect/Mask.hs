@@ -1,8 +1,7 @@
 {-# options_haddock prune #-}
+
 -- |Description: Mask Effect, Internal
 module Polysemy.Conc.Effect.Mask where
-
-import Polysemy (makeSem_)
 
 import Polysemy.Conc.Effect.Scoped (Scoped, scoped)
 

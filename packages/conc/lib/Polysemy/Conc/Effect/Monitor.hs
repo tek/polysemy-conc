@@ -1,8 +1,9 @@
 {-# options_haddock prune #-}
+
 -- |Description: Monitor Effect, Internal
 module Polysemy.Conc.Effect.Monitor where
 
-import Polysemy (makeSem_)
+import Control.Concurrent (MVar)
 import Polysemy.Time (NanoSeconds)
 
 import Polysemy.Conc.Effect.Scoped (Scoped, scoped)

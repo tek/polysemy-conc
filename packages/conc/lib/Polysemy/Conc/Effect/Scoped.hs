@@ -3,9 +3,6 @@
 -- |Description: Scoped Effect, Internal
 module Polysemy.Conc.Effect.Scoped where
 
-import Polysemy (transform)
-import Polysemy.Internal (send)
-
 -- |@Scoped@ transforms a program so that @effect@ is associated with a @resource@ within that program.
 -- This requires the interpreter for @effect@ to be parameterized by @resource@ and constructed for every program using
 -- @Scoped@ separately.

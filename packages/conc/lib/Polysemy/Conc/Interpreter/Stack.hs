@@ -1,9 +1,7 @@
 {-# options_haddock prune #-}
+
 -- |Description: Convenience Interpreters for all Conc Effects, Internal
 module Polysemy.Conc.Interpreter.Stack where
-
-import Polysemy.Async (Async, asyncToIOFinal)
-import Polysemy.Resource (Resource, resourceToIOFinal)
 
 import Polysemy.Conc.Effect.Mask (Mask, UninterruptipleMask)
 import Polysemy.Conc.Effect.Race (Race)

@@ -7,26 +7,22 @@ defaults:
 
 library:
   source-dirs: lib
-  other-modules:
-    - Prelude
-  generated-other-modules:
-    - Paths_polysemy_conc
   dependencies:
     - async
     - containers
-    - data-default >= 0.2
+    - incipit-core >= 0.1.0.1
     - polysemy >= 1.6
-    - polysemy-resume >= 0.2
-    - polysemy-time >= 0.1.4
-    - relude >= 0.7
+    - polysemy-resume >= 0.3
+    - polysemy-time >= 0.3
     - stm
     - stm-chans >= 2
-    - template-haskell
-    - text
-    - time
     - torsor >= 0.1
     - unagi-chan >= 0.4
     - unix
+  when:
+    condition: false
+    generated-other-modules:
+      - Paths_polysemy_conc
 
 tests:
   polysemy-conc-unit:
@@ -37,11 +33,9 @@ tests:
       - -rtsopts
       - -with-rtsopts=-N
     dependencies:
-      - name: polysemy-conc
-        mixin:
-          - hiding (Prelude)
-          - (Polysemy.Conc.Prelude as Prelude)
+      - polysemy-conc
       - async
+      - incipit-core
       - polysemy
       - polysemy-plugin
       - polysemy-resume
@@ -52,3 +46,7 @@ tests:
       - time
       - unagi-chan
       - unix
+    when:
+      condition: false
+      generated-other-modules:
+        - Paths_polysemy_conc

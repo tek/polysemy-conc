@@ -4,6 +4,7 @@
 module Polysemy.Process.Effect.Pty where
 
 import Polysemy.Conc.Effect.Scoped (Scoped, scoped)
+import System.IO (Handle)
 
 -- |Horizontal size of a pseudo terminal in characters.
 newtype Rows =

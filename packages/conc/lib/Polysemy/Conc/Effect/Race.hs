@@ -1,8 +1,7 @@
 {-# options_haddock prune #-}
+
 -- |Description: Race effect
 module Polysemy.Conc.Effect.Race where
-
-import Polysemy (makeSem_)
 
 import Polysemy.Time (TimeUnit)
 

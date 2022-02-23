@@ -2,8 +2,8 @@
 module Polysemy.Conc.Interpreter.Critical where
 
 import qualified Control.Exception as Exception
-import Polysemy (runT)
 import Polysemy.Final (getInitialStateS, interpretFinal, runS)
+import Prelude hiding (Catch)
 
 import Polysemy.Conc.Effect.Critical (Critical (..))
 
@@ -16,9 +16,9 @@ interpretCritical =
     Catch ma -> do
       s <- getInitialStateS
       o <- runS ma
-      pure (run o s)
+      pure (go o s)
       where
-        run ma' s =
+        go ma' s =
           Exception.catch (fmap Right <$> ma') \ se -> pure (Left se <$ s)
 {-# inline interpretCritical #-}
 
