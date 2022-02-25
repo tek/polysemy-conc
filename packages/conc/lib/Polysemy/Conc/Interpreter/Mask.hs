@@ -10,8 +10,8 @@ import Polysemy.Conc.Effect.Mask (
   Mask,
   MaskResource (MaskResource),
   RestoreMask (Restore),
-  UninterruptipleMask,
-  UninterruptipleMaskResource (UninterruptipleMaskResource),
+  UninterruptibleMask,
+  UninterruptibleMaskResource (UninterruptibleMaskResource),
   )
 import Polysemy.Conc.Interpreter.Scoped (runScoped)
 
@@ -28,11 +28,11 @@ mask f =
 
 uninterruptibleMask ::
   Member (Final IO) r =>
-  (UninterruptipleMaskResource Restoration -> Sem r a) ->
+  (UninterruptibleMaskResource Restoration -> Sem r a) ->
   Sem r a
 uninterruptibleMask f =
   withWeavingToFinal @IO \ s lower _ ->
-    Base.uninterruptibleMask \ restore -> (lower (f (UninterruptipleMaskResource (Restoration restore)) <$ s))
+    Base.uninterruptibleMask \ restore -> (lower (f (UninterruptibleMaskResource (Restoration restore)) <$ s))
 
 interpretRestoreMask ::
   ∀ r .
@@ -55,9 +55,9 @@ interpretMaskFinal ::
 interpretMaskFinal =
   runScoped mask \ (MaskResource r) -> interpretRestoreMask r
 
--- |Interpret 'UninterruptipleMask' in 'IO'.
+-- |Interpret 'UninterruptibleMask' in 'IO'.
 interpretUninterruptibleMaskFinal ::
   Member (Final IO) r =>
-  InterpreterFor (UninterruptipleMask Restoration) r
+  InterpreterFor (UninterruptibleMask Restoration) r
 interpretUninterruptibleMaskFinal =
-  runScoped uninterruptibleMask \ (UninterruptipleMaskResource r) -> interpretRestoreMask r
+  runScoped uninterruptibleMask \ (UninterruptibleMaskResource r) -> interpretRestoreMask r

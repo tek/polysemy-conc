@@ -85,7 +85,7 @@ module Polysemy.Conc (
 
   -- * Masking
   Mask,
-  UninterruptipleMask,
+  UninterruptibleMask,
   mask,
   uninterruptibleMask,
   restore,
@@ -147,7 +147,7 @@ import Polysemy.Conc.Data.QueueResult (QueueResult)
 import Polysemy.Conc.Effect.Critical (Critical)
 import Polysemy.Conc.Effect.Events (EventResource, Events, consume, publish, subscribe)
 import Polysemy.Conc.Effect.Interrupt (Interrupt)
-import Polysemy.Conc.Effect.Mask (Mask, UninterruptipleMask, mask, restore, uninterruptibleMask)
+import Polysemy.Conc.Effect.Mask (Mask, UninterruptibleMask, mask, restore, uninterruptibleMask)
 import Polysemy.Conc.Effect.Monitor (
   Monitor,
   MonitorResource (MonitorResource),
@@ -229,7 +229,7 @@ import Polysemy.Conc.Sync (lock, withSync)
 
 -- $mask
 -- #mask#
--- The two effects 'Mask' and 'UninterruptipleMask' use the 'Polysemy.Conc.Effect.Scoped' pattern, which allow an effect
+-- The two effects 'Mask' and 'UninterruptibleMask' use the 'Polysemy.Conc.Effect.Scoped' pattern, which allow an effect
 -- with resources to be constrained to a region of code.
 -- The actual effect is 'Polysemy.Conc.Effect.Mask.RestoreMask', with `mask` and 'uninterruptibleMask' only specializing
 -- 'Polysemy.Conc.Effect.scoped' to the appropriate resource type.

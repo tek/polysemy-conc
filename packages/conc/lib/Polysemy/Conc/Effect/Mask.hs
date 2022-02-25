@@ -22,16 +22,16 @@ restore ::
 newtype MaskResource resource =
   MaskResource { unMaskResource :: resource }
 
-newtype UninterruptipleMaskResource resource =
-  UninterruptipleMaskResource { unUninterruptipleMaskResource :: resource }
+newtype UninterruptibleMaskResource resource =
+  UninterruptibleMaskResource { unUninterruptibleMaskResource :: resource }
 
 -- |The scoped masking effect.
 type Mask resource =
   Scoped (MaskResource resource) RestoreMask
 
 -- |The scoped uninterruptible masking effect.
-type UninterruptipleMask resource =
-  Scoped (UninterruptipleMaskResource resource) RestoreMask
+type UninterruptibleMask resource =
+  Scoped (UninterruptibleMaskResource resource) RestoreMask
 
 -- |Mark a region as masked.
 -- Uses the 'Scoped' pattern.
@@ -46,7 +46,7 @@ mask =
 -- Uses the 'Scoped' pattern.
 uninterruptibleMask ::
   ∀ resource r .
-  Member (UninterruptipleMask resource) r =>
+  Member (UninterruptibleMask resource) r =>
   InterpreterFor RestoreMask r
 uninterruptibleMask =
-  scoped @(UninterruptipleMaskResource resource)
+  scoped @(UninterruptibleMaskResource resource)
