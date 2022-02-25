@@ -3,7 +3,6 @@
 -- |Description: Monitor Interpreters, Internal
 module Polysemy.Conc.Interpreter.Monitor where
 
-import Control.Concurrent (MVar, newEmptyMVar, readMVar, tryTakeMVar)
 import qualified Control.Exception as Base
 import qualified Polysemy.Time as Time
 import Polysemy.Time (Time)

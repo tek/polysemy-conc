@@ -4,8 +4,9 @@
   inputs.hix.url = github:tek/hix;
   inputs.incipit-core.url = github:tek/incipit-core;
   inputs.polysemy-resume.url = github:tek/polysemy-resume;
+  inputs.polysemy-time.url = github:tek/polysemy-time;
 
-  outputs = { hix, incipit-core, polysemy-resume, ... }:
+  outputs = { hix, incipit-core, polysemy-resume, polysemy-time, ... }:
   let
 
     ghc921 = { hackage, jailbreak, notest, ... }: {
@@ -18,8 +19,6 @@
       polysemy = hackage "1.6.0.0" "15k51ysrfcbkww1562g8zvrlzymlk2rxhcsz9ipsb0q6h571qgvf";
       polysemy-plugin = hackage "0.4.1.0" "117g92l1ppsqd3w0rqjrxfk0lx6yndd54rpymgxljilnv43zg29s";
       polysemy-resume = source.package polysemy-resume "resume";
-      polysemy-test = hackage "0.4.0.1" "038n31xxid72vrckr3afgkvbsvqhf9q4b912agg24ppjzckq2s15";
-      polysemy-time = hackage "0.3.0.0" "0mgiq70b35q7ymfwvb8fv291l3f8v7k0z7w6909h922d6jgl4jgp";
     };
 
   in hix.lib.flake {
@@ -30,7 +29,7 @@
     };
     main = "polysemy-process";
     overrides = { inherit all ghc921; };
-    deps = [incipit-core];
+    deps = [incipit-core polysemy-time];
     hackage.versionFile = "ops/hpack/shared/meta.yaml";
     ghci.preludePackage = "incipit-core";
   };

@@ -3,7 +3,7 @@
 -- |Description: Critical effect
 module Polysemy.Conc.Effect.Critical where
 
-import Prelude hiding (catch, run)
+import Prelude hiding (catch)
 
 -- |An effect that catches exceptions.
 --

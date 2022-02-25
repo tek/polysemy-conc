@@ -3,7 +3,6 @@
 -- |Description: Interrupt interpreters
 module Polysemy.Conc.Interpreter.Interrupt where
 
-import Control.Concurrent (MVar, newEmptyMVar, readMVar, takeMVar, tryPutMVar, tryReadMVar)
 import qualified Control.Concurrent.Async as A
 import Control.Concurrent.Async (AsyncCancelled)
 import Control.Concurrent.STM (TVar, newTVarIO)
@@ -12,7 +11,6 @@ import qualified Data.Set as Set
 import qualified Data.Text.IO as Text
 import Polysemy.Internal.Tactics (liftT)
 import Polysemy.Time (Seconds (Seconds))
-import Prelude hiding (Catch)
 import System.IO (stderr)
 import System.Posix.Signals (
   Handler (Catch, CatchInfo, CatchInfoOnce, CatchOnce),

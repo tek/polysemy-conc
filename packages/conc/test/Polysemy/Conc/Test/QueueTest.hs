@@ -2,8 +2,7 @@ module Polysemy.Conc.Test.QueueTest where
 
 import Polysemy.Test (UnitTest, assertEq, assertJust, runTestAuto)
 import Polysemy.Time (MilliSeconds (MilliSeconds), interpretTimeGhc)
-import Polysemy.Time.Ghc (GhcTime)
-import Prelude hiding (run)
+import Polysemy.Time.Interpreter.Ghc (GhcTime)
 
 import qualified Polysemy.Conc.Data.QueueResult as QueueResult
 import Polysemy.Conc.Data.QueueResult (QueueResult)

@@ -1,7 +1,6 @@
 module Polysemy.Conc.Test.SyncTest where
 
 import Polysemy.Test (UnitTest, assertEq, runTestAuto)
-import Prelude hiding (run)
 
 import Polysemy.Conc.Effect.Race (Race)
 import qualified Polysemy.Conc.Effect.Sync as Sync

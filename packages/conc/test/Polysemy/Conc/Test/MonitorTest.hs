@@ -2,7 +2,6 @@
 
 module Polysemy.Conc.Test.MonitorTest where
 
-import Control.Concurrent (MVar, putMVar)
 import Data.Time (UTCTime)
 import Polysemy.Test (UnitTest, assertEq, assertJust, runTestAuto)
 import qualified Polysemy.Time as Time

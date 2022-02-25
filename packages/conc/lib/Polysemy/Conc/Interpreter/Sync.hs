@@ -1,19 +1,6 @@
 -- |Description: Sync Interpreters
 module Polysemy.Conc.Interpreter.Sync where
 
-import Control.Concurrent (
-  MVar,
-  isEmptyMVar,
-  newEmptyMVar,
-  newMVar,
-  putMVar,
-  readMVar,
-  takeMVar,
-  tryPutMVar,
-  tryReadMVar,
-  tryTakeMVar,
-  )
-
 import Polysemy.Conc.Effect.Race (Race)
 import Polysemy.Conc.Effect.Scoped (Scoped)
 import qualified Polysemy.Conc.Effect.Sync as Sync

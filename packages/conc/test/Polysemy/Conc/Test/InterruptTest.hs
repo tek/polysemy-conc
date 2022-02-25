@@ -1,6 +1,5 @@
 module Polysemy.Conc.Test.InterruptTest where
 
-import Control.Concurrent (MVar, newEmptyMVar, putMVar, takeMVar)
 import Control.Concurrent.STM (TVar, atomically, modifyTVar, newTVarIO, readTVarIO)
 import Polysemy.Test (UnitTest, assertEq, runTestAuto)
 import System.Posix (Handler (CatchInfoOnce), SignalInfo, installHandler, keyboardSignal, raiseSignal)

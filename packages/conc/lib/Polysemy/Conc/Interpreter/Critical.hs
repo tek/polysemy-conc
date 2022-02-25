@@ -3,7 +3,6 @@ module Polysemy.Conc.Interpreter.Critical where
 
 import qualified Control.Exception as Exception
 import Polysemy.Final (getInitialStateS, interpretFinal, runS)
-import Prelude hiding (Catch)
 
 import Polysemy.Conc.Effect.Critical (Critical (..))
 
