@@ -6,6 +6,8 @@ module Polysemy.Process.Effect.Process where
 import Polysemy.Conc.Effect.Scoped (Scoped, scoped)
 import Polysemy.Resume (interpretResumable, restop, type (!!))
 import Prelude hiding (send)
+import Polysemy.Input (Input(Input))
+import Polysemy.Output (Output(Output))
 
 -- |Abstraction of a process with stdin/stdout/stderr.
 --

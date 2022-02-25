@@ -2,8 +2,10 @@
   description = "Polysemy Effects for Concurrency";
 
   inputs.hix.url = github:tek/hix;
+  inputs.incipit-core.url = github:tek/incipit-core;
+  inputs.polysemy-resume.url = github:tek/polysemy-resume;
 
-  outputs = { hix, ... }:
+  outputs = { hix, incipit-core, polysemy-resume, ... }:
   let
 
     ghc921 = { hackage, jailbreak, notest, ... }: {
@@ -12,24 +14,23 @@
       type-errors = notest;
     };
 
-    all = { hackage, unbreak, ... }: {
+    all = { hackage, unbreak, source, ... }: {
       polysemy = hackage "1.6.0.0" "15k51ysrfcbkww1562g8zvrlzymlk2rxhcsz9ipsb0q6h571qgvf";
       polysemy-plugin = hackage "0.4.1.0" "117g92l1ppsqd3w0rqjrxfk0lx6yndd54rpymgxljilnv43zg29s";
-      polysemy-resume = hackage "0.3.0.0" "0kv8x41cxrdwxh7xw8vrywl7sgjkigl84xl7gv038gijh7pvd358";
+      polysemy-resume = source.package polysemy-resume "resume";
       polysemy-test = hackage "0.4.0.1" "038n31xxid72vrckr3afgkvbsvqhf9q4b912agg24ppjzckq2s15";
       polysemy-time = hackage "0.3.0.0" "0mgiq70b35q7ymfwvb8fv291l3f8v7k0z7w6909h922d6jgl4jgp";
-      incipit-base = hackage "0.1.0.1" "0bcygln28zhrp0jqsm1z8p45k7faas5yamwddz2narsgpkzirx4y";
-      incipit-core = hackage "0.1.0.1" "1bdkw0q4db3k73i3jjhil96p3rz3gw7mq9jcpcphamld72f4f5ni";
     };
 
   in hix.lib.flake {
     base = ./.;
-    overrides = { inherit all ghc921; };
     packages = {
       polysemy-conc = ./packages/conc;
       polysemy-process = ./packages/process;
     };
     main = "polysemy-process";
+    overrides = { inherit all ghc921; };
+    deps = [incipit-core];
     hackage.versionFile = "ops/hpack/shared/meta.yaml";
     ghci.preludePackage = "incipit-core";
   };
