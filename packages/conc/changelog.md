@@ -1,5 +1,9 @@
 # Unreleased
 
+* Add `SyncRead`, a read-only variant of `Sync`.
+
+# 0.6.0.0
+
 * Add `Resumable` support for `Scoped`.
 * Add `Scoped` interpreters that allow the allocator to interpret additional effects used by the handler.
 

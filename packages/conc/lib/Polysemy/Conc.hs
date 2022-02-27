@@ -24,6 +24,7 @@ module Polysemy.Conc (
   -- * MVars
   -- $mvar
   Sync,
+  SyncRead,
   ScopedSync,
 
   -- ** Interpreters
@@ -33,6 +34,7 @@ module Polysemy.Conc (
   lock,
   interpretScopedSync,
   interpretScopedSyncAs,
+  syncRead,
 
   -- * Racing
   -- $race
@@ -194,6 +196,8 @@ import Polysemy.Conc.Queue.Result (resultToMaybe)
 import Polysemy.Conc.Race (race_, timeoutAs, timeoutAs_, timeoutMaybe, timeoutU, timeout_)
 import Polysemy.Conc.Retry (retrying, retryingWithError)
 import Polysemy.Conc.Sync (lock, withSync)
+import Polysemy.Conc.Effect.SyncRead (SyncRead)
+import Polysemy.Conc.Interpreter.SyncRead (syncRead)
 
 -- $intro
 -- This library provides an assortment of tools for concurrency-related tasks:

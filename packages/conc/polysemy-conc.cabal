@@ -40,6 +40,7 @@ library
       Polysemy.Conc.Effect.Race
       Polysemy.Conc.Effect.Scoped
       Polysemy.Conc.Effect.Sync
+      Polysemy.Conc.Effect.SyncRead
       Polysemy.Conc.Events
       Polysemy.Conc.Interpreter.Critical
       Polysemy.Conc.Interpreter.Events
@@ -53,6 +54,7 @@ library
       Polysemy.Conc.Interpreter.Scoped
       Polysemy.Conc.Interpreter.Stack
       Polysemy.Conc.Interpreter.Sync
+      Polysemy.Conc.Interpreter.SyncRead
       Polysemy.Conc.Monitor
       Polysemy.Conc.Queue
       Polysemy.Conc.Queue.Result
@@ -60,6 +62,7 @@ library
       Polysemy.Conc.Race
       Polysemy.Conc.Retry
       Polysemy.Conc.Sync
+      Polysemy.Conc.SyncRead
   hs-source-dirs:
       lib
   default-extensions:
