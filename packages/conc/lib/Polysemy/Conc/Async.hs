@@ -86,7 +86,7 @@ scheduleAsync ::
 scheduleAsync mb f =
   withSync @() @res do
     h <- async do
-      Sync.readBlock @()
+      Sync.block @()
       raise mb
     f h (Sync.putBlock ())
 
@@ -100,6 +100,6 @@ scheduleAsyncIO ::
 scheduleAsyncIO mb f =
   interpretSync @() do
     h <- async do
-      Sync.readBlock @()
+      Sync.block @()
       raise mb
     f h (Sync.putBlock ())

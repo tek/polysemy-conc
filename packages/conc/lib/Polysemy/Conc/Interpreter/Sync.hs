@@ -28,12 +28,6 @@ interpretSyncWith var =
       rightToMaybe <$> Race.timeoutAs () interval (embed (takeMVar var))
     Sync.TakeTry ->
       embed (tryTakeMVar var)
-    Sync.ReadBlock ->
-      embed (readMVar var)
-    Sync.ReadWait interval ->
-      rightToMaybe <$> Race.timeoutAs () interval (embed (readMVar var))
-    Sync.ReadTry ->
-      embed (tryReadMVar var)
     Sync.PutBlock d ->
       embed (putMVar var d)
     Sync.PutWait interval d ->

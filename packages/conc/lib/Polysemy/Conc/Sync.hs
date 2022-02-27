@@ -2,7 +2,7 @@
 -- |Description: Sync Combinators
 module Polysemy.Conc.Sync (
   module Polysemy.Conc.Sync,
-  module Polysemy.Conc.Effect.Sync
+  module Polysemy.Conc.Effect.Sync,
 ) where
 
 import qualified Polysemy.Time as Time
@@ -19,9 +19,6 @@ import Polysemy.Conc.Effect.Sync (
   putBlock,
   putTry,
   putWait,
-  readBlock,
-  readTry,
-  readWait,
   takeBlock,
   takeTry,
   takeWait,
@@ -58,6 +55,7 @@ whileEmptyInterval interval action =
       whenM (not <$> Sync.empty @a) (Time.sleep @t @d interval *> spin)
 
 -- |Run an action with a locally scoped 'Sync' variable.
+-- This avoids a dependency on @'Embed' 'IO'@ in application logic while still allowing the variable to be scoped.
 withSync ::
   ∀ d res r .
   Member (ScopedSync res d) r =>

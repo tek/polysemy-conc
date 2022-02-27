@@ -1,4 +1,5 @@
 {-# options_haddock prune #-}
+
 -- |Description: Sync effect
 module Polysemy.Conc.Effect.Sync where
 
@@ -31,12 +32,6 @@ data Sync d :: Effect where
   TakeWait :: TimeUnit u => u -> Sync d m (Maybe d)
   -- |Take the variable, returning 'Nothing' immmediately if no value was available.
   TakeTry :: Sync d m (Maybe d)
-  -- |Read the variable, waiting until a value is available.
-  ReadBlock :: Sync d m d
-  -- |Read the variable, waiting until a value is available or the timeout has expired.
-  ReadWait :: TimeUnit u => u -> Sync d m (Maybe d)
-  -- |Read the variable, returning 'Nothing' immmediately if no value was available.
-  ReadTry :: Sync d m (Maybe d)
   -- |Write the variable, waiting until it is writable.
   PutBlock :: d -> Sync d m ()
   -- |Write the variable, waiting until it is writable or the timeout has expired.
