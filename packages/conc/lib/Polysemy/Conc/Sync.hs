@@ -1,4 +1,5 @@
 {-# options_haddock prune #-}
+
 -- |Description: Sync Combinators
 module Polysemy.Conc.Sync (
   module Polysemy.Conc.Sync,
@@ -77,3 +78,11 @@ lock ::
   Sem r a
 lock l ma =
   finally (takeBlock @l *> ma) (putTry l)
+
+-- |Remove the content of the 'Sync' variable if it is present.
+clear ::
+  ∀ a r .
+  Member (Sync a) r =>
+  Sem r ()
+clear =
+  void (takeTry @a)
