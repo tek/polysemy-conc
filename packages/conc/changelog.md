@@ -1,6 +1,10 @@
 # Unreleased
 
+# 0.6.1.0
+
 * Add `SyncRead`, a read-only variant of `Sync`.
+* Change `withAsync` to use `finally` instead of `bracket`, since the latter causes `AsyncCancelled` to be masked,
+  preventing the action from being cancelled unless it runs an interruptible action.
 
 # 0.6.0.0
 

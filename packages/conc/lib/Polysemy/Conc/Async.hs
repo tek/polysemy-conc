@@ -20,8 +20,9 @@ withAsyncBlock ::
   Sem r b ->
   (Base.Async (Maybe b) -> Sem r a) ->
   Sem r a
-withAsyncBlock mb =
-  bracket (async mb) cancel
+withAsyncBlock mb use = do
+  handle <- async mb
+  finally (use handle) (cancel handle)
 
 -- |Run the first action asynchronously while the second action executes, then cancel the first action.
 -- Passes the handle into the action to allow it to await its result.
@@ -34,8 +35,9 @@ withAsyncWait ::
   Sem r b ->
   (Base.Async (Maybe b) -> Sem r a) ->
   Sem r a
-withAsyncWait interval mb =
-  bracket (async mb) (Race.timeoutU interval . cancel)
+withAsyncWait interval mb use = do
+  handle <- async mb
+  finally (use handle) (Race.timeoutU interval (cancel handle))
 
 -- |Run the first action asynchronously while the second action executes, then cancel the first action.
 -- Passes the handle into the action to allow it to await its result.
