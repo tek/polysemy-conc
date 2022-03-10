@@ -108,7 +108,7 @@ library
   ghc-options: -Wall -Wredundant-constraints -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Widentities
   build-depends:
       base ==4.*
-    , incipit-core >=0.1.0.1
+    , incipit-core >=0.2
     , path >=0.7
     , path-io >=1.6.2
     , polysemy >=1.6
