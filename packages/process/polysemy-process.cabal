@@ -200,6 +200,7 @@ test-suite polysemy-process-unit
     , polysemy-process
     , polysemy-resume
     , polysemy-test
+    , polysemy-time
     , tasty
     , typed-process
   mixins:
