@@ -1,4 +1,4 @@
-# Unreleased
+# 0.8.0.0
 * Add `ProcessOptions`, replacing the primitive parameters of `Process` interpreters.
 * Add an option for `Process` that determines whether to kill the process after exiting the scope.
 
