@@ -35,11 +35,13 @@ library
       Polysemy.Process.Data.PtyResources
       Polysemy.Process.Data.SystemProcessError
       Polysemy.Process.Effect.Process
+      Polysemy.Process.Effect.ProcessInput
       Polysemy.Process.Effect.ProcessOutput
       Polysemy.Process.Effect.Pty
       Polysemy.Process.Effect.SystemProcess
       Polysemy.Process.Executable
       Polysemy.Process.Interpreter.Process
+      Polysemy.Process.Interpreter.ProcessInput
       Polysemy.Process.Interpreter.ProcessOutput
       Polysemy.Process.Interpreter.ProcessStdio
       Polysemy.Process.Interpreter.Pty

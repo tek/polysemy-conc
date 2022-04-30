@@ -1,3 +1,8 @@
+#Unreleased
+* Remove stderr from the `Process` abstraction so that stdout and stderr must be unified after parsing (potentially as
+  `Either` to emulate the previous behaviour).
+* Make default `ProcessOutput` interpreters discard all stderr output.
+
 # 0.8.0.0
 * Add `ProcessOptions`, replacing the primitive parameters of `Process` interpreters.
 * Add an option for `Process` that determines whether to kill the process after exiting the scope.

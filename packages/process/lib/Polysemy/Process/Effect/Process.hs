@@ -33,22 +33,15 @@ import Polysemy.Output (Output(Output))
 -- @
 data Process i o e :: Effect where
   Recv :: Process i o e m o
-  RecvError :: Process i o e m e
   Send :: i -> Process i o e m ()
 
 makeSem_ ''Process
 
--- |Obtain a chunk of stdout.
+-- |Obtain a chunk of output.
 recv ::
   ∀ i o e r .
   Member (Process i o e) r =>
   Sem r o
-
--- |Obtain a chunk of stderr.
-recvError ::
-  ∀ i o e r .
-  Member (Process i o e) r =>
-  Sem r e
 
 -- |Send data to stdin.
 send ::

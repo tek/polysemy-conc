@@ -7,7 +7,6 @@ module Polysemy.Process (
   -- ** Process
   Process (..),
   recv,
-  recvError,
   send,
   withProcess,
   ProcessOptions (ProcessOptions),
@@ -15,6 +14,7 @@ module Polysemy.Process (
 
   -- ** ProcessOutput
   ProcessOutput,
+  OutputPipe (Stdout, Stderr),
 
   -- ** SystemProcess
   SystemProcess,
@@ -61,8 +61,8 @@ import Prelude hiding (send)
 
 import Polysemy.Process.Data.ProcessKill (ProcessKill (..))
 import Polysemy.Process.Data.ProcessOptions (ProcessOptions (ProcessOptions))
-import Polysemy.Process.Effect.Process (Process (..), recv, recvError, send, withProcess)
-import Polysemy.Process.Effect.ProcessOutput (ProcessOutput)
+import Polysemy.Process.Effect.Process (Process (..), recv, send, withProcess)
+import Polysemy.Process.Effect.ProcessOutput (OutputPipe (Stderr, Stdout), ProcessOutput)
 import Polysemy.Process.Effect.Pty (Pty, withPty)
 import Polysemy.Process.Effect.SystemProcess (
   SystemProcess,
