@@ -29,6 +29,8 @@ library
   exposed-modules:
       Polysemy.Process
       Polysemy.Process.Data.ProcessError
+      Polysemy.Process.Data.ProcessKill
+      Polysemy.Process.Data.ProcessOptions
       Polysemy.Process.Data.PtyError
       Polysemy.Process.Data.PtyResources
       Polysemy.Process.Data.SystemProcessError
@@ -114,6 +116,7 @@ library
     , polysemy >=1.6
     , polysemy-conc
     , polysemy-resume >=0.3
+    , polysemy-time >=0.4
     , posix-pty >=0.2
     , process
     , stm-chans >=2
@@ -202,6 +205,7 @@ test-suite polysemy-process-unit
     , polysemy-test
     , polysemy-time
     , tasty
+    , tasty-expected-failure
     , typed-process
   mixins:
       base hiding (Prelude)

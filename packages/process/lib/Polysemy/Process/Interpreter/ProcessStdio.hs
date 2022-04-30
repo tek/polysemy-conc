@@ -9,6 +9,7 @@ import Polysemy.Resume (type (!!))
 import System.Process.Typed (ProcessConfig)
 
 import Polysemy.Process.Data.ProcessError (ProcessError)
+import Polysemy.Process.Data.ProcessOptions (ProcessOptions)
 import Polysemy.Process.Data.SystemProcessError (SystemProcessError)
 import Polysemy.Process.Effect.Process (Process)
 import Polysemy.Process.Interpreter.Process (
@@ -23,58 +24,46 @@ import Polysemy.Process.Interpreter.SystemProcess (PipesProcess, interpretSystem
 interpretProcessByteStringNative ::
   Members [Resource, Race, Async, Embed IO] r =>
   -- |Whether to discard output chunks if the queue is full.
-  Bool ->
-  -- |Maximum number of chunks allowed to be queued for each of the three standard pipes.
-  Int ->
-  -- |Basic config. The pipes will be changed to 'System.IO.Handle' by the interpreter.
+  ProcessOptions ->
   ProcessConfig () () () ->
   InterpreterFor (Scoped () (Process ByteString ByteString ByteString) !! ProcessError) r
-interpretProcessByteStringNative discard qSize conf =
+interpretProcessByteStringNative options conf =
   interpretSystemProcessNative conf .
-  interpretProcessByteString @PipesProcess @SystemProcessError discard qSize .
+  interpretProcessByteString @PipesProcess @SystemProcessError options .
   raiseUnder
 
 -- |Interpret 'Process' as a native 'Polysemy.Process.SystemProcess', producing lines of 'ByteString'.
 interpretProcessByteStringLinesNative ::
   Members [Resource, Race, Async, Embed IO] r =>
-  -- |Whether to discard output chunks if the queue is full.
-  Bool ->
-  -- |Maximum number of chunks allowed to be queued for each of the three standard pipes.
-  Int ->
+  ProcessOptions ->
   -- |Basic config. The pipes will be changed to 'System.IO.Handle' by the interpreter.
   ProcessConfig () () () ->
   InterpreterFor (Scoped () (Process ByteString ByteString ByteString) !! ProcessError) r
-interpretProcessByteStringLinesNative discard qSize conf =
+interpretProcessByteStringLinesNative options conf =
   interpretSystemProcessNative conf .
-  interpretProcessByteStringLines @PipesProcess @SystemProcessError discard qSize .
+  interpretProcessByteStringLines @PipesProcess @SystemProcessError options .
   raiseUnder
 
 -- |Interpret 'Process' as a native 'Polysemy.Process.SystemProcess', producing unaccumulated chunks of 'Text'.
 interpretProcessTextNative ::
   Members [Resource, Race, Async, Embed IO] r =>
-  -- |Whether to discard output chunks if the queue is full.
-  Bool ->
-  -- |Maximum number of chunks allowed to be queued for each of the three standard pipes.
-  Int ->
+  ProcessOptions ->
   -- |Basic config. The pipes will be changed to 'System.IO.Handle' by the interpreter.
   ProcessConfig () () () ->
   InterpreterFor (Scoped () (Process ByteString Text Text) !! ProcessError) r
-interpretProcessTextNative discard qSize conf =
+interpretProcessTextNative options conf =
   interpretSystemProcessNative conf .
-  interpretProcessText @PipesProcess @SystemProcessError discard qSize .
+  interpretProcessText @PipesProcess @SystemProcessError options .
   raiseUnder
 
 -- |Interpret 'Process' as a native 'Polysemy.Process.SystemProcess', producing lines of 'Text'.
 interpretProcessTextLinesNative ::
   Members [Resource, Race, Async, Embed IO] r =>
-  -- |Whether to discard output chunks if the queue is full.
-  Bool ->
-  -- |Maximum number of chunks allowed to be queued for each of the three standard pipes.
-  Int ->
+  ProcessOptions ->
   -- |Basic config. The pipes will be changed to 'System.IO.Handle' by the interpreter.
   ProcessConfig () () () ->
   InterpreterFor (Scoped () (Process ByteString Text Text) !! ProcessError) r
-interpretProcessTextLinesNative discard qSize conf =
+interpretProcessTextLinesNative options conf =
   interpretSystemProcessNative conf .
-  interpretProcessTextLines @PipesProcess @SystemProcessError discard qSize .
+  interpretProcessTextLines @PipesProcess @SystemProcessError options .
   raiseUnder

@@ -64,6 +64,7 @@ module Polysemy.Conc (
 
   -- * Event Channels
   Events,
+  Consume,
   publish,
   consume,
   subscribe,
@@ -147,7 +148,7 @@ import Polysemy.Conc.Async (
 import Polysemy.Conc.AtomicState (interpretAtomic)
 import Polysemy.Conc.Data.QueueResult (QueueResult)
 import Polysemy.Conc.Effect.Critical (Critical)
-import Polysemy.Conc.Effect.Events (EventResource, Events, consume, publish, subscribe)
+import Polysemy.Conc.Effect.Events (Consume, EventResource, Events, consume, publish, subscribe)
 import Polysemy.Conc.Effect.Interrupt (Interrupt)
 import Polysemy.Conc.Effect.Mask (Mask, UninterruptibleMask, mask, restore, uninterruptibleMask)
 import Polysemy.Conc.Effect.Monitor (
@@ -164,6 +165,7 @@ import Polysemy.Conc.Effect.Queue (Queue)
 import Polysemy.Conc.Effect.Race (Race, race, timeout)
 import Polysemy.Conc.Effect.Scoped (Scoped, scoped)
 import Polysemy.Conc.Effect.Sync (ScopedSync, Sync)
+import Polysemy.Conc.Effect.SyncRead (SyncRead)
 import Polysemy.Conc.Events (subscribeLoop, subscribeWhile)
 import Polysemy.Conc.Interpreter.Critical (interpretCritical, interpretCriticalNull)
 import Polysemy.Conc.Interpreter.Events (ChanConsumer, ChanEvents, EventChan, EventConsumer, interpretEventsChan)
@@ -190,14 +192,13 @@ import Polysemy.Conc.Interpreter.Scoped (
   )
 import Polysemy.Conc.Interpreter.Stack (ConcStack, runConc)
 import Polysemy.Conc.Interpreter.Sync (interpretScopedSync, interpretScopedSyncAs, interpretSync, interpretSyncAs)
+import Polysemy.Conc.Interpreter.SyncRead (syncRead)
 import Polysemy.Conc.Monitor (ClockSkewConfig (ClockSkewConfig), clockSkewConfig, monitorClockSkew)
 import Polysemy.Conc.Queue (loop, loopOr)
 import Polysemy.Conc.Queue.Result (resultToMaybe)
 import Polysemy.Conc.Race (race_, timeoutAs, timeoutAs_, timeoutMaybe, timeoutU, timeout_)
 import Polysemy.Conc.Retry (retrying, retryingWithError)
 import Polysemy.Conc.Sync (lock, withSync)
-import Polysemy.Conc.Effect.SyncRead (SyncRead)
-import Polysemy.Conc.Interpreter.SyncRead (syncRead)
 
 -- $intro
 -- This library provides an assortment of tools for concurrency-related tasks:

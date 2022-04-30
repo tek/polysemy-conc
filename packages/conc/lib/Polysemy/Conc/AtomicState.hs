@@ -3,7 +3,7 @@ module Polysemy.Conc.AtomicState where
 
 import Control.Concurrent.STM (newTVarIO)
 
--- |Convenience wrapper around 'runAtomicStateTVar' that creates a new 'TVar'.
+-- |Convenience wrapper around 'runAtomicStateTVar' that creates a new 'Control.Concurrent.STM.TVar'.
 interpretAtomic ::
   ∀ a r .
   Member (Embed IO) r =>

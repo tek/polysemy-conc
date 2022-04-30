@@ -4,6 +4,7 @@
 module Polysemy.Process.Interpreter.Process where
 
 import Control.Concurrent.STM.TBMQueue (TBMQueue)
+import qualified Polysemy.Conc as Conc
 import Polysemy.Conc.Async (withAsync_)
 import qualified Polysemy.Conc.Data.QueueResult as QueueResult
 import qualified Polysemy.Conc.Effect.Queue as Queue
@@ -12,10 +13,12 @@ import Polysemy.Conc.Effect.Race (Race)
 import Polysemy.Conc.Effect.Scoped (Scoped)
 import Polysemy.Conc.Interpreter.Queue.TBM (interpretQueueTBMWith, withTBMQueue)
 import Polysemy.Conc.Interpreter.Scoped (interpretScopedResumableWith_)
-import Polysemy.Resume (Stop, resumeOr, stop, type (!!))
+import Polysemy.Resume (Stop, resumeOr, stop, type (!!), resuming)
 import Prelude hiding (fromException)
 
 import Polysemy.Process.Data.ProcessError (ProcessError (Terminated))
+import Polysemy.Process.Data.ProcessKill (ProcessKill (KillAfter, KillImmediately, KillNever))
+import Polysemy.Process.Data.ProcessOptions (ProcessOptions (ProcessOptions))
 import qualified Polysemy.Process.Effect.Process as Process
 import Polysemy.Process.Effect.Process (Process)
 import qualified Polysemy.Process.Effect.ProcessOutput as ProcessOutput
@@ -135,6 +138,30 @@ inputQueue writeChunk =
         _ ->
           unit
 
+handleKill ::
+  Members [SystemProcess, Race] r =>
+  ProcessKill ->
+  Sem r ()
+handleKill = \case
+  KillAfter interval ->
+    Conc.timeout_ SystemProcess.term interval (void SystemProcess.wait)
+  KillImmediately ->
+    SystemProcess.term
+  KillNever ->
+    void (dbgs =<< SystemProcess.wait)
+
+withKill ::
+  ∀ err r a .
+  Members [SystemProcess !! err, Resource, Race] r =>
+  ProcessKill ->
+  Sem r a ->
+  Sem r a
+withKill kill ma =
+  ma <* resuming @err @SystemProcess (\ _ -> dbg "resume") do
+    void SystemProcess.pid
+    dbg "killing"
+    handleKill kill
+
 type ScopeEffects o e err =
   [Queue (In ByteString), Queue (Out o), Queue (Err e), SystemProcess !! err]
 
@@ -142,15 +169,15 @@ scope ::
   ∀ o e resource err r .
   Member (Scoped resource (SystemProcess !! err)) r =>
   Members [ProcessOutput e, ProcessOutput o, Resource, Race, Async, Embed IO] r =>
-  Bool ->
-  Int ->
+  ProcessOptions ->
   InterpretersFor (ScopeEffects o e err) r
-scope discard qSize =
+scope (ProcessOptions discard qSize kill) =
   withSystemProcess @resource .
   withQueues qSize .
   withAsync_ (outputQueue @Err @e @err discard SystemProcess.readStderr) .
   withAsync_ (outputQueue @Out @o @err discard SystemProcess.readStdout) .
-  withAsync_ (inputQueue @err SystemProcess.writeStdin)
+  withAsync_ (inputQueue @err SystemProcess.writeStdin) .
+  withKill @err kill
 
 -- |Interpret 'Process' with a system process resource whose file descriptors are connected to three 'TBMQueue's,
 -- deferring decoding of stdout and stderr to the interpreters of two 'ProcessOutput' effects.
@@ -158,27 +185,21 @@ interpretProcess ::
   ∀ resource err o e r .
   Member (Scoped resource (SystemProcess !! err)) r =>
   Members [ProcessOutput o, ProcessOutput e, Resource, Race, Async, Embed IO] r =>
-  -- |Whether to discard output chunks if the queue is full or block.
-  Bool ->
-  -- |Maximum number of chunks allowed to be queued for each of the three standard pipes.
-  Int ->
+  ProcessOptions ->
   InterpreterFor (Scoped () (Process ByteString o e) !! ProcessError) r
-interpretProcess discard qSize =
-  interpretScopedResumableWith_ @(ScopeEffects o e err) (scope @o @e @resource discard qSize) handleProcessWithQueues
+interpretProcess options =
+  interpretScopedResumableWith_ @(ScopeEffects o e err) (scope @o @e @resource options) handleProcessWithQueues
 
 -- |Interpret 'Process' with a system process resource whose file descriptors are connected to three 'TBMQueue's,
 -- producing 'ByteString's.
 interpretProcessByteString ::
   ∀ resource err r .
   Members [Scoped resource (SystemProcess !! err), Resource, Race, Async, Embed IO] r =>
-  -- |Whether to discard output chunks if the queue is full.
-  Bool ->
-  -- |Maximum number of chunks allowed to be queued for each of the three standard pipes.
-  Int ->
+  ProcessOptions ->
   InterpreterFor (Scoped () (Process ByteString ByteString ByteString) !! ProcessError) r
-interpretProcessByteString discard qSize =
+interpretProcessByteString options =
   interpretProcessOutputId .
-  interpretProcess @resource @err discard qSize .
+  interpretProcess @resource @err options .
   raiseUnder
 
 -- |Interpret 'Process' with a system process resource whose file descriptors are connected to three 'TBMQueue's,
@@ -186,14 +207,11 @@ interpretProcessByteString discard qSize =
 interpretProcessByteStringLines ::
   ∀ resource err r .
   Members [Scoped resource (SystemProcess !! err), Resource, Race, Async, Embed IO] r =>
-  -- |Whether to discard output chunks if the queue is full.
-  Bool ->
-  -- |Maximum number of chunks allowed to be queued for each of the three standard pipes.
-  Int ->
+  ProcessOptions ->
   InterpreterFor (Scoped () (Process ByteString ByteString ByteString) !! ProcessError) r
-interpretProcessByteStringLines discard qSize =
+interpretProcessByteStringLines options =
   interpretProcessOutputLines .
-  interpretProcess @resource @err discard qSize .
+  interpretProcess @resource @err options .
   raiseUnder
 
 -- |Interpret 'Process' with a system process resource whose file descriptors are connected to three 'TBMQueue's,
@@ -201,14 +219,11 @@ interpretProcessByteStringLines discard qSize =
 interpretProcessText ::
   ∀ resource err r .
   Members [Scoped resource (SystemProcess !! err), Resource, Race, Async, Embed IO] r =>
-  -- |Whether to discard output chunks if the queue is full.
-  Bool ->
-  -- |Maximum number of chunks allowed to be queued for each of the three standard pipes.
-  Int ->
+  ProcessOptions ->
   InterpreterFor (Scoped () (Process ByteString Text Text) !! ProcessError) r
-interpretProcessText discard qSize =
+interpretProcessText options =
   interpretProcessOutputText .
-  interpretProcess @resource @err discard qSize .
+  interpretProcess @resource @err options .
   raiseUnder
 
 -- |Interpret 'Process' with a system process resource whose file descriptors are connected to three 'TBMQueue's,
@@ -216,12 +231,9 @@ interpretProcessText discard qSize =
 interpretProcessTextLines ::
   ∀ resource err r .
   Members [Scoped resource (SystemProcess !! err), Resource, Race, Async, Embed IO] r =>
-  -- |Whether to discard output chunks if the queue is full.
-  Bool ->
-  -- |Maximum number of chunks allowed to be queued for each of the three standard pipes.
-  Int ->
+  ProcessOptions ->
   InterpreterFor (Scoped () (Process ByteString Text Text) !! ProcessError) r
-interpretProcessTextLines discard qSize =
+interpretProcessTextLines options =
   interpretProcessOutputTextLines .
-  interpretProcess @resource @err discard qSize .
+  interpretProcess @resource @err options .
   raiseUnder

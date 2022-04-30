@@ -1,3 +1,7 @@
+# Unreleased
+* Add `ProcessOptions`, replacing the primitive parameters of `Process` interpreters.
+* Add an option for `Process` that determines whether to kill the process after exiting the scope.
+
 # 0.6.0.0
 
 * Allow `Process` to emit custom chunks constructed by an interpreter of `ProcessOutput` instead of `ByteString`s

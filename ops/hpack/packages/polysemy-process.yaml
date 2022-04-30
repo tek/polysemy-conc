@@ -14,6 +14,7 @@ library:
     - path-io >= 1.6.2
     - polysemy >= 1.6
     - polysemy-resume >= 0.3
+    - polysemy-time >= 0.4
     - posix-pty >= 0.2
     - process
     - stm-chans >= 2
@@ -42,6 +43,7 @@ tests:
       - polysemy-test
       - polysemy-time
       - tasty
+      - tasty-expected-failure
       - typed-process
     when:
       condition: false
