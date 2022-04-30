@@ -13,7 +13,7 @@ import Polysemy.Conc.Effect.Race (Race)
 import Polysemy.Conc.Effect.Scoped (Scoped)
 import Polysemy.Conc.Interpreter.Queue.TBM (interpretQueueTBMWith, withTBMQueue)
 import Polysemy.Conc.Interpreter.Scoped (interpretScopedResumableWith_)
-import Polysemy.Resume (Stop, resumeOr, stop, type (!!), resuming)
+import Polysemy.Resume (Stop, resumeOr, resume_, stop, type (!!))
 import Prelude hiding (fromException)
 
 import Polysemy.Process.Data.ProcessError (ProcessError (Terminated))
@@ -148,7 +148,7 @@ handleKill = \case
   KillImmediately ->
     SystemProcess.term
   KillNever ->
-    void (dbgs =<< SystemProcess.wait)
+    void SystemProcess.wait
 
 withKill ::
   ∀ err r a .
@@ -157,9 +157,8 @@ withKill ::
   Sem r a ->
   Sem r a
 withKill kill ma =
-  ma <* resuming @err @SystemProcess (\ _ -> dbg "resume") do
+  finally ma $ resume_ @err @SystemProcess do
     void SystemProcess.pid
-    dbg "killing"
     handleKill kill
 
 type ScopeEffects o e err =
