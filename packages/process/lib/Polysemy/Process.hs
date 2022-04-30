@@ -7,7 +7,6 @@ module Polysemy.Process (
   -- ** Process
   Process (..),
   recv,
-  recvError,
   send,
   withProcess,
   ProcessOptions (ProcessOptions),
@@ -15,6 +14,10 @@ module Polysemy.Process (
 
   -- ** ProcessOutput
   ProcessOutput,
+  OutputPipe (Stdout, Stderr),
+
+  -- ** ProcessInput
+  ProcessInput,
 
   -- ** SystemProcess
   SystemProcess,
@@ -37,10 +40,15 @@ module Polysemy.Process (
   interpretProcessTextLines,
 
   -- ** ProcessOutput
+  interpretProcessOutputIgnore,
   interpretProcessOutputId,
   interpretProcessOutputLines,
   interpretProcessOutputText,
   interpretProcessOutputTextLines,
+
+  -- ** ProcessInput
+  interpretProcessInputId,
+  interpretProcessInputText,
 
   -- ** SystemProcess
   interpretSystemProcessWithProcess,
@@ -61,13 +69,11 @@ import Prelude hiding (send)
 
 import Polysemy.Process.Data.ProcessKill (ProcessKill (..))
 import Polysemy.Process.Data.ProcessOptions (ProcessOptions (ProcessOptions))
-import Polysemy.Process.Effect.Process (Process (..), recv, recvError, send, withProcess)
-import Polysemy.Process.Effect.ProcessOutput (ProcessOutput)
+import Polysemy.Process.Effect.Process (Process (..), recv, send, withProcess)
+import Polysemy.Process.Effect.ProcessInput (ProcessInput)
+import Polysemy.Process.Effect.ProcessOutput (OutputPipe (Stderr, Stdout), ProcessOutput)
 import Polysemy.Process.Effect.Pty (Pty, withPty)
-import Polysemy.Process.Effect.SystemProcess (
-  SystemProcess,
-  withSystemProcess,
-  )
+import Polysemy.Process.Effect.SystemProcess (SystemProcess, withSystemProcess)
 import Polysemy.Process.Executable (resolveExecutable)
 import Polysemy.Process.Interpreter.Process (
   interpretProcess,
@@ -76,8 +82,10 @@ import Polysemy.Process.Interpreter.Process (
   interpretProcessText,
   interpretProcessTextLines,
   )
+import Polysemy.Process.Interpreter.ProcessInput (interpretProcessInputId, interpretProcessInputText)
 import Polysemy.Process.Interpreter.ProcessOutput (
   interpretProcessOutputId,
+  interpretProcessOutputIgnore,
   interpretProcessOutputLines,
   interpretProcessOutputText,
   interpretProcessOutputTextLines,

@@ -29,18 +29,18 @@ messageLines :: [Text]
 messageLines =
   replicate 4 "line"
 
-message :: ByteString
+message :: Text
 message =
-  encodeUtf8 (unlines messageLines)
+  unlines messageLines
 
 test_process :: UnitTest
 test_process =
   runTestAuto $ interpretRace $ asyncToIOFinal $ interpretProcessByteStringNative def config do
     response <- resumeHoistError @ProcessError @(Scoped _ _) show do
       withProcess do
-        Process.send message
+        Process.send (encodeUtf8 message)
         Race.timeout_ (throw "timed out") (Seconds 5) Process.recv
-    message === response
+    message === decodeUtf8 response
 
 test_processLines :: UnitTest
 test_processLines =

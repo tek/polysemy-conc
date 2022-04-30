@@ -21,48 +21,52 @@ import Polysemy.Process.Interpreter.Process (
 import Polysemy.Process.Interpreter.SystemProcess (PipesProcess, interpretSystemProcessNative)
 
 -- |Interpret 'Process' as a native 'Polysemy.Process.SystemProcess', producing unaccumulated chunks of 'ByteString'.
+-- Silently discards stderr.
 interpretProcessByteStringNative ::
   Members [Resource, Race, Async, Embed IO] r =>
-  -- |Whether to discard output chunks if the queue is full.
   ProcessOptions ->
+  -- |Basic config. The pipes will be changed to 'System.IO.Handle' by the interpreter.
   ProcessConfig () () () ->
-  InterpreterFor (Scoped () (Process ByteString ByteString ByteString) !! ProcessError) r
+  InterpreterFor (Scoped () (Process ByteString ByteString) !! ProcessError) r
 interpretProcessByteStringNative options conf =
   interpretSystemProcessNative conf .
   interpretProcessByteString @PipesProcess @SystemProcessError options .
   raiseUnder
 
 -- |Interpret 'Process' as a native 'Polysemy.Process.SystemProcess', producing lines of 'ByteString'.
+-- Silently discards stderr.
 interpretProcessByteStringLinesNative ::
   Members [Resource, Race, Async, Embed IO] r =>
   ProcessOptions ->
   -- |Basic config. The pipes will be changed to 'System.IO.Handle' by the interpreter.
   ProcessConfig () () () ->
-  InterpreterFor (Scoped () (Process ByteString ByteString ByteString) !! ProcessError) r
+  InterpreterFor (Scoped () (Process ByteString ByteString) !! ProcessError) r
 interpretProcessByteStringLinesNative options conf =
   interpretSystemProcessNative conf .
   interpretProcessByteStringLines @PipesProcess @SystemProcessError options .
   raiseUnder
 
 -- |Interpret 'Process' as a native 'Polysemy.Process.SystemProcess', producing unaccumulated chunks of 'Text'.
+-- Silently discards stderr.
 interpretProcessTextNative ::
   Members [Resource, Race, Async, Embed IO] r =>
   ProcessOptions ->
   -- |Basic config. The pipes will be changed to 'System.IO.Handle' by the interpreter.
   ProcessConfig () () () ->
-  InterpreterFor (Scoped () (Process ByteString Text Text) !! ProcessError) r
+  InterpreterFor (Scoped () (Process Text Text) !! ProcessError) r
 interpretProcessTextNative options conf =
   interpretSystemProcessNative conf .
   interpretProcessText @PipesProcess @SystemProcessError options .
   raiseUnder
 
 -- |Interpret 'Process' as a native 'Polysemy.Process.SystemProcess', producing lines of 'Text'.
+-- Silently discards stderr.
 interpretProcessTextLinesNative ::
   Members [Resource, Race, Async, Embed IO] r =>
   ProcessOptions ->
   -- |Basic config. The pipes will be changed to 'System.IO.Handle' by the interpreter.
   ProcessConfig () () () ->
-  InterpreterFor (Scoped () (Process ByteString Text Text) !! ProcessError) r
+  InterpreterFor (Scoped () (Process Text Text) !! ProcessError) r
 interpretProcessTextLinesNative options conf =
   interpretSystemProcessNative conf .
   interpretProcessTextLines @PipesProcess @SystemProcessError options .

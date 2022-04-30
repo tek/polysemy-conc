@@ -4,12 +4,12 @@
 module Polysemy.Process.Effect.Process where
 
 import Polysemy.Conc.Effect.Scoped (Scoped, scoped)
+import Polysemy.Input (Input (Input))
+import Polysemy.Output (Output (Output))
 import Polysemy.Resume (interpretResumable, restop, type (!!))
 import Prelude hiding (send)
-import Polysemy.Input (Input(Input))
-import Polysemy.Output (Output(Output))
 
--- |Abstraction of a process with stdin/stdout/stderr.
+-- |Abstraction of a process with input and output.
 --
 -- This effect is intended to be used in a scoped manner:
 --
@@ -19,7 +19,7 @@ import Polysemy.Output (Output(Output))
 -- import Polysemy.Process
 -- import qualified System.Process.Typed as System
 --
--- prog :: Member (Scoped resource (Process Text Text e !! err)) r => Sem r Text
+-- prog :: Member (Scoped resource (Process Text Text !! err)) r => Sem r Text
 -- prog =
 --  resumeAs "failed" do
 --    withProcess do
@@ -31,50 +31,43 @@ import Polysemy.Output (Output(Output))
 --   out <- runConc $ interpretProcessNative (System.proc "cat" []) prog
 --   putStrLn out
 -- @
-data Process i o e :: Effect where
-  Recv :: Process i o e m o
-  RecvError :: Process i o e m e
-  Send :: i -> Process i o e m ()
+data Process i o :: Effect where
+  Recv :: Process i o m o
+  Send :: i -> Process i o m ()
 
 makeSem_ ''Process
 
--- |Obtain a chunk of stdout.
+-- |Obtain a chunk of output.
 recv ::
-  ∀ i o e r .
-  Member (Process i o e) r =>
+  ∀ i o r .
+  Member (Process i o) r =>
   Sem r o
-
--- |Obtain a chunk of stderr.
-recvError ::
-  ∀ i o e r .
-  Member (Process i o e) r =>
-  Sem r e
 
 -- |Send data to stdin.
 send ::
-  ∀ i o e r .
-  Member (Process i o e) r =>
+  ∀ i o r .
+  Member (Process i o) r =>
   i ->
   Sem r ()
 
 -- |Create a scoped resource for 'Process'.
 withProcess ::
-  ∀ resource i o e r .
-  Member (Scoped resource (Process i o e)) r =>
-  InterpreterFor (Process i o e) r
+  ∀ resource i o r .
+  Member (Scoped resource (Process i o)) r =>
+  InterpreterFor (Process i o) r
 withProcess =
   scoped @resource
 
 -- |Convert 'Output' and 'Input' to 'Process'.
 runProcessIO ::
-  ∀ i o e err r .
-  Member (Process i o e !! err) r =>
+  ∀ i o err r .
+  Member (Process i o !! err) r =>
   InterpretersFor [Output i !! err, Input o !! err] r
 runProcessIO =
   interpretResumable \case
     Input ->
-      restop @err @(Process i o e) (recv @i @o @e)
+      restop @err @(Process i o) (recv @i @o)
   .
   interpretResumable \case
     Output o ->
-      restop @err @(Process i o e) (send @i @o @e o)
+      restop @err @(Process i o) (send @i @o o)

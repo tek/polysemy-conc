@@ -21,12 +21,16 @@ import Polysemy.Process.Data.ProcessKill (ProcessKill (KillAfter, KillImmediatel
 import Polysemy.Process.Data.ProcessOptions (ProcessOptions (ProcessOptions))
 import qualified Polysemy.Process.Effect.Process as Process
 import Polysemy.Process.Effect.Process (Process)
+import qualified Polysemy.Process.Effect.ProcessInput as ProcessInput
+import Polysemy.Process.Effect.ProcessInput (ProcessInput)
 import qualified Polysemy.Process.Effect.ProcessOutput as ProcessOutput
-import Polysemy.Process.Effect.ProcessOutput (ProcessOutput)
+import Polysemy.Process.Effect.ProcessOutput (OutputPipe (Stderr, Stdout), ProcessOutput)
 import qualified Polysemy.Process.Effect.SystemProcess as SystemProcess
 import Polysemy.Process.Effect.SystemProcess (SystemProcess, withSystemProcess)
+import Polysemy.Process.Interpreter.ProcessInput (interpretProcessInputId, interpretProcessInputText)
 import Polysemy.Process.Interpreter.ProcessOutput (
   interpretProcessOutputId,
+  interpretProcessOutputIgnore,
   interpretProcessOutputLines,
   interpretProcessOutputText,
   interpretProcessOutputTextLines,
@@ -44,26 +48,24 @@ newtype Err a =
   Err { unErr :: a }
   deriving stock (Eq, Show)
 
-data ProcessQueues o e =
+data ProcessQueues i o =
   ProcessQueues {
-    pqIn :: TBMQueue (In ByteString),
-    pqOut :: TBMQueue (Out o),
-    pqErr :: TBMQueue (Err e)
+    pqIn :: TBMQueue (In i),
+    pqOut :: TBMQueue (Out o)
   }
 
 interpretQueues ::
   Members [Resource, Race, Embed IO] r =>
-  ProcessQueues o e ->
-  InterpretersFor [Queue (In ByteString), Queue (Out o), Queue (Err e)] r
-interpretQueues (ProcessQueues inQ outQ errQ) =
-  interpretQueueTBMWith errQ .
+  ProcessQueues i o ->
+  InterpretersFor [Queue (In i), Queue (Out o)] r
+interpretQueues (ProcessQueues inQ outQ) =
   interpretQueueTBMWith outQ .
   interpretQueueTBMWith inQ
 
 handleProcessWithQueues ::
-  ∀ o e m r a .
-  Members [Queue (In ByteString), Queue (Out o), Queue (Err e), Stop ProcessError] r =>
-  Process ByteString o e m a ->
+  ∀ i o m r a .
+  Members [Queue (In i), Queue (Out o), Stop ProcessError] r =>
+  Process i o m a ->
   Sem r a
 handleProcessWithQueues = \case
   Process.Recv ->
@@ -74,41 +76,32 @@ handleProcessWithQueues = \case
         stop (Terminated "impossible: empty")
       QueueResult.Success (Out msg) ->
         pure msg
-  Process.RecvError ->
-    Queue.read >>= \case
-      QueueResult.Closed ->
-        stop (Terminated "closed")
-      QueueResult.NotAvailable ->
-        stop (Terminated "impossible: empty")
-      QueueResult.Success (Err msg) ->
-        pure msg
   Process.Send msg -> do
-    whenM (Queue.closed @(In ByteString)) (stop (Terminated "closed"))
+    whenM (Queue.closed @(In i)) (stop (Terminated "closed"))
     Queue.write (In msg)
 
 withSTMResources ::
-  ∀ o e r a .
+  ∀ i o r a .
   Members [Resource, Embed IO] r =>
   Int ->
-  (ProcessQueues o e -> Sem r a) ->
+  (ProcessQueues i o -> Sem r a) ->
   Sem r a
 withSTMResources qSize action = do
   withTBMQueue qSize \ inQ ->
     withTBMQueue qSize \ outQ ->
-      withTBMQueue qSize \ errQ ->
-        action (ProcessQueues inQ outQ errQ)
+      action (ProcessQueues inQ outQ)
 
 withQueues ::
   Members [Race, Resource, Embed IO] r =>
   Int ->
-  InterpretersFor [Queue (In ByteString), Queue (Out o), Queue (Err e)] r
+  InterpretersFor [Queue (In i), Queue (Out o)] r
 withQueues qSize action =
   withSTMResources qSize \ qs -> interpretQueues qs action
 
 outputQueue ::
-  ∀ pipe chunk err r .
+  ∀ pipe p chunk err r .
   Coercible (pipe chunk) chunk =>
-  Members [SystemProcess !! err, ProcessOutput chunk, Queue (pipe chunk), Embed IO] r =>
+  Members [SystemProcess !! err, ProcessOutput p chunk, Queue (pipe chunk), Embed IO] r =>
   Bool ->
   Sem (SystemProcess : r) ByteString ->
   Sem r ()
@@ -118,23 +111,24 @@ outputQueue discardWhenFull readChunk = do
     spin buffer =
       resumeOr @err readChunk (write buffer) (const (Queue.close @(pipe chunk)))
     write buffer msg = do
-      (chunks, newBuffer) <- ProcessOutput.chunk buffer msg
+      (chunks, newBuffer) <- ProcessOutput.chunk @p buffer msg
       for_ chunks \ (coerce @chunk @(pipe chunk) -> c) ->
         if discardWhenFull then void (Queue.tryWrite c) else Queue.write c
       spin newBuffer
 
 inputQueue ::
-  ∀ err r .
-  Members [SystemProcess !! err, Queue (In ByteString), Embed IO] r =>
+  ∀ i err r .
+  Members [SystemProcess !! err, ProcessInput i, Queue (In i), Embed IO] r =>
   (ByteString -> Sem (SystemProcess : r) ()) ->
   Sem r ()
 inputQueue writeChunk =
   spin
   where
     spin =
-      Queue.read >>= \case
-        QueueResult.Success (In msg) ->
-          resumeOr @err (writeChunk msg) (const spin) (const (Queue.close @(In ByteString)))
+      Queue.read @(In i) >>= \case
+        QueueResult.Success (In msg) -> do
+          bytes <- ProcessInput.encode msg
+          resumeOr @err (writeChunk bytes) (const spin) (const (Queue.close @(In i)))
         _ ->
           unit
 
@@ -161,78 +155,90 @@ withKill kill ma =
     void SystemProcess.pid
     handleKill kill
 
-type ScopeEffects o e err =
-  [Queue (In ByteString), Queue (Out o), Queue (Err e), SystemProcess !! err]
+type ScopeEffects i o err =
+  [Queue (In i), Queue (Out o), SystemProcess !! err]
 
 scope ::
-  ∀ o e resource err r .
+  ∀ i o resource err r .
   Member (Scoped resource (SystemProcess !! err)) r =>
-  Members [ProcessOutput e, ProcessOutput o, Resource, Race, Async, Embed IO] r =>
+  Members [ProcessInput i, ProcessOutput 'Stdout o, ProcessOutput 'Stderr o, Resource, Race, Async, Embed IO] r =>
   ProcessOptions ->
-  InterpretersFor (ScopeEffects o e err) r
+  InterpretersFor (ScopeEffects i o err) r
 scope (ProcessOptions discard qSize kill) =
   withSystemProcess @resource .
   withQueues qSize .
-  withAsync_ (outputQueue @Err @e @err discard SystemProcess.readStderr) .
-  withAsync_ (outputQueue @Out @o @err discard SystemProcess.readStdout) .
-  withAsync_ (inputQueue @err SystemProcess.writeStdin) .
+  withAsync_ (outputQueue @Out @'Stderr @o @err discard SystemProcess.readStderr) .
+  withAsync_ (outputQueue @Out @'Stdout @o @err discard SystemProcess.readStdout) .
+  withAsync_ (inputQueue @i @err SystemProcess.writeStdin) .
   withKill @err kill
 
 -- |Interpret 'Process' with a system process resource whose file descriptors are connected to three 'TBMQueue's,
 -- deferring decoding of stdout and stderr to the interpreters of two 'ProcessOutput' effects.
 interpretProcess ::
-  ∀ resource err o e r .
+  ∀ resource err i o r .
   Member (Scoped resource (SystemProcess !! err)) r =>
-  Members [ProcessOutput o, ProcessOutput e, Resource, Race, Async, Embed IO] r =>
+  Members [ProcessOutput 'Stdout o, ProcessOutput 'Stderr o, ProcessInput i, Resource, Race, Async, Embed IO] r =>
   ProcessOptions ->
-  InterpreterFor (Scoped () (Process ByteString o e) !! ProcessError) r
+  InterpreterFor (Scoped () (Process i o) !! ProcessError) r
 interpretProcess options =
-  interpretScopedResumableWith_ @(ScopeEffects o e err) (scope @o @e @resource options) handleProcessWithQueues
+  interpretScopedResumableWith_ @(ScopeEffects i o err) (scope @i @o @resource options) handleProcessWithQueues
 
--- |Interpret 'Process' with a system process resource whose file descriptors are connected to three 'TBMQueue's,
+-- |Interpret 'Process' with a system process resource whose stdin/stdout are connected to two 'TBMQueue's,
 -- producing 'ByteString's.
+-- Silently discards stderr.
 interpretProcessByteString ::
   ∀ resource err r .
   Members [Scoped resource (SystemProcess !! err), Resource, Race, Async, Embed IO] r =>
   ProcessOptions ->
-  InterpreterFor (Scoped () (Process ByteString ByteString ByteString) !! ProcessError) r
+  InterpreterFor (Scoped () (Process ByteString ByteString) !! ProcessError) r
 interpretProcessByteString options =
-  interpretProcessOutputId .
+  interpretProcessOutputIgnore @'Stderr @ByteString .
+  interpretProcessOutputId @'Stdout .
+  interpretProcessInputId .
   interpretProcess @resource @err options .
-  raiseUnder
+  raiseUnder3
 
--- |Interpret 'Process' with a system process resource whose file descriptors are connected to three 'TBMQueue's,
+-- |Interpret 'Process' with a system process resource whose stdin/stdout are connected to two 'TBMQueue's,
 -- producing chunks of lines of 'ByteString's.
+-- Silently discards stderr.
 interpretProcessByteStringLines ::
   ∀ resource err r .
   Members [Scoped resource (SystemProcess !! err), Resource, Race, Async, Embed IO] r =>
   ProcessOptions ->
-  InterpreterFor (Scoped () (Process ByteString ByteString ByteString) !! ProcessError) r
+  InterpreterFor (Scoped () (Process ByteString ByteString) !! ProcessError) r
 interpretProcessByteStringLines options =
-  interpretProcessOutputLines .
+  interpretProcessOutputIgnore @'Stderr @ByteString .
+  interpretProcessOutputLines @'Stdout .
+  interpretProcessInputId .
   interpretProcess @resource @err options .
-  raiseUnder
+  raiseUnder3
 
--- |Interpret 'Process' with a system process resource whose file descriptors are connected to three 'TBMQueue's,
+-- |Interpret 'Process' with a system process resource whose stdin/stdout are connected to two 'TBMQueue's,
 -- producing 'Text's.
+-- Silently discards stderr.
 interpretProcessText ::
   ∀ resource err r .
   Members [Scoped resource (SystemProcess !! err), Resource, Race, Async, Embed IO] r =>
   ProcessOptions ->
-  InterpreterFor (Scoped () (Process ByteString Text Text) !! ProcessError) r
+  InterpreterFor (Scoped () (Process Text Text) !! ProcessError) r
 interpretProcessText options =
-  interpretProcessOutputText .
+  interpretProcessOutputIgnore @'Stderr @Text .
+  interpretProcessOutputText @'Stdout .
+  interpretProcessInputText .
   interpretProcess @resource @err options .
-  raiseUnder
+  raiseUnder3
 
--- |Interpret 'Process' with a system process resource whose file descriptors are connected to three 'TBMQueue's,
+-- |Interpret 'Process' with a system process resource whose stdin/stdout are connected to two 'TBMQueue's,
 -- producing chunks of lines of 'Text's.
+-- Silently discards stderr.
 interpretProcessTextLines ::
   ∀ resource err r .
   Members [Scoped resource (SystemProcess !! err), Resource, Race, Async, Embed IO] r =>
   ProcessOptions ->
-  InterpreterFor (Scoped () (Process ByteString Text Text) !! ProcessError) r
+  InterpreterFor (Scoped () (Process Text Text) !! ProcessError) r
 interpretProcessTextLines options =
-  interpretProcessOutputTextLines .
+  interpretProcessOutputIgnore @'Stderr @Text .
+  interpretProcessOutputTextLines @'Stdout .
+  interpretProcessInputText .
   interpretProcess @resource @err options .
-  raiseUnder
+  raiseUnder3

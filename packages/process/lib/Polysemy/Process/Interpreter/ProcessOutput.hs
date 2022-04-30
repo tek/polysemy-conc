@@ -7,8 +7,20 @@ import qualified Data.ByteString as ByteString
 
 import Polysemy.Process.Effect.ProcessOutput (ProcessOutput (Chunk))
 
+-- |Interpret 'ProcessOutput' by discarding any output.
+interpretProcessOutputIgnore ::
+  ∀ p a r .
+  InterpreterFor (ProcessOutput p a) r
+interpretProcessOutputIgnore =
+  interpret \case
+    Chunk _ _ ->
+      pure ([], "")
+{-# inline interpretProcessOutputIgnore #-}
+
 -- |Interpret 'ProcessOutput' by immediately emitting raw 'ByteString's without accumulation.
-interpretProcessOutputId :: InterpreterFor (ProcessOutput ByteString) r
+interpretProcessOutputId ::
+  ∀ p r .
+  InterpreterFor (ProcessOutput p ByteString) r
 interpretProcessOutputId =
   interpret \case
     Chunk buffer new ->
@@ -27,7 +39,9 @@ splitLines buffer new =
       (a : z, Just r)
 
 -- |Interpret 'ProcessOutput' by emitting individual 'ByteString' lines of output.
-interpretProcessOutputLines :: InterpreterFor (ProcessOutput ByteString) r
+interpretProcessOutputLines ::
+  ∀ p r .
+  InterpreterFor (ProcessOutput p ByteString) r
 interpretProcessOutputLines =
   interpret \case
     Chunk buffer new ->
@@ -35,7 +49,9 @@ interpretProcessOutputLines =
 {-# inline interpretProcessOutputLines #-}
 
 -- |Interpret 'ProcessOutput' by immediately emitting 'Text' without accumulation.
-interpretProcessOutputText :: InterpreterFor (ProcessOutput Text) r
+interpretProcessOutputText ::
+  ∀ p r .
+  InterpreterFor (ProcessOutput p Text) r
 interpretProcessOutputText =
   interpret \case
     Chunk buffer new ->
@@ -43,7 +59,9 @@ interpretProcessOutputText =
 {-# inline interpretProcessOutputText #-}
 
 -- |Interpret 'ProcessOutput' by emitting individual 'Text' lines of output.
-interpretProcessOutputTextLines :: InterpreterFor (ProcessOutput Text) r
+interpretProcessOutputTextLines ::
+  ∀ p r .
+  InterpreterFor (ProcessOutput p Text) r
 interpretProcessOutputTextLines =
   interpret \case
     Chunk buffer new ->
