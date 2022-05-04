@@ -2,6 +2,7 @@
 * Remove stderr from the `Process` abstraction so that stdout and stderr must be unified after parsing (potentially as
   `Either` to emulate the previous behaviour).
 * Make default `ProcessOutput` interpreters discard all stderr output.
+* Add re-interpreter from `Input`/`Output` to `Process`.
 
 # 0.8.0.0
 * Add `ProcessOptions`, replacing the primitive parameters of `Process` interpreters.

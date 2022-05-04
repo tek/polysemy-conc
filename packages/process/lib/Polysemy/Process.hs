@@ -38,6 +38,7 @@ module Polysemy.Process (
   interpretProcessByteStringLines,
   interpretProcessText,
   interpretProcessTextLines,
+  interpretInputOutputProcess,
 
   -- ** ProcessOutput
   interpretProcessOutputIgnore,
@@ -76,6 +77,7 @@ import Polysemy.Process.Effect.Pty (Pty, withPty)
 import Polysemy.Process.Effect.SystemProcess (SystemProcess, withSystemProcess)
 import Polysemy.Process.Executable (resolveExecutable)
 import Polysemy.Process.Interpreter.Process (
+  interpretInputOutputProcess,
   interpretProcess,
   interpretProcessByteString,
   interpretProcessByteStringLines,

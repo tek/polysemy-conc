@@ -241,3 +241,12 @@ interpretProcessTextLines options =
   interpretProcessInputText .
   interpretProcess @resource @err options .
   raiseUnder3
+
+-- |Reinterpret 'Input' and 'Output' as 'Process'.
+interpretInputOutputProcess ::
+  ∀ i o r .
+  Member (Process i o) r =>
+  InterpretersFor [Input o, Output i] r
+interpretInputOutputProcess =
+  runOutputSem (Process.send @i @o) .
+  runInputSem (Process.recv @i @o)
