@@ -40,6 +40,13 @@ module Polysemy.Process (
   interpretProcessText,
   interpretProcessTextLines,
   interpretInputOutputProcess,
+  interpretInputHandleBuffered,
+  interpretInputHandle,
+  interpretOutputHandleBuffered,
+  interpretOutputHandle,
+  interpretProcessIO,
+  interpretProcessHandles,
+  interpretProcessCurrent,
 
   -- ** ProcessOutput
   interpretProcessOutputIgnore,
@@ -80,10 +87,17 @@ import Polysemy.Process.Effect.Pty (Pty, withPty)
 import Polysemy.Process.Effect.SystemProcess (SystemProcess, withSystemProcess)
 import Polysemy.Process.Executable (resolveExecutable)
 import Polysemy.Process.Interpreter.Process (
+  interpretInputHandle,
+  interpretInputHandleBuffered,
   interpretInputOutputProcess,
+  interpretOutputHandle,
+  interpretOutputHandleBuffered,
   interpretProcess,
   interpretProcessByteString,
   interpretProcessByteStringLines,
+  interpretProcessCurrent,
+  interpretProcessHandles,
+  interpretProcessIO,
   interpretProcessText,
   interpretProcessTextLines,
   )

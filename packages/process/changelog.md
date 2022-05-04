@@ -5,6 +5,8 @@
 * Add re-interpreter from `Input`/`Output` to `Process`.
 * Add `interpretProcessOutputIncremental`, a stateful interpreter using a supplied parser that may produce partial
   results.
+* Add `interpretProcessCurrent` et al, treating the program's process's stdio as the (mirrored) stdio of an external
+  process.
 
 # 0.8.0.0
 * Add `ProcessOptions`, replacing the primitive parameters of `Process` interpreters.
