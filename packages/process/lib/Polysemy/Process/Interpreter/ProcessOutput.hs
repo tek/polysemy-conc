@@ -5,6 +5,7 @@ module Polysemy.Process.Interpreter.ProcessOutput where
 
 import qualified Data.ByteString as ByteString
 
+import Polysemy.Process.Data.ProcessOutputParseResult (ProcessOutputParseResult (Done, Fail, Partial))
 import Polysemy.Process.Effect.ProcessOutput (ProcessOutput (Chunk))
 
 -- |Interpret 'ProcessOutput' by discarding any output.
@@ -67,3 +68,29 @@ interpretProcessOutputTextLines =
     Chunk buffer new ->
       pure (first (fmap decodeUtf8) (splitLines buffer new))
 {-# inline interpretProcessOutputTextLines #-}
+
+-- |Internal helper for 'interpretProcessOutputIncremental' that stores a partial parse result in the state.
+parseResult ::
+  Member (AtomicState (Maybe (ByteString -> ProcessOutputParseResult a))) r =>
+  ProcessOutputParseResult a ->
+  Sem r ([Either Text a], ByteString)
+parseResult = \case
+  Fail err -> pure ([Left err], "")
+  Partial c -> ([], "") <$ atomicPut (Just c)
+  Done a rest -> pure ([Right a], rest)
+
+-- |Whenever a chunk of output arrives, call the supplied incremental parser whose result must be converted to
+-- 'ProcessOutputParseResult'.
+-- If a partial parse result is produced, it is stored in the state and resumed when the next chunk is available.
+interpretProcessOutputIncremental ::
+  ∀ p a r .
+  (ByteString -> ProcessOutputParseResult a) ->
+  InterpreterFor (ProcessOutput p (Either Text a)) r
+interpretProcessOutputIncremental parse =
+  evalState (Nothing :: Maybe (ByteString -> ProcessOutputParseResult a)) .
+  atomicStateToState @(Maybe (ByteString -> ProcessOutputParseResult a)) .
+  interpret \case
+    Chunk _ new -> do
+      cont <- atomicState' (Nothing,)
+      parseResult (fromMaybe parse cont new)
+  . raiseUnder2

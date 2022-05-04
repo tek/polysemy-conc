@@ -15,6 +15,7 @@ module Polysemy.Process (
   -- ** ProcessOutput
   ProcessOutput,
   OutputPipe (Stdout, Stderr),
+  ProcessOutputParseResult (..),
 
   -- ** ProcessInput
   ProcessInput,
@@ -46,6 +47,7 @@ module Polysemy.Process (
   interpretProcessOutputLines,
   interpretProcessOutputText,
   interpretProcessOutputTextLines,
+  interpretProcessOutputIncremental,
 
   -- ** ProcessInput
   interpretProcessInputId,
@@ -70,6 +72,7 @@ import Prelude hiding (send)
 
 import Polysemy.Process.Data.ProcessKill (ProcessKill (..))
 import Polysemy.Process.Data.ProcessOptions (ProcessOptions (ProcessOptions))
+import Polysemy.Process.Data.ProcessOutputParseResult (ProcessOutputParseResult (..))
 import Polysemy.Process.Effect.Process (Process (..), recv, send, withProcess)
 import Polysemy.Process.Effect.ProcessInput (ProcessInput)
 import Polysemy.Process.Effect.ProcessOutput (OutputPipe (Stderr, Stdout), ProcessOutput)
@@ -88,6 +91,7 @@ import Polysemy.Process.Interpreter.ProcessInput (interpretProcessInputId, inter
 import Polysemy.Process.Interpreter.ProcessOutput (
   interpretProcessOutputId,
   interpretProcessOutputIgnore,
+  interpretProcessOutputIncremental,
   interpretProcessOutputLines,
   interpretProcessOutputText,
   interpretProcessOutputTextLines,

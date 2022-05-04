@@ -31,6 +31,7 @@ library
       Polysemy.Process.Data.ProcessError
       Polysemy.Process.Data.ProcessKill
       Polysemy.Process.Data.ProcessOptions
+      Polysemy.Process.Data.ProcessOutputParseResult
       Polysemy.Process.Data.PtyError
       Polysemy.Process.Data.PtyResources
       Polysemy.Process.Data.SystemProcessError

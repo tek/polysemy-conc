@@ -3,6 +3,8 @@
   `Either` to emulate the previous behaviour).
 * Make default `ProcessOutput` interpreters discard all stderr output.
 * Add re-interpreter from `Input`/`Output` to `Process`.
+* Add `interpretProcessOutputIncremental`, a stateful interpreter using a supplied parser that may produce partial
+  results.
 
 # 0.8.0.0
 * Add `ProcessOptions`, replacing the primitive parameters of `Process` interpreters.
