@@ -99,9 +99,8 @@ withQueues qSize action =
   withSTMResources qSize \ qs -> interpretQueues qs action
 
 outputQueue ::
-  ∀ pipe p chunk err r .
-  Coercible (pipe chunk) chunk =>
-  Members [SystemProcess !! err, ProcessOutput p chunk, Queue (pipe chunk), Embed IO] r =>
+  ∀ p chunk err r .
+  Members [SystemProcess !! err, ProcessOutput p chunk, Queue (Out chunk), Embed IO] r =>
   Bool ->
   Sem (SystemProcess : r) ByteString ->
   Sem r ()
@@ -109,10 +108,10 @@ outputQueue discardWhenFull readChunk = do
   spin ""
   where
     spin buffer =
-      resumeOr @err readChunk (write buffer) (const (Queue.close @(pipe chunk)))
+      resumeOr @err readChunk (write buffer) (const (Queue.close @(Out chunk)))
     write buffer msg = do
-      (chunks, newBuffer) <- ProcessOutput.chunk @p buffer msg
-      for_ chunks \ (coerce @chunk @(pipe chunk) -> c) ->
+      (chunks, newBuffer) <- ProcessOutput.chunk @p @chunk buffer msg
+      for_ chunks \ (Out -> c) ->
         if discardWhenFull then void (Queue.tryWrite c) else Queue.write c
       spin newBuffer
 
@@ -167,8 +166,8 @@ scope ::
 scope (ProcessOptions discard qSize kill) =
   withSystemProcess @resource .
   withQueues qSize .
-  withAsync_ (outputQueue @Out @'Stderr @o @err discard SystemProcess.readStderr) .
-  withAsync_ (outputQueue @Out @'Stdout @o @err discard SystemProcess.readStdout) .
+  withAsync_ (outputQueue @'Stderr @o @err discard SystemProcess.readStderr) .
+  withAsync_ (outputQueue @'Stdout @o @err discard SystemProcess.readStdout) .
   withAsync_ (inputQueue @i @err SystemProcess.writeStdin) .
   withKill @err kill
 
