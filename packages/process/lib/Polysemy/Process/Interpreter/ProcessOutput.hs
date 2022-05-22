@@ -69,19 +69,35 @@ interpretProcessOutputTextLines =
       pure (first (fmap decodeUtf8) (splitLines buffer new))
 {-# inline interpretProcessOutputTextLines #-}
 
--- |Internal helper for 'interpretProcessOutputIncremental' that stores a partial parse result in the state.
-parseResult ::
-  Member (AtomicState (Maybe (ByteString -> ProcessOutputParseResult a))) r =>
-  ProcessOutputParseResult a ->
-  Sem r ([Either Text a], ByteString)
-parseResult = \case
-  Fail err -> pure ([Left err], "")
-  Partial c -> ([], "") <$ atomicPut (Just c)
-  Done a rest -> pure ([Right a], rest)
+type Parser a =
+  ByteString -> ProcessOutputParseResult a
+
+-- |Internal helper for 'interpretProcessOutputIncremental' that repeatedly parses elements from a chunk until the
+-- parser returns a failure or a partial result.
+parseMany ::
+  Parser a ->
+  Maybe (Parser a) ->
+  ByteString ->
+  (Maybe (Parser a), ([Either Text a], ByteString))
+parseMany parse =
+  spin id
+  where
+    spin cons cont = \case
+      "" ->
+        (cont, (cons [], ""))
+      chunk ->
+        case fromMaybe parse cont chunk of
+          Fail e ->
+            (Nothing, (cons [Left e], ""))
+          Partial c ->
+            (Just c, (cons [], ""))
+          Done a rest ->
+            spin (cons . (Right a :)) Nothing rest
 
 -- |Whenever a chunk of output arrives, call the supplied incremental parser whose result must be converted to
 -- 'ProcessOutputParseResult'.
 -- If a partial parse result is produced, it is stored in the state and resumed when the next chunk is available.
+-- If parsing an @a@ succeeds, the parser recurses until it fails.
 interpretProcessOutputIncremental ::
   ∀ p a r .
   (ByteString -> ProcessOutputParseResult a) ->
@@ -90,7 +106,5 @@ interpretProcessOutputIncremental parse =
   evalState (Nothing :: Maybe (ByteString -> ProcessOutputParseResult a)) .
   atomicStateToState @(Maybe (ByteString -> ProcessOutputParseResult a)) .
   interpret \case
-    Chunk _ new -> do
-      cont <- atomicState' (Nothing,)
-      parseResult (fromMaybe parse cont new)
+    Chunk buffer new -> atomicState (flip (parseMany parse) (buffer <> new))
   . raiseUnder2
