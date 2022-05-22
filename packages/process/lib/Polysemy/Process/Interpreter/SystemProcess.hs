@@ -101,6 +101,16 @@ processId ::
 processId process =
   terminate "getPid returned Nothing" =<< embed (getPid (unsafeProcessHandle process))
 
+checkEof ::
+  Member (Stop SystemProcessError) r =>
+  ByteString ->
+  Sem r ByteString
+checkEof = \case
+  "" ->
+    stop (SystemProcessError.Terminated "Process terminated, empty ByteString read from handle")
+  b ->
+    pure b
+
 -- |Interpret 'SystemProcess' with a concrete 'System.Process' with connected pipes.
 interpretSystemProcessWithProcess ::
   ∀ r .
@@ -115,9 +125,9 @@ interpretSystemProcessWithProcess process =
       pid <- processId process
       tryStop "signal failed" (Signal.signalProcess sig pid)
     SystemProcess.ReadStdout ->
-      tryStop "stdout failed" (hGetSome (getStdout process) 4096)
+      checkEof =<< tryStop "stdout failed" (hGetSome (getStdout process) 4096)
     SystemProcess.ReadStderr ->
-      tryStop "stderr failed" (hGetSome (getStderr process) 4096)
+      checkEof =<< tryStop "stderr failed" (hGetSome (getStderr process) 4096)
     SystemProcess.WriteStdin msg ->
       tryStop "stdin failed" (hPut (getStdin process) msg)
     SystemProcess.Wait ->
