@@ -9,6 +9,7 @@ module Polysemy.Conc.Sync (
 import qualified Polysemy.Time as Time
 import Polysemy.Time (Time, TimeUnit)
 
+import Polysemy.Conc.Effect.Mask (Mask, mask, restore)
 import Polysemy.Conc.Effect.Scoped (scoped)
 import qualified Polysemy.Conc.Effect.Sync as Sync
 import Polysemy.Conc.Effect.Sync (
@@ -78,6 +79,7 @@ lock ::
   Sem r a
 lock l ma =
   finally (takeBlock @l *> ma) (putTry l)
+{-# inline lock #-}
 
 -- |Remove the content of the 'Sync' variable if it is present.
 clear ::
@@ -86,3 +88,91 @@ clear ::
   Sem r ()
 clear =
   void (takeTry @a)
+{-# inline clear #-}
+
+-- |Modify a 'Sync' variable with async exceptions masked for the 'Sync' operations, but not the action.
+-- Allows a value to be returned.
+-- Equivalent to 'Control.Concurrent.MVar.modifyMVar'.
+modify ::
+  ∀ a b res r .
+  Members [Sync a, Mask res, Resource] r =>
+  (a -> Sem r (a, b)) ->
+  Sem r b
+modify m =
+  mask @res do
+    a <- takeBlock
+    (a', b) <- onException (restore (raise (m a))) (putBlock a)
+    b <$ putBlock a'
+{-# inline modify #-}
+
+-- |Modify a 'Sync' variable with async exceptions masked for the 'Sync' operations, but not the action.
+-- Does not allow a value to be returned.
+-- Equivalent to 'Control.Concurrent.MVar.modifyMVar_'.
+modify_ ::
+  ∀ a res r .
+  Members [Sync a, Mask res, Resource] r =>
+  (a -> Sem r a) ->
+  Sem r ()
+modify_ m =
+  mask @res do
+    a <- takeBlock
+    a' <- onException (restore (raise (m a))) (putBlock a)
+    putBlock a'
+{-# inline modify_ #-}
+
+-- |Modify a 'Sync' variable with async exceptions masked for the entire procedure.
+-- Allows a value to be returned.
+-- Equivalent to 'Control.Concurrent.MVar.modifyMVarMasked'.
+modifyMasked ::
+  ∀ a b res r .
+  Members [Sync a, Mask res, Resource] r =>
+  (a -> Sem r (a, b)) ->
+  Sem r b
+modifyMasked m =
+  mask @res do
+    a <- takeBlock
+    (a', b) <- onException (raise (m a)) (putBlock a)
+    b <$ putBlock a'
+{-# inline modifyMasked #-}
+
+-- |Modify a 'Sync' variable with async exceptions masked for the entire procedure.
+-- Does not allow a value to be returned.
+-- Equivalent to 'Control.Concurrent.MVar.modifyMVarMasked_'.
+modifyMasked_ ::
+  ∀ a res r .
+  Members [Sync a, Mask res, Resource] r =>
+  (a -> Sem r a) ->
+  Sem r ()
+modifyMasked_ m =
+  mask @res do
+    a <- takeBlock
+    a' <- onException (raise (m a)) (putBlock a)
+    putBlock a'
+{-# inline modifyMasked_ #-}
+
+-- |Run an action with the current value of the 'Sync' variable with async exceptions masked for the 'Sync' operations,
+-- but not the action.
+-- Equivalent to 'Control.Concurrent.MVar.withMVar'.
+use ::
+  ∀ a b res r .
+  Members [Sync a, Mask res, Resource] r =>
+  (a -> Sem r b) ->
+  Sem r b
+use m =
+  mask @res do
+    a <- takeBlock
+    finally (restore (raise (m a))) (putBlock a)
+{-# inline use #-}
+
+-- |Run an action with the current value of the 'Sync' variable with async exceptions masked for the entire procedure.
+-- Equivalent to 'Control.Concurrent.MVar.withMVarMasked'.
+useMasked ::
+  ∀ a b res r .
+  Members [Sync a, Mask res, Resource] r =>
+  (a -> Sem r b) ->
+  Sem r b
+useMasked m =
+  mask @res do
+    a <- takeBlock
+    finally (raise (m a)) (putBlock a)
+{-# inline useMasked #-}

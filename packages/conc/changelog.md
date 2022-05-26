@@ -1,5 +1,7 @@
 # Unreleased
 
+* Add the missing `MVar` combinators for `Sync` that bracket an action with mask.
+
 # 0.6.1.0
 
 * Add `SyncRead`, a read-only variant of `Sync`.
