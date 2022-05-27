@@ -1,6 +1,7 @@
 # Unreleased
 
 * Add the missing `MVar` combinators for `Sync` that bracket an action with mask.
+* Export `Restoration`
 
 # 0.6.1.0
 
