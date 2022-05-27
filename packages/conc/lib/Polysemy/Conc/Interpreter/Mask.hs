@@ -24,7 +24,7 @@ mask ::
   Sem r a
 mask f =
   withWeavingToFinal @IO \ s lower _ ->
-    Base.mask \ restore -> (lower (f (MaskResource (Restoration restore)) <$ s))
+    Base.mask \ restore -> lower (f (MaskResource (Restoration restore)) <$ s)
 
 uninterruptibleMask ::
   Member (Final IO) r =>
@@ -32,7 +32,7 @@ uninterruptibleMask ::
   Sem r a
 uninterruptibleMask f =
   withWeavingToFinal @IO \ s lower _ ->
-    Base.uninterruptibleMask \ restore -> (lower (f (UninterruptibleMaskResource (Restoration restore)) <$ s))
+    Base.uninterruptibleMask \ restore -> lower (f (UninterruptibleMaskResource (Restoration restore)) <$ s)
 
 interpretRestoreMask ::
   ∀ r .
@@ -44,8 +44,7 @@ interpretRestoreMask (Restoration restore) =
     Restore ma -> do
       let
         restoreSem m =
-          withStrategicToFinal do
-            (restore <$> runS m)
+          withStrategicToFinal (restore <$> runS m)
       restoreSem (runTSimple ma)
 
 -- |Interpret 'Mask' in 'IO'.
