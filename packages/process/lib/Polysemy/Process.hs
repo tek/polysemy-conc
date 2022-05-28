@@ -51,6 +51,8 @@ module Polysemy.Process (
   -- ** ProcessOutput
   interpretProcessOutputIgnore,
   interpretProcessOutputId,
+  interpretProcessOutputLeft,
+  interpretProcessOutputRight,
   interpretProcessOutputLines,
   interpretProcessOutputText,
   interpretProcessOutputTextLines,
@@ -106,7 +108,9 @@ import Polysemy.Process.Interpreter.ProcessOutput (
   interpretProcessOutputId,
   interpretProcessOutputIgnore,
   interpretProcessOutputIncremental,
+  interpretProcessOutputLeft,
   interpretProcessOutputLines,
+  interpretProcessOutputRight,
   interpretProcessOutputText,
   interpretProcessOutputTextLines,
   )

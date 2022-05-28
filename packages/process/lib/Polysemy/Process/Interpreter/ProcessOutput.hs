@@ -6,7 +6,7 @@ module Polysemy.Process.Interpreter.ProcessOutput where
 import qualified Data.ByteString as ByteString
 
 import Polysemy.Process.Data.ProcessOutputParseResult (ProcessOutputParseResult (Done, Fail, Partial))
-import Polysemy.Process.Effect.ProcessOutput (ProcessOutput (Chunk))
+import Polysemy.Process.Effect.ProcessOutput (ProcessOutput (Chunk), chunk)
 
 -- |Interpret 'ProcessOutput' by discarding any output.
 interpretProcessOutputIgnore ::
@@ -27,6 +27,28 @@ interpretProcessOutputId =
     Chunk buffer new ->
       pure ([buffer <> new], "")
 {-# inline interpretProcessOutputId #-}
+
+-- |Transformer for 'ProcessOutput' that lifts results into 'Left', creating 'ProcessOutput p (Either a b)' from
+-- 'ProcessOutput p a'.
+interpretProcessOutputLeft ::
+  ∀ p a b r .
+  Member (ProcessOutput p a) r =>
+  InterpreterFor (ProcessOutput p (Either a b)) r
+interpretProcessOutputLeft =
+  interpret \case
+    Chunk buf new ->
+      first (fmap Left) <$> chunk @p buf new
+
+-- |Transformer for 'ProcessOutput' that lifts results into 'Right', creating 'ProcessOutput p (Either a b)' from
+-- 'ProcessOutput p b'.
+interpretProcessOutputRight ::
+  ∀ p a b r .
+  Member (ProcessOutput p b) r =>
+  InterpreterFor (ProcessOutput p (Either a b)) r
+interpretProcessOutputRight =
+  interpret \case
+    Chunk buf new ->
+      first (fmap Right) <$> chunk @p buf new
 
 splitLines :: ByteString -> ByteString -> ([ByteString], ByteString)
 splitLines buffer new =

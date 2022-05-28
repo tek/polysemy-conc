@@ -7,6 +7,8 @@
   results.
 * Add `interpretProcessCurrent` et al, treating the program's process's stdio as the (mirrored) stdio of an external
   process.
+* Add `interpretProcessOutputLeft` and `interpretProcessOutputRight`, lifting results of another interpreter into
+  `Either`.
 
 # 0.8.0.0
 * Add `ProcessOptions`, replacing the primitive parameters of `Process` interpreters.
