@@ -6,7 +6,8 @@ module Polysemy.Process.Interpreter.ProcessOutput where
 import qualified Data.ByteString as ByteString
 
 import Polysemy.Process.Data.ProcessOutputParseResult (ProcessOutputParseResult (Done, Fail, Partial))
-import Polysemy.Process.Effect.ProcessOutput (ProcessOutput (Chunk), chunk)
+import Polysemy.Process.Effect.ProcessOutput (ProcessOutput (Chunk))
+import qualified Polysemy.Process.Effect.ProcessOutput as ProcessOutput
 
 -- |Interpret 'ProcessOutput' by discarding any output.
 interpretProcessOutputIgnore ::
@@ -37,7 +38,7 @@ interpretProcessOutputLeft ::
 interpretProcessOutputLeft =
   interpret \case
     Chunk buf new ->
-      first (fmap Left) <$> chunk @p buf new
+      first (fmap Left) <$> ProcessOutput.chunk @p buf new
 
 -- |Transformer for 'ProcessOutput' that lifts results into 'Right', creating 'ProcessOutput p (Either a b)' from
 -- 'ProcessOutput p b'.
@@ -48,7 +49,7 @@ interpretProcessOutputRight ::
 interpretProcessOutputRight =
   interpret \case
     Chunk buf new ->
-      first (fmap Right) <$> chunk @p buf new
+      first (fmap Right) <$> ProcessOutput.chunk @p buf new
 
 splitLines :: ByteString -> ByteString -> ([ByteString], ByteString)
 splitLines buffer new =
