@@ -8,7 +8,7 @@ import Polysemy.Internal.Index (InsertAtIndex)
 import Polysemy.Internal.Tactics (liftT, runTactics)
 import Polysemy.Internal.Union (Weaving (Weaving), decomp, hoist, injWeaving)
 import Polysemy.Resume (Stop, runStop, type (!!))
-import Polysemy.Resume.Data.Resumable (Resumable (Resumable))
+import Polysemy.Resume.Effect.Resumable (Resumable (Resumable))
 
 import Polysemy.Conc.Effect.Scoped (Scoped (InScope, Run))
 
