@@ -219,6 +219,7 @@ test-suite polysemy-conc-unit
   build-depends:
       async
     , base ==4.*
+    , hedgehog
     , incipit-core
     , polysemy
     , polysemy-conc
@@ -228,6 +229,7 @@ test-suite polysemy-conc-unit
     , polysemy-time
     , stm
     , tasty
+    , tasty-hedgehog
     , time
     , unagi-chan
     , unix

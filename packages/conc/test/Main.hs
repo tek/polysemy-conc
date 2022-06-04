@@ -1,5 +1,6 @@
 module Main where
 
+import Hedgehog (property, test, withTests)
 import Polysemy.Conc.Test.EventsTest (test_events)
 import Polysemy.Conc.Test.InterruptTest (test_interrupt)
 import Polysemy.Conc.Test.MaskTest (test_mask)
@@ -16,6 +17,7 @@ import Polysemy.Conc.Test.ScopedTest (test_scopedResumableWith, test_scopedWith)
 import Polysemy.Conc.Test.SyncTest (test_sync)
 import Polysemy.Test (unitTest)
 import Test.Tasty (TestTree, defaultMain, testGroup)
+import Test.Tasty.Hedgehog (testProperty)
 
 tests :: TestTree
 tests =
@@ -29,7 +31,7 @@ tests =
       unitTest "TB block" test_queueBlockTB
     ],
     testGroup "events" [
-      unitTest "events" test_events
+      testProperty "events" (withTests 100 (property (test test_events)))
     ],
     testGroup "sync" [
       unitTest "sync" test_sync

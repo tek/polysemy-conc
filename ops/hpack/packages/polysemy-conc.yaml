@@ -35,6 +35,7 @@ tests:
     dependencies:
       - polysemy-conc
       - async
+      - hedgehog
       - incipit-core
       - polysemy
       - polysemy-plugin
@@ -43,6 +44,7 @@ tests:
       - polysemy-time
       - stm
       - tasty
+      - tasty-hedgehog
       - time
       - unagi-chan
       - unix
