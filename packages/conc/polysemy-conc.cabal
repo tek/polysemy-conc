@@ -6,20 +6,17 @@ cabal-version: 2.2
 
 name:           polysemy-conc
 version:        0.8.0.1
-synopsis:       Polysemy Effects for Concurrency
-description:    See <https://hackage.haskell.org/package/polysemy-conc/docs/Polysemy-Conc.html>
+synopsis:       Polysemy effects for concurrency
+description:    See https://hackage.haskell.org/package/polysemy-conc/docs/Polysemy-Conc.html
 category:       Concurrency
 homepage:       https://github.com/tek/polysemy-conc#readme
 bug-reports:    https://github.com/tek/polysemy-conc/issues
 author:         Torsten Schmits
-maintainer:     haskell@tryp.io
-copyright:      2021 Torsten Schmits
+maintainer:     hackage@tryp.io
+copyright:      2022 Torsten Schmits
 license:        BSD-2-Clause-Patent
 license-file:   LICENSE
 build-type:     Simple
-extra-source-files:
-    readme.md
-    changelog.md
 
 source-repository head
   type: git
@@ -79,6 +76,7 @@ library
       DeriveFoldable
       DeriveFunctor
       DeriveGeneric
+      DeriveLift
       DeriveTraversable
       DerivingStrategies
       DerivingVia
@@ -111,6 +109,7 @@ library
       RankNTypes
       RecordWildCards
       RecursiveDo
+      RoleAnnotations
       ScopedTypeVariables
       StandaloneDeriving
       TemplateHaskell
@@ -123,10 +122,10 @@ library
       UndecidableInstances
       UnicodeSyntax
       ViewPatterns
-  ghc-options: -Wall -Wredundant-constraints -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Widentities
+  ghc-options: -Wall -Wredundant-constraints -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Widentities -Wunused-packages
   build-depends:
       async
-    , base ==4.*
+    , base >=4.12 && <5
     , containers
     , incipit-core >=0.2
     , polysemy >=1.6
@@ -139,8 +138,6 @@ library
     , unix
   mixins:
       base hiding (Prelude)
-  if impl(ghc >= 8.10)
-    ghc-options: -Wunused-packages
   default-language: Haskell2010
 
 test-suite polysemy-conc-unit
@@ -171,6 +168,7 @@ test-suite polysemy-conc-unit
       DeriveFoldable
       DeriveFunctor
       DeriveGeneric
+      DeriveLift
       DeriveTraversable
       DerivingStrategies
       DerivingVia
@@ -203,6 +201,7 @@ test-suite polysemy-conc-unit
       RankNTypes
       RecordWildCards
       RecursiveDo
+      RoleAnnotations
       ScopedTypeVariables
       StandaloneDeriving
       TemplateHaskell
@@ -215,13 +214,13 @@ test-suite polysemy-conc-unit
       UndecidableInstances
       UnicodeSyntax
       ViewPatterns
-  ghc-options: -Wall -Wredundant-constraints -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Widentities -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -Wall -Wredundant-constraints -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Widentities -Wunused-packages -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       async
-    , base ==4.*
+    , base >=4.12 && <5
     , hedgehog
     , incipit-core
-    , polysemy
+    , polysemy >=1.6
     , polysemy-conc
     , polysemy-plugin
     , polysemy-resume
@@ -235,6 +234,4 @@ test-suite polysemy-conc-unit
     , unix
   mixins:
       base hiding (Prelude)
-  if impl(ghc >= 8.10)
-    ghc-options: -Wunused-packages
   default-language: Haskell2010

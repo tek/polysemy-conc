@@ -23,7 +23,7 @@
       polysemy-test = hackage "0.5.0.0" "0lzbf7bfmcima8ib4hv68bjciy2n5s4x493g0a5cmdjj6pcg2d2k";
     };
 
-  in hix.lib.flake {
+  in hix.lib.flake ({ config, lib, ...}: {
     base = ./.;
     packages = {
       polysemy-conc = ./packages/conc;
@@ -32,7 +32,8 @@
     main = "polysemy-process";
     overrides = { inherit all ghc921; };
     deps = [polysemy-time];
-    hackage.versionFile = "ops/hpack/shared/meta.yaml";
+    hpack.packages = import ./ops/hpack.nix { inherit config lib; };
+    hackage.versionFile = "ops/version.nix";
     ghci.preludePackage = "incipit-core";
-  };
+  });
 }
