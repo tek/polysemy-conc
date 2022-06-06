@@ -8,12 +8,13 @@
   outputs = { hix, polysemy-resume, polysemy-time, ... }:
   let
 
-    ghc921 = { hackage, jailbreak, notest, ... }: {
+    ghc922 = { hackage, jailbreak, notest, ... }: {
       polysemy = hackage "1.7.1.0" "0qwli1kx3hk68hqsgw65mk81bx0djw1wlk17v8ggym7mf3lailyc";
       polysemy-plugin = hackage "0.4.3.0" "1r7j1ffsd6z2q2fgpg78brl2gb0dg8r5ywfiwdrsjd2fxkinjcg1";
+      type-errors = notest;
     };
 
-    all = { hackage, unbreak, source, ... }: {
+    all = { hackage, source, ... }: {
       incipit-base = hackage "0.2.0.0" "12979prkjk1kr1556mwsgf1v04rzd67xg68x6q9pnvm41pxbvk5w";
       incipit-core = hackage "0.2.0.0" "1v4xrqwcylbk32b6hzl6i7k0964varw2iy73s7mkjxpxpdg432ci";
       polysemy = hackage "1.6.0.0" "15k51ysrfcbkww1562g8zvrlzymlk2rxhcsz9ipsb0q6h571qgvf";
@@ -30,7 +31,7 @@
       polysemy-process = ./packages/process;
     };
     main = "polysemy-process";
-    overrides = { inherit all ghc921; };
+    overrides = { inherit all ghc922; };
     deps = [polysemy-time];
     hpack.packages = import ./ops/hpack.nix { inherit config lib; };
     hackage.versionFile = "ops/version.nix";

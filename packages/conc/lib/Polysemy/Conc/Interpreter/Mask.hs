@@ -15,7 +15,7 @@ import Polysemy.Conc.Effect.Mask (
   )
 import Polysemy.Conc.Interpreter.Scoped (runScoped)
 
--- |Resource type for the scoped 'Mask' effect, wrapping the `restore` callback passed in by 'Base.mask'.
+-- |Resource type for the scoped 'Mask' effect, wrapping the @restore@ callback passed in by 'Base.mask'.
 newtype Restoration =
   Restoration { unRestoration :: ∀ a . IO a -> IO a }
 
