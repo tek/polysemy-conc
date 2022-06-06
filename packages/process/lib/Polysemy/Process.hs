@@ -5,7 +5,7 @@ module Polysemy.Process (
 
   -- * Effects
   -- ** Process
-  Process (..),
+  Process,
   recv,
   send,
   withProcess,
