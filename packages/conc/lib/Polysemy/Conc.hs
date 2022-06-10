@@ -110,6 +110,12 @@ module Polysemy.Conc (
   interpretScopedAs,
   interpretScopedResumable,
   interpretScopedResumableH,
+  interpretScopedWith,
+  interpretScopedWithH,
+  interpretScopedWith_,
+  interpretScopedResumableWith,
+  interpretScopedResumableWithH,
+  interpretScopedResumableWith_,
 
   -- * Monitoring
   Monitor,
@@ -188,6 +194,12 @@ import Polysemy.Conc.Interpreter.Scoped (
   interpretScopedH,
   interpretScopedResumable,
   interpretScopedResumableH,
+  interpretScopedResumableWith,
+  interpretScopedResumableWithH,
+  interpretScopedResumableWith_,
+  interpretScopedWith,
+  interpretScopedWithH,
+  interpretScopedWith_,
   runScoped,
   runScopedAs,
   )
