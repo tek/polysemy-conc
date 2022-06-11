@@ -1,7 +1,10 @@
 # Unreleased
 
-* Add the missing `MVar` combinators for `Sync` that bracket an action with mask.
-* Export `Restoration`
+# 0.9.0.0
+
+* Add the missing `MVar` combinators for `Sync` that bracket an action with `mask`.
+* Export `Restoration`.
+* Add `interpretProcessOutputLeft/Right`.
 
 # 0.6.1.0
 
