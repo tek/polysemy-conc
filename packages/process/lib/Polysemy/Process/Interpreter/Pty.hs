@@ -34,8 +34,8 @@ releasePty ::
   PtyResources ->
   Sem r ()
 releasePty PtyResources {primary, pty} = do
-  ignoreException (closePty pty)
-  ignoreException (closeFd primary)
+  tryAny_ (closePty pty)
+  tryAny_ (closeFd primary)
 
 withPty ::
   Members [Resource, Embed IO] r =>

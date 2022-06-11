@@ -5,7 +5,6 @@ module Polysemy.Conc.Test.MaskTest where
 import qualified Control.Concurrent.Async as Base
 import Control.Concurrent.Async (asyncThreadId)
 import Control.Exception (throwTo)
-import GHC.Stack (withFrozenCallStack)
 import Polysemy.Test (Hedgehog, UnitTest, assertEq, evalLeft, runTestAuto)
 import qualified Polysemy.Time as Time
 import Polysemy.Time (MilliSeconds (MilliSeconds), interpretTimeGhc)

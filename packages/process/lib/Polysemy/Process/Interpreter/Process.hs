@@ -273,7 +273,7 @@ interpretInputHandle ::
   Handle ->
   InterpreterFor (Input ByteString !! ProcessError) r
 interpretInputHandle handle sem = do
-  ignoreException (hSetBuffering handle NoBuffering)
+  tryAny_ (hSetBuffering handle NoBuffering)
   interpretInputHandleBuffered handle sem
 
 -- |Interpret 'Output ByteString' by writing to a 'Handle' and stopping with 'ProcessError' when it fails.
@@ -293,7 +293,7 @@ interpretOutputHandle ::
   Handle ->
   InterpreterFor (Output ByteString !! ProcessError) r
 interpretOutputHandle handle sem = do
-  ignoreException (hSetBuffering handle NoBuffering)
+  tryAny_ (hSetBuffering handle NoBuffering)
   interpretOutputHandleBuffered handle sem
 
 -- |Interpret 'Process' in terms of 'Input' and 'Output'.

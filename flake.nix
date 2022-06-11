@@ -1,11 +1,12 @@
 {
   description = "Polysemy Effects for Concurrency";
 
-  inputs.hix.url = github:tek/hix;
-  inputs.polysemy-resume.url = github:tek/polysemy-resume;
-  inputs.polysemy-time.url = github:tek/polysemy-time;
+  inputs = {
+    hix.url = github:tek/hix;
+    polysemy-time.url = github:tek/polysemy-time;
+  };
 
-  outputs = { hix, polysemy-resume, polysemy-time, ... }:
+  outputs = { hix, polysemy-time, ... }:
   let
 
     ghc922 = { hackage, jailbreak, notest, ... }: {
@@ -15,13 +16,13 @@
     };
 
     all = { hackage, source, ... }: {
-      incipit-base = hackage "0.2.0.0" "12979prkjk1kr1556mwsgf1v04rzd67xg68x6q9pnvm41pxbvk5w";
-      incipit-core = hackage "0.2.0.0" "1v4xrqwcylbk32b6hzl6i7k0964varw2iy73s7mkjxpxpdg432ci";
+      incipit-base = hackage "0.3.0.0" "1078yyl5k94c9pr16rqd1i1g1fj8zx4iswhk7rcxb8f10fjqzapg";
+      incipit-core = hackage "0.3.0.0" "0q11zmxlpdb72p8c8zvr5hd7qca9c37crm70lm16jxlzw1qxk51b";
       polysemy = hackage "1.6.0.0" "15k51ysrfcbkww1562g8zvrlzymlk2rxhcsz9ipsb0q6h571qgvf";
       polysemy-plugin = hackage "0.4.1.0" "117g92l1ppsqd3w0rqjrxfk0lx6yndd54rpymgxljilnv43zg29s";
-      polysemy-resume = source.package polysemy-resume "resume";
-      polysemy-time = hackage "0.4.0.0" "1dddg61d8djfwlc85bz99vwm23621cdjwxd1llcc4ng3afgx5bg9";
-      polysemy-test = hackage "0.5.0.0" "0lzbf7bfmcima8ib4hv68bjciy2n5s4x493g0a5cmdjj6pcg2d2k";
+      polysemy-resume = hackage "0.5.0.0" "1yavr2h31ffxj861vscm2hddrwi977ddx0sn0hh47zn78pqafz77";
+      polysemy-time = hackage "0.5.0.0" "1y7zqzvpah019hh9dqxhv9vh690b7nqchq613hlfsc4xgrvzq3d4";
+      polysemy-test = hackage "0.6.0.0" "07pi549ral22sxhja67k5b9v787q0b32ysp0bq9szhwjqgxsab46";
     };
 
   in hix.lib.flake ({ config, lib, ...}: {
@@ -35,6 +36,9 @@
     deps = [polysemy-time];
     hpack.packages = import ./ops/hpack.nix { inherit config lib; };
     hackage.versionFile = "ops/version.nix";
-    ghci.preludePackage = "incipit-core";
+    ghci = {
+      preludePackage = "incipit-core";
+      preludeModule = "IncipitCore";
+    };
   });
 }

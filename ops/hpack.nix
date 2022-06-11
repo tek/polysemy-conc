@@ -37,12 +37,6 @@ let
     github = "tek/polysemy-conc";
   };
 
-  base = {
-    name = "base";
-    version = ">= 4.12 && < 5";
-    mixin = "hiding (Prelude)";
-  };
-
   options.ghc-options = [
     "-Wall"
     "-Wredundant-constraints"
@@ -52,7 +46,10 @@ let
     "-Wunused-packages"
   ];
 
-  dependencies = [base "incipit-core >= 0.2" "polysemy >= 1.6"];
+  dependencies = [
+      { name = "base"; version = ">= 4.12 && < 5"; mixin = "hiding (Prelude)"; }
+      { name = "incipit-core"; version = ">= 0.3"; mixin = ["(IncipitCore as Prelude)" "hiding (IncipitCore)"]; }
+    ];
 
   project = name: doc: merge (meta // { library = paths name; } // options) {
     inherit name;
@@ -82,6 +79,7 @@ in {
     library.dependencies = [
       "async"
       "containers"
+      "polysemy >= 1.6"
       "polysemy-resume >= 0.3"
       "polysemy-time >= 0.3"
       "stm"
@@ -94,7 +92,7 @@ in {
       dependencies = [
         "async"
         "hedgehog"
-        "incipit-core"
+        "polysemy"
         "polysemy-conc"
         "polysemy-plugin"
         "polysemy-resume"
@@ -115,9 +113,10 @@ in {
     library.dependencies = [
       "path >= 0.7"
       "path-io >= 1.6.2"
-      "polysemy-conc >= 0.8.0.1"
-      "polysemy-resume >= 0.3"
-      "polysemy-time >= 0.4"
+      "polysemy >= 1.6"
+      "polysemy-conc >= 0.9"
+      "polysemy-resume >= 0.5"
+      "polysemy-time >= 0.5"
       "posix-pty >= 0.2"
       "process"
       "stm-chans >= 2"
@@ -126,11 +125,12 @@ in {
     ];
     tests.polysemy-process-unit = exe "polysemy-process" "test" {
       dependencies = [
+        "polysemy"
         "polysemy-conc"
         "polysemy-plugin"
         "polysemy-process"
         "polysemy-resume"
-        "polysemy-test"
+        "polysemy-test >= 0.6"
         "polysemy-time"
         "tasty"
         "tasty-expected-failure"
