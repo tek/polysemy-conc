@@ -33,6 +33,7 @@ library
       Polysemy.Conc.Effect.Interrupt
       Polysemy.Conc.Effect.Mask
       Polysemy.Conc.Effect.Monitor
+      Polysemy.Conc.Effect.PScoped
       Polysemy.Conc.Effect.Queue
       Polysemy.Conc.Effect.Race
       Polysemy.Conc.Effect.Scoped
@@ -44,6 +45,7 @@ library
       Polysemy.Conc.Interpreter.Interrupt
       Polysemy.Conc.Interpreter.Mask
       Polysemy.Conc.Interpreter.Monitor
+      Polysemy.Conc.Interpreter.PScoped
       Polysemy.Conc.Interpreter.Queue.Pure
       Polysemy.Conc.Interpreter.Queue.TB
       Polysemy.Conc.Interpreter.Queue.TBM
@@ -129,7 +131,7 @@ library
     , containers
     , incipit-core >=0.3
     , polysemy >=1.6
-    , polysemy-resume >=0.3
+    , polysemy-resume >=0.5
     , polysemy-time >=0.3
     , stm
     , stm-chans >=2
@@ -151,6 +153,7 @@ test-suite polysemy-conc-unit
       Polysemy.Conc.Test.LockTest
       Polysemy.Conc.Test.MaskTest
       Polysemy.Conc.Test.MonitorTest
+      Polysemy.Conc.Test.PScopedTest
       Polysemy.Conc.Test.QueueTest
       Polysemy.Conc.Test.ScopedTest
       Polysemy.Conc.Test.SyncTest

@@ -1,5 +1,7 @@
 # Unreleased
 
+* Add `PScoped`, a variant of `Scoped` that allows passing arguments to the scope.
+
 # 0.9.0.0
 
 * Add the missing `MVar` combinators for `Sync` that bracket an action with `mask`.

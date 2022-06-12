@@ -117,6 +117,25 @@ module Polysemy.Conc (
   interpretScopedResumableWithH,
   interpretScopedResumableWith_,
 
+  -- * Scoped Effects with scope parameter
+  PScoped,
+  pscoped,
+
+  -- ** Interpreters
+  runPScoped,
+  runPScopedAs,
+  interpretPScoped,
+  interpretPScopedH,
+  interpretPScopedAs,
+  interpretPScopedResumable,
+  interpretPScopedResumableH,
+  interpretPScopedWith,
+  interpretPScopedWithH,
+  interpretPScopedWith_,
+  interpretPScopedResumableWith,
+  interpretPScopedResumableWithH,
+  interpretPScopedResumableWith_,
+
   -- * Monitoring
   Monitor,
   monitor,
@@ -168,6 +187,7 @@ import Polysemy.Conc.Effect.Monitor (
   restart,
   withMonitor,
   )
+import Polysemy.Conc.Effect.PScoped (PScoped, pscoped)
 import Polysemy.Conc.Effect.Queue (Queue)
 import Polysemy.Conc.Effect.Race (Race, race, timeout)
 import Polysemy.Conc.Effect.Scoped (Scoped, scoped)
@@ -179,6 +199,21 @@ import Polysemy.Conc.Interpreter.Events (ChanConsumer, ChanEvents, EventChan, Ev
 import Polysemy.Conc.Interpreter.Interrupt (interpretInterrupt, interpretInterruptNull, interpretInterruptOnce)
 import Polysemy.Conc.Interpreter.Mask (Restoration, interpretMaskFinal, interpretUninterruptibleMaskFinal)
 import Polysemy.Conc.Interpreter.Monitor (interpretMonitorPure, interpretMonitorRestart)
+import Polysemy.Conc.Interpreter.PScoped (
+  interpretPScoped,
+  interpretPScopedAs,
+  interpretPScopedH,
+  interpretPScopedResumable,
+  interpretPScopedResumableH,
+  interpretPScopedResumableWith,
+  interpretPScopedResumableWithH,
+  interpretPScopedResumableWith_,
+  interpretPScopedWith,
+  interpretPScopedWithH,
+  interpretPScopedWith_,
+  runPScoped,
+  runPScopedAs,
+  )
 import Polysemy.Conc.Interpreter.Queue.Pure (
   interpretQueueListReadOnlyAtomic,
   interpretQueueListReadOnlyAtomicWith,
