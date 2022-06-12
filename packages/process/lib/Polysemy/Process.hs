@@ -73,6 +73,7 @@ module Polysemy.Process (
   interpretSystemProcessNativeOpaque,
   BasicProcess,
   PipesProcess,
+  SystemProcessError,
 
   -- ** Pty
   interpretPty,
@@ -136,6 +137,7 @@ import Polysemy.Process.Interpreter.SystemProcess (
   interpretSystemProcessWithProcess,
   interpretSystemProcessWithProcessOpaque,
   )
+import Polysemy.Process.Data.SystemProcessError (SystemProcessError)
 
 -- $intro
 -- This library provides an abstraction of a system process in the effect 'Process', whose constructors represent the
