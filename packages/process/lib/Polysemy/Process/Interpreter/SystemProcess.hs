@@ -117,13 +117,14 @@ checkEof = \case
     pure b
 
 -- |Interpret 'SystemProcess' with a concrete 'System.Process' with connected pipes.
-interpretSystemProcessWithProcess ::
-  ∀ r .
-  Member (Embed IO) r =>
+handleSystemProcessWithProcess ::
+  ∀ r r0 a .
+  Members [Stop SystemProcessError, Embed IO] r =>
   Process Handle Handle Handle ->
-  InterpreterFor (SystemProcess !! SystemProcessError) r
-interpretSystemProcessWithProcess process =
-  interpretResumable \case
+  SystemProcess (Sem r0) a ->
+  Sem r a
+handleSystemProcessWithProcess process =
+  \case
     SystemProcess.Pid ->
       processId process
     SystemProcess.Signal sig -> do
@@ -137,6 +138,15 @@ interpretSystemProcessWithProcess process =
       tryStop "stdin failed" (hPut (getStdin process) msg)
     SystemProcess.Wait ->
       tryStop "wait failed" (waitExitCode process)
+
+-- |Interpret 'SystemProcess' with a concrete 'System.Process' with connected pipes.
+interpretSystemProcessWithProcess ::
+  ∀ r .
+  Member (Embed IO) r =>
+  Process Handle Handle Handle ->
+  InterpreterFor (SystemProcess !! SystemProcessError) r
+interpretSystemProcessWithProcess process =
+  interpretResumable (handleSystemProcessWithProcess process)
 
 -- |Interpret 'SystemProcess' as a single global 'System.Process' that's started immediately.
 interpretSystemProcessNativeSingle ::

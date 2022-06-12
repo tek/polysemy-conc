@@ -65,6 +65,7 @@ module Polysemy.Process (
 
   -- ** SystemProcess
   interpretSystemProcessWithProcess,
+  handleSystemProcessWithProcess,
   interpretSystemProcessNativeSingle,
   interpretSystemProcessNative,
   interpretSystemProcessParamNative,
@@ -134,6 +135,7 @@ import Polysemy.Process.Interpreter.SystemProcess (
   interpretSystemProcessNativeOpaqueSingle,
   interpretSystemProcessNativeSingle,
   interpretSystemProcessParamNative,
+  handleSystemProcessWithProcess,
   interpretSystemProcessWithProcess,
   interpretSystemProcessWithProcessOpaque,
   )
