@@ -116,7 +116,7 @@ checkEof = \case
   b ->
     pure b
 
--- |Interpret 'SystemProcess' with a concrete 'System.Process' with connected pipes.
+-- |Handle 'SystemProcess' with a concrete 'System.Process' with connected pipes.
 handleSystemProcessWithProcess ::
   ∀ r r0 a .
   Members [Stop SystemProcessError, Embed IO] r =>
@@ -178,7 +178,7 @@ interpretSystemProcessParamNative ::
 interpretSystemProcessParamNative config =
   runPScoped (\ p u -> config p >>= \ c -> withProcess c u) interpretSystemProcessWithProcess
 
--- |Interpret 'SystemProcess' with a concrete 'System.Process' with connected pipes.
+-- |Interpret 'SystemProcess' with a concrete 'System.Process' with no connection to stdio.
 interpretSystemProcessWithProcessOpaque ::
   ∀ i o e r .
   Member (Embed IO) r =>

@@ -53,7 +53,7 @@ runScopedAs ::
   (resource -> InterpreterFor effect r) ->
   InterpreterFor (Scoped resource effect) r
 runScopedAs resource =
-  runScoped \ f -> f =<< resource
+  runScoped (=<< resource)
 
 -- |Variant of 'runScoped' that takes a higher-order handler instead of an interpreter.
 interpretScopedH ::
@@ -88,7 +88,7 @@ interpretScopedAs ::
   (∀ r0 x . resource -> effect (Sem r0) x -> Sem r x) ->
   InterpreterFor (Scoped resource effect) r
 interpretScopedAs resource =
-  interpretScoped \ f -> f =<< resource
+  interpretScoped (=<< resource)
 
 -- |Combined higher-order interpreter for 'Scoped' and 'Resumable'.
 -- This allows 'Stop' to be sent from within the resource allocator so that the consumer receives it.

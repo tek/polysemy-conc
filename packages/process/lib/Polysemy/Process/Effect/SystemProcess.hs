@@ -53,14 +53,14 @@ interrupt ::
 interrupt =
   signal Signal.sigINT
 
--- |Send signal INT(15) to the process.
+-- |Send signal TERM(15) to the process.
 term ::
   Member SystemProcess r =>
   Sem r ()
 term =
   signal Signal.sigTERM
 
--- |Send signal INT(9) to the process.
+-- |Send signal KILL(9) to the process.
 kill ::
   Member SystemProcess r =>
   Sem r ()
