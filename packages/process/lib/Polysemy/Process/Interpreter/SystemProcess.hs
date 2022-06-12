@@ -163,10 +163,10 @@ interpretSystemProcessNative config =
 interpretSystemProcessParamNative ::
   ∀ param r .
   Members [Resource, Embed IO] r =>
-  (param -> SysProcConf) ->
+  (param -> Sem r SysProcConf) ->
   InterpreterFor (PScoped param PipesProcess (SystemProcess !! SystemProcessError)) r
 interpretSystemProcessParamNative config =
-  runPScoped (withProcess . config) interpretSystemProcessWithProcess
+  runPScoped (\ p u -> config p >>= \ c -> withProcess c u) interpretSystemProcessWithProcess
 
 -- |Interpret 'SystemProcess' with a concrete 'System.Process' with connected pipes.
 interpretSystemProcessWithProcessOpaque ::
