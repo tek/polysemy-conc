@@ -66,9 +66,12 @@ module Polysemy.Process (
   interpretSystemProcessWithProcess,
   interpretSystemProcessNativeSingle,
   interpretSystemProcessNative,
+  interpretSystemProcessParamNative,
   interpretSystemProcessWithProcessOpaque,
   interpretSystemProcessNativeOpaqueSingle,
   interpretSystemProcessNativeOpaque,
+  BasicProcess,
+  PipesProcess,
 
   -- ** Pty
   interpretPty,
@@ -122,10 +125,13 @@ import Polysemy.Process.Interpreter.ProcessStdio (
   )
 import Polysemy.Process.Interpreter.Pty (interpretPty)
 import Polysemy.Process.Interpreter.SystemProcess (
+  BasicProcess,
+  PipesProcess,
   interpretSystemProcessNative,
   interpretSystemProcessNativeOpaque,
   interpretSystemProcessNativeOpaqueSingle,
   interpretSystemProcessNativeSingle,
+  interpretSystemProcessParamNative,
   interpretSystemProcessWithProcess,
   interpretSystemProcessWithProcessOpaque,
   )

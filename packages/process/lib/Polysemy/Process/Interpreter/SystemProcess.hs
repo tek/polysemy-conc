@@ -34,6 +34,9 @@ import Polysemy.Process.Data.SystemProcessError (SystemProcessError)
 import qualified Polysemy.Process.Effect.SystemProcess as SystemProcess
 import Polysemy.Process.Effect.SystemProcess (SystemProcess)
 
+type BasicProcess =
+  Process () () ()
+
 type PipesProcess =
   Process Handle Handle Handle
 
