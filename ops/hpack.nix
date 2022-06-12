@@ -80,7 +80,7 @@ in {
       "async"
       "containers"
       "polysemy >= 1.6"
-      "polysemy-resume >= 0.3"
+      "polysemy-resume >= 0.5"
       "polysemy-time >= 0.3"
       "stm"
       "stm-chans >= 2"
