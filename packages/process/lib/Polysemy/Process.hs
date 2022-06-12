@@ -71,7 +71,7 @@ module Polysemy.Process (
   interpretSystemProcessWithProcessOpaque,
   interpretSystemProcessNativeOpaqueSingle,
   interpretSystemProcessNativeOpaque,
-  BasicProcess,
+  SysProcConf,
   PipesProcess,
   SystemProcessError,
 
@@ -127,7 +127,7 @@ import Polysemy.Process.Interpreter.ProcessStdio (
   )
 import Polysemy.Process.Interpreter.Pty (interpretPty)
 import Polysemy.Process.Interpreter.SystemProcess (
-  BasicProcess,
+  SysProcConf,
   PipesProcess,
   interpretSystemProcessNative,
   interpretSystemProcessNativeOpaque,

@@ -34,13 +34,13 @@ import Polysemy.Process.Data.SystemProcessError (SystemProcessError)
 import qualified Polysemy.Process.Effect.SystemProcess as SystemProcess
 import Polysemy.Process.Effect.SystemProcess (SystemProcess)
 
-type BasicProcess =
-  Process () () ()
+type SysProcConf =
+  ProcessConfig () () ()
 
 type PipesProcess =
   Process Handle Handle Handle
 
-processWithPipes :: ProcessConfig () () () -> ProcessConfig Handle Handle Handle
+processWithPipes :: SysProcConf -> ProcessConfig Handle Handle Handle
 processWithPipes =
   setStdin createPipe .
   setStdout createPipe .
@@ -48,14 +48,14 @@ processWithPipes =
 
 start ::
   Member (Embed IO) r =>
-  ProcessConfig () () () ->
+  SysProcConf ->
   Sem r PipesProcess
 start =
   startProcess . processWithPipes
 
 withProcess ::
   Members [Resource, Embed IO] r =>
-  ProcessConfig () () () ->
+  SysProcConf ->
   (PipesProcess -> Sem r a) ->
   Sem r a
 withProcess config use =
@@ -142,7 +142,7 @@ interpretSystemProcessWithProcess process =
 interpretSystemProcessNativeSingle ::
   ∀ r .
   Members [Resource, Embed IO] r =>
-  ProcessConfig () () () ->
+  SysProcConf ->
   InterpreterFor (SystemProcess !! SystemProcessError) r
 interpretSystemProcessNativeSingle config sem =
   withProcess config \ process ->
@@ -153,7 +153,7 @@ interpretSystemProcessNativeSingle config sem =
 interpretSystemProcessNative ::
   ∀ r .
   Members [Resource, Embed IO] r =>
-  ProcessConfig () () () ->
+  SysProcConf ->
   InterpreterFor (Scoped PipesProcess (SystemProcess !! SystemProcessError)) r
 interpretSystemProcessNative config =
   runScoped (withProcess config) interpretSystemProcessWithProcess
@@ -163,7 +163,7 @@ interpretSystemProcessNative config =
 interpretSystemProcessParamNative ::
   ∀ param r .
   Members [Resource, Embed IO] r =>
-  (param -> ProcessConfig () () ()) ->
+  (param -> SysProcConf) ->
   InterpreterFor (PScoped param PipesProcess (SystemProcess !! SystemProcessError)) r
 interpretSystemProcessParamNative config =
   runPScoped (withProcess . config) interpretSystemProcessWithProcess
