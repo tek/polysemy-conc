@@ -23,6 +23,7 @@ module Polysemy.Process (
   -- ** SystemProcess
   SystemProcess,
   withSystemProcess,
+  withSystemProcessParam,
 
   -- ** Pty
   Pty,
@@ -89,7 +90,7 @@ import Polysemy.Process.Effect.Process (Process (..), recv, send, withProcess)
 import Polysemy.Process.Effect.ProcessInput (ProcessInput)
 import Polysemy.Process.Effect.ProcessOutput (OutputPipe (Stderr, Stdout), ProcessOutput)
 import Polysemy.Process.Effect.Pty (Pty, withPty)
-import Polysemy.Process.Effect.SystemProcess (SystemProcess, withSystemProcess)
+import Polysemy.Process.Effect.SystemProcess (SystemProcess, withSystemProcess, withSystemProcessParam)
 import Polysemy.Process.Executable (resolveExecutable)
 import Polysemy.Process.Interpreter.Process (
   interpretInputHandle,
