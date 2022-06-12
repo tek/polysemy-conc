@@ -4,7 +4,9 @@
 module Polysemy.Process.Interpreter.SystemProcess where
 
 import Data.ByteString (hGetSome, hPut)
+import Polysemy.Conc.Effect.PScoped (PScoped)
 import Polysemy.Conc.Effect.Scoped (Scoped)
+import Polysemy.Conc.Interpreter.PScoped (runPScoped)
 import Polysemy.Conc.Interpreter.Scoped (runScoped)
 import Polysemy.Resume (Stop, interpretResumable, stop, stopNote, type (!!))
 import Prelude hiding (fromException)
@@ -152,6 +154,16 @@ interpretSystemProcessNative ::
   InterpreterFor (Scoped PipesProcess (SystemProcess !! SystemProcessError)) r
 interpretSystemProcessNative config =
   runScoped (withProcess config) interpretSystemProcessWithProcess
+
+-- |Interpret 'SystemProcess' as a scoped 'System.Process' that's started wherever 'Polysemy.Process.withSystemProcess'
+-- is called and terminated when the wrapped action finishes.
+interpretSystemProcessParamNative ::
+  ∀ param r .
+  Members [Resource, Embed IO] r =>
+  (param -> ProcessConfig () () ()) ->
+  InterpreterFor (PScoped param PipesProcess (SystemProcess !! SystemProcessError)) r
+interpretSystemProcessParamNative config =
+  runPScoped (withProcess . config) interpretSystemProcessWithProcess
 
 -- |Interpret 'SystemProcess' with a concrete 'System.Process' with connected pipes.
 interpretSystemProcessWithProcessOpaque ::

@@ -3,6 +3,7 @@
 -- |Description: SystemProcess Effect, Internal
 module Polysemy.Process.Effect.SystemProcess where
 
+import Polysemy.Conc.Effect.PScoped (PScoped, pscoped)
 import Polysemy.Conc.Effect.Scoped (Scoped, scoped)
 import Polysemy.Resume (type (!!))
 import System.Exit (ExitCode)
@@ -35,6 +36,15 @@ withSystemProcess ::
   InterpreterFor (SystemProcess !! err) r
 withSystemProcess =
   scoped @resource
+
+-- |Create a scoped resource for 'SystemProcess'.
+withSystemProcessParam ::
+  ∀ param resource err r .
+  Member (PScoped param resource (SystemProcess !! err)) r =>
+  param ->
+  InterpreterFor (SystemProcess !! err) r
+withSystemProcessParam =
+  pscoped @param @resource
 
 -- |Send signal INT(2) to the process.
 interrupt ::
