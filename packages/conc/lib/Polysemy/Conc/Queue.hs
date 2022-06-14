@@ -50,10 +50,18 @@ loop ::
 loop action =
   loopOr (pure True) \ d -> True <$ action d
 
--- |Read from a 'Queue' and convert the result to 'Maybe', returning 'Nothing' if there is no element available or the
--- queue has been closed.
+-- |Read from a 'Queue' and convert the result to 'Maybe', returning 'Nothing' if the queue has been closed, and
+-- blocking until an element is available.
 readMaybe ::
   Member (Queue d) r =>
   Sem r (Maybe d)
 readMaybe =
   resultToMaybe <$> read
+
+-- |Read from a 'Queue' and convert the result to 'Maybe', returning 'Nothing' if there is no element available or the
+-- queue has been closed.
+tryReadMaybe ::
+  Member (Queue d) r =>
+  Sem r (Maybe d)
+tryReadMaybe =
+  resultToMaybe <$> tryRead

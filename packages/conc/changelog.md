@@ -1,6 +1,7 @@
 # Unreleased
 
 * Add `PScoped`, a variant of `Scoped` that allows passing arguments to the scope.
+* Add `Queue.tryReadMaybe`, a variant of `readMaybe` that does not wait.
 
 # 0.9.0.0
 
