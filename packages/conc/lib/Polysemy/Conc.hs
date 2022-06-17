@@ -116,6 +116,10 @@ module Polysemy.Conc (
   interpretScopedResumableWith,
   interpretScopedResumableWithH,
   interpretScopedResumableWith_,
+  interpretResumableScoped,
+  interpretResumableScopedH,
+  interpretResumableScopedWith,
+  interpretResumableScopedWithH,
 
   -- * Scoped Effects with scope parameter
   PScoped,
@@ -224,6 +228,10 @@ import Polysemy.Conc.Interpreter.Queue.TB (interpretQueueTB)
 import Polysemy.Conc.Interpreter.Queue.TBM (interpretQueueTBM)
 import Polysemy.Conc.Interpreter.Race (interpretRace)
 import Polysemy.Conc.Interpreter.Scoped (
+  interpretResumableScoped,
+  interpretResumableScopedH,
+  interpretResumableScopedWith,
+  interpretResumableScopedWithH,
   interpretScoped,
   interpretScopedAs,
   interpretScopedH,

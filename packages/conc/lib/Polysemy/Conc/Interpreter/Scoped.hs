@@ -91,7 +91,8 @@ interpretScopedAs resource =
   interpretScoped (=<< resource)
 
 -- |Combined higher-order interpreter for 'Scoped' and 'Resumable'.
--- This allows 'Stop' to be sent from within the resource allocator so that the consumer receives it.
+-- This allows 'Stop' to be sent from within the resource allocator so that the consumer receives it, terminating the
+-- entire scope.
 interpretScopedResumableH ::
   ∀ resource effect err r .
   (∀ x . (resource -> Sem (Stop err : r) x) -> Sem (Stop err : r) x) ->
@@ -124,7 +125,8 @@ interpretScopedResumableH withResource scopedHandler =
             exFinal <$> runStop tac
 
 -- |Combined interpreter for 'Scoped' and 'Resumable'.
--- This allows 'Stop' to be sent from within the resource allocator so that the consumer receives it.
+-- This allows 'Stop' to be sent from within the resource allocator so that the consumer receives it, terminating the
+-- entire scope.
 interpretScopedResumable ::
   ∀ resource effect err r .
   (∀ x . (resource -> Sem (Stop err : r) x) -> Sem (Stop err : r) x) ->
@@ -133,6 +135,8 @@ interpretScopedResumable ::
 interpretScopedResumable withResource scopedHandler =
   interpretScopedResumableH withResource \ r e -> liftT (scopedHandler r e)
 
+-- |Higher-order interpreter for 'Scoped' that allows the handler to use additional effects that are interpreted by the
+-- resource allocator.
 interpretScopedWithH ::
   ∀ extra resource effect r r1 .
   r1 ~ (extra ++ r) =>
@@ -155,6 +159,8 @@ interpretScopedWithH withResource scopedHandler =
         _ ->
           error "nested InScope"
 
+-- |Interpreter for 'Scoped' that allows the handler to use additional effects that are interpreted by the resource
+-- allocator.
 interpretScopedWith ::
   ∀ extra resource effect r r1 .
   r1 ~ (extra ++ r) =>
@@ -165,6 +171,9 @@ interpretScopedWith ::
 interpretScopedWith withResource scopedHandler =
   interpretScopedWithH @extra withResource \ r e -> liftT (scopedHandler r e)
 
+-- |Interpreter for 'Scoped' that allows the handler to use additional effects that are interpreted by the resource
+-- allocator.
+-- In this variant, the resource allocator is a plain action.
 interpretScopedWith_ ::
   ∀ extra effect r r1 .
   r1 ~ (extra ++ r) =>
@@ -175,6 +184,10 @@ interpretScopedWith_ ::
 interpretScopedWith_ withResource scopedHandler =
   interpretScopedWithH @extra (\ f -> withResource (f ())) \ () e -> liftT (scopedHandler e)
 
+-- |Combined higher-order interpreter for 'Scoped' and 'Resumable' that allows the handler to use additional effects
+-- that are interpreted by the resource allocator.
+-- This allows 'Stop' to be sent from within the resource allocator so that the consumer receives it, terminating the
+-- entire scope.
 interpretScopedResumableWithH ::
   ∀ extra resource effect err r r1 .
   r1 ~ ((extra ++ '[Stop err]) ++ r) =>
@@ -230,9 +243,13 @@ interpretScopedResumableWithH withResource scopedHandler =
                 Left err -> Left err <$ s'
             exFinal <$> runStop (raise tac)
 
+-- |Combined interpreter for 'Scoped' and 'Resumable' that allows the handler to use additional effects that are
+-- interpreted by the resource allocator.
+-- This allows 'Stop' to be sent from within the resource allocator so that the consumer receives it, terminating the
+-- entire scope.
 interpretScopedResumableWith ::
   ∀ extra resource effect err r r1 .
-  r1 ~ ((extra ++ '[Stop err]) ++ r) =>
+  r1 ~ (extra ++ '[Stop err]) ++ r =>
   InsertAtIndex 1 '[Scoped resource effect !! err] r1 r (Scoped resource effect !! err : r1) (extra ++ '[Stop err]) =>
   (∀ x . (resource -> Sem r1 x) -> Sem (Stop err : r) x) ->
   (∀ r0 x . resource -> effect (Sem r0) x -> Sem r1 x) ->
@@ -240,12 +257,111 @@ interpretScopedResumableWith ::
 interpretScopedResumableWith withResource scopedHandler =
   interpretScopedResumableWithH @extra withResource \ r e -> liftT (scopedHandler r e)
 
+-- |Combined interpreter for 'Scoped' and 'Resumable' that allows the handler to use additional effects that are
+-- interpreted by the resource allocator.
+-- This allows 'Stop' to be sent from within the resource allocator so that the consumer receives it, terminating the
+-- entire scope.
+-- In this variant, the resource allocator is a plain action.
 interpretScopedResumableWith_ ::
   ∀ extra effect err r r1 .
-  r1 ~ ((extra ++ '[Stop err]) ++ r) =>
+  r1 ~ (extra ++ '[Stop err]) ++ r =>
   InsertAtIndex 1 '[Scoped () effect !! err] r1 r (Scoped () effect !! err : r1) (extra ++ '[Stop err]) =>
   (∀ x . Sem r1 x -> Sem (Stop err : r) x) ->
   (∀ r0 x . effect (Sem r0) x -> Sem r1 x) ->
   InterpreterFor (Scoped () effect !! err) r
 interpretScopedResumableWith_ withResource scopedHandler =
   interpretScopedResumableWith @extra (\ f -> withResource (f ())) (const scopedHandler)
+
+-- |Combined higher-order interpreter for 'Resumable' and 'Scoped'.
+-- In this variant, only the handler may send 'Stop', but this allows resumption to happen on each action inside of the
+-- scope.
+interpretResumableScopedH ::
+  ∀ resource effect err r .
+  (∀ x . (resource -> Sem r x) -> Sem r x) ->
+  (∀ r0 x . resource -> effect (Sem r0) x -> Tactical effect (Sem r0) (Stop err : r) x) ->
+  InterpreterFor (Scoped resource (effect !! err)) r
+interpretResumableScopedH withResource scopedHandler =
+  run
+  where
+    run :: InterpreterFor (Scoped resource (effect !! err)) r
+    run =
+      interpretH' \ (Weaving inner s' dist' ex' ins') -> case inner of
+        Run resource (Resumable (Weaving effect s dist ex ins)) ->
+          exFinal <$> runStop (tac (scopedHandler resource effect))
+          where
+            tac =
+              runTactics
+              (Compose (s <$ s'))
+              (raise . raise . run . fmap Compose . dist' . fmap dist . getCompose)
+              (ins <=< ins' . getCompose)
+              (raise . run . fmap Compose . dist' . fmap dist . getCompose)
+            exFinal = ex' . \case
+              Right (Compose a) -> Right . ex <$> a
+              Left err -> Left err <$ s'
+        InScope main ->
+          ex' <$> withResource \ resource -> run (dist' (main resource <$ s'))
+
+-- |Combined interpreter for 'Resumable' and 'Scoped'.
+-- In this variant, only the handler may send 'Stop', but this allows resumption to happen on each action inside of the
+-- scope.
+interpretResumableScoped ::
+  ∀ resource effect err r .
+  (∀ x . (resource -> Sem r x) -> Sem r x) ->
+  (∀ r0 x . resource -> effect (Sem r0) x -> Sem (Stop err : r) x) ->
+  InterpreterFor (Scoped resource (effect !! err)) r
+interpretResumableScoped withResource scopedHandler =
+  interpretResumableScopedH withResource \ r e -> liftT (scopedHandler r e)
+
+-- |Combined higher-order interpreter for 'Resumable' and 'Scoped' that allows the handler to use additional effects
+-- that are interpreted by the resource allocator.
+-- In this variant, only the handler may send 'Stop', but this allows resumption to happen on each action inside of the
+-- scope.
+interpretResumableScopedWithH ::
+  ∀ extra resource effect err r r1 .
+  r1 ~ extra ++ r =>
+  InsertAtIndex 1 '[Scoped resource (effect !! err)] r1 r (Scoped resource (effect !! err) : r1) extra =>
+  (∀ x . (resource -> Sem r1 x) -> Sem r x) ->
+  (∀ r0 x . resource -> effect (Sem r0) x -> Tactical effect (Sem r0) (Stop err : r1) x) ->
+  InterpreterFor (Scoped resource (effect !! err)) r
+interpretResumableScopedWithH withResource scopedHandler =
+  run
+  where
+    run :: InterpreterFor (Scoped resource (effect !! err)) r
+    run =
+      interpretH' \case
+        Weaving (InScope main) s' dist' ex' _ ->
+          ex' <$> withResource \ resource -> inScope (insertAt @1 @extra (dist' (main resource <$ s')))
+        _ ->
+          error "top level Run"
+      where
+        inScope :: InterpreterFor (Scoped resource (effect !! err)) r1
+        inScope =
+          interpretH' \case
+            Weaving (Run resource (Resumable (Weaving effect s dist ex ins))) s' dist' ex' ins' ->
+              exFinal <$> runStop (tac (scopedHandler resource effect))
+              where
+                tac =
+                  runTactics
+                  (Compose (s <$ s'))
+                  (raise . raise . inScope . fmap Compose . dist' . fmap dist . getCompose)
+                  (ins <=< ins' . getCompose)
+                  (raise . inScope . fmap Compose . dist' . fmap dist . getCompose)
+                exFinal = ex' . \case
+                  Right (Compose a) -> Right . ex <$> a
+                  Left err -> Left err <$ s'
+            _ ->
+              error "nested InScope"
+
+-- |Combined interpreter for 'Resumable' and 'Scoped' that allows the handler to use additional effects that are
+-- interpreted by the resource allocator.
+-- In this variant, only the handler may send 'Stop', but this allows resumption to happen on each action inside of the
+-- scope.
+interpretResumableScopedWith ::
+  ∀ extra resource effect err r r1 .
+  r1 ~ extra ++ r =>
+  InsertAtIndex 1 '[Scoped resource (effect !! err)] r1 r (Scoped resource (effect !! err) : r1) extra =>
+  (∀ x . (resource -> Sem r1 x) -> Sem r x) ->
+  (∀ r0 x . resource -> effect (Sem r0) x -> Sem (Stop err : r1) x) ->
+  InterpreterFor (Scoped resource (effect !! err)) r
+interpretResumableScopedWith withResource scopedHandler =
+  interpretResumableScopedWithH @extra withResource \ r e -> liftT (scopedHandler r e)
