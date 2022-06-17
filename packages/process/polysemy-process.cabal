@@ -40,6 +40,8 @@ library
       Polysemy.Process.Executable
       Polysemy.Process.Interpreter.Process
       Polysemy.Process.Interpreter.ProcessInput
+      Polysemy.Process.Interpreter.ProcessOneshot
+      Polysemy.Process.Interpreter.ProcessOneshotStdio
       Polysemy.Process.Interpreter.ProcessOutput
       Polysemy.Process.Interpreter.ProcessStdio
       Polysemy.Process.Interpreter.Pty

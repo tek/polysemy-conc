@@ -1,5 +1,8 @@
 # Unreleased
 
+* Add `oneshot` variants of `Process` interpreters that send `Stop` to the individual actions inside the scope, modeling
+  a process that is expected to terminate.
+
 # 0.9.0.0
 
 * Remove stderr from the `Process` abstraction so that stdout and stderr must be unified after parsing (potentially as

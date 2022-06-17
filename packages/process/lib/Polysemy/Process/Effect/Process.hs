@@ -58,6 +58,14 @@ withProcess ::
 withProcess =
   scoped @resource
 
+-- |Create a scoped resource for 'Process'.
+withProcessOneshot ::
+  ∀ resource i o err r .
+  Member (Scoped resource (Process i o !! err)) r =>
+  InterpreterFor (Process i o !! err) r
+withProcessOneshot =
+  scoped @resource
+
 -- |Convert 'Output' and 'Input' to 'Process'.
 runProcessIO ::
   ∀ i o err r .

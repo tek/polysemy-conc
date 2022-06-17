@@ -48,6 +48,15 @@ module Polysemy.Process (
   interpretProcessIO,
   interpretProcessHandles,
   interpretProcessCurrent,
+  interpretProcessOneshotByteStringNative,
+  interpretProcessOneshotByteStringLinesNative,
+  interpretProcessOneshotTextNative,
+  interpretProcessOneshotTextLinesNative,
+  interpretProcessOneshot,
+  interpretProcessOneshotByteString,
+  interpretProcessOneshotByteStringLines,
+  interpretProcessOneshotText,
+  interpretProcessOneshotTextLines,
 
   -- ** ProcessOutput
   interpretProcessOutputIgnore,
@@ -88,6 +97,7 @@ import Prelude hiding (send)
 import Polysemy.Process.Data.ProcessKill (ProcessKill (..))
 import Polysemy.Process.Data.ProcessOptions (ProcessOptions (ProcessOptions))
 import Polysemy.Process.Data.ProcessOutputParseResult (ProcessOutputParseResult (..))
+import Polysemy.Process.Data.SystemProcessError (SystemProcessError)
 import Polysemy.Process.Effect.Process (Process (..), recv, send, withProcess)
 import Polysemy.Process.Effect.ProcessInput (ProcessInput)
 import Polysemy.Process.Effect.ProcessOutput (OutputPipe (Stderr, Stdout), ProcessOutput)
@@ -110,6 +120,8 @@ import Polysemy.Process.Interpreter.Process (
   interpretProcessTextLines,
   )
 import Polysemy.Process.Interpreter.ProcessInput (interpretProcessInputId, interpretProcessInputText)
+import Polysemy.Process.Interpreter.ProcessOneshot (interpretProcessOneshot, interpretProcessOneshotByteString, interpretProcessOneshotByteStringLines, interpretProcessOneshotText, interpretProcessOneshotTextLines)
+import Polysemy.Process.Interpreter.ProcessOneshotStdio (interpretProcessOneshotByteStringLinesNative, interpretProcessOneshotByteStringNative, interpretProcessOneshotTextLinesNative, interpretProcessOneshotTextNative)
 import Polysemy.Process.Interpreter.ProcessOutput (
   interpretProcessOutputId,
   interpretProcessOutputIgnore,
@@ -128,18 +140,17 @@ import Polysemy.Process.Interpreter.ProcessStdio (
   )
 import Polysemy.Process.Interpreter.Pty (interpretPty)
 import Polysemy.Process.Interpreter.SystemProcess (
-  SysProcConf,
   PipesProcess,
+  SysProcConf,
+  handleSystemProcessWithProcess,
   interpretSystemProcessNative,
   interpretSystemProcessNativeOpaque,
   interpretSystemProcessNativeOpaqueSingle,
   interpretSystemProcessNativeSingle,
   interpretSystemProcessParamNative,
-  handleSystemProcessWithProcess,
   interpretSystemProcessWithProcess,
   interpretSystemProcessWithProcessOpaque,
   )
-import Polysemy.Process.Data.SystemProcessError (SystemProcessError)
 
 -- $intro
 -- This library provides an abstraction of a system process in the effect 'Process', whose constructors represent the

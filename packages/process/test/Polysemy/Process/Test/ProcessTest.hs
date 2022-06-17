@@ -3,11 +3,11 @@
 module Polysemy.Process.Test.ProcessTest where
 
 import qualified Data.ByteString as ByteString
-import qualified Polysemy.Conc as Conc
+import qualified Polysemy.Conc.Effect.Race as Conc (timeout)
 import Polysemy.Conc.Effect.Scoped (Scoped)
 import Polysemy.Conc.Interpreter.Race (interpretRace)
 import qualified Polysemy.Conc.Race as Race
-import Polysemy.Resume (resumeHoistError)
+import Polysemy.Resume (resumeHoistAs, resumeHoistError, runStop)
 import Polysemy.Test (UnitTest, assertLeft, runTestAuto, unitTest, (===))
 import Polysemy.Time (MilliSeconds (MilliSeconds), Seconds (Seconds))
 import qualified System.Process.Typed as Process
@@ -18,11 +18,12 @@ import Test.Tasty.ExpectedFailure (ignoreTest)
 import Polysemy.Process.Data.ProcessError (ProcessError)
 import Polysemy.Process.Data.ProcessKill (ProcessKill (KillNever))
 import Polysemy.Process.Data.ProcessOptions (ProcessOptions (kill))
+import Polysemy.Process.Data.ProcessOutputParseResult (ProcessOutputParseResult (Done, Partial))
 import qualified Polysemy.Process.Effect.Process as Process
-import Polysemy.Process.Effect.Process (withProcess)
+import Polysemy.Process.Effect.Process (withProcess, withProcessOneshot)
+import Polysemy.Process.Interpreter.ProcessOneshotStdio (interpretProcessOneshotTextLinesNative)
 import Polysemy.Process.Interpreter.ProcessOutput (parseMany)
 import Polysemy.Process.Interpreter.ProcessStdio (interpretProcessByteStringNative, interpretProcessTextLinesNative)
-import Polysemy.Process.Data.ProcessOutputParseResult (ProcessOutputParseResult(Done, Partial))
 
 config :: ProcessConfig () () ()
 config =
@@ -88,10 +89,21 @@ test_processIncremental =
       | otherwise =
         Done (ByteString.take 2 b) (ByteString.drop 2 b)
 
+test_processOneshot :: UnitTest
+test_processOneshot =
+  runTestAuto $ interpretRace $ asyncToIOFinal $ interpretProcessOneshotTextLinesNative def (Process.proc "echo" [toString message]) do
+    num :: Either Int () <- runStop @Int $ withProcessOneshot do
+      Race.timeout_ (throw "timed out") (Seconds 5) do
+        for_ @[] [1..6] \ i ->
+          resumeHoistAs i Process.recv
+        unit
+    assertLeft 6 num
+
 test_processAll :: TestTree
 test_processAll =
   testGroup "process" [
     unitTest "read raw chunks" test_process,
     unitTest "read lines" test_processLines,
-    ignoreTest (unitTest "don't kill the process at the end of the scope" test_processKillNever)
+    ignoreTest (unitTest "don't kill the process at the end of the scope" test_processKillNever),
+    unitTest "expect termination" test_processOneshot
   ]

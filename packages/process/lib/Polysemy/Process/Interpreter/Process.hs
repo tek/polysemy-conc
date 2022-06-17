@@ -5,7 +5,6 @@ module Polysemy.Process.Interpreter.Process where
 
 import Control.Concurrent.STM.TBMQueue (TBMQueue)
 import Data.ByteString (hGetSome, hPut)
-import qualified Polysemy.Conc as Conc
 import Polysemy.Conc.Async (withAsync_)
 import qualified Polysemy.Conc.Data.QueueResult as QueueResult
 import qualified Polysemy.Conc.Effect.Queue as Queue
@@ -14,6 +13,7 @@ import Polysemy.Conc.Effect.Race (Race)
 import Polysemy.Conc.Effect.Scoped (Scoped)
 import Polysemy.Conc.Interpreter.Queue.TBM (interpretQueueTBMWith, withTBMQueue)
 import Polysemy.Conc.Interpreter.Scoped (interpretScopedResumableWith_)
+import qualified Polysemy.Conc.Race as Conc (timeout_)
 import Polysemy.Input (Input (Input))
 import Polysemy.Output (Output (Output))
 import Polysemy.Resume (Stop, interpretResumable, resumeOr, resume_, stop, stopNote, type (!!))
@@ -178,6 +178,8 @@ scope (ProcessOptions discard qSize kill) =
 
 -- |Interpret 'Process' with a system process resource whose file descriptors are connected to three 'TBMQueue's,
 -- deferring decoding of stdout and stderr to the interpreters of two 'ProcessOutput' effects.
+-- This variant models a daemon process that is not expected to terminate, causing 'Stop' to be sent to the scope
+-- callsite instead of individual 'Process' actions.
 interpretProcess ::
   ∀ resource err i o r .
   Member (Scoped resource (SystemProcess !! err)) r =>
@@ -190,6 +192,8 @@ interpretProcess options =
 -- |Interpret 'Process' with a system process resource whose stdin/stdout are connected to two 'TBMQueue's,
 -- producing 'ByteString's.
 -- Silently discards stderr.
+-- This variant models a daemon process that is not expected to terminate, causing 'Stop' to be sent to the scope
+-- callsite instead of individual 'Process' actions.
 interpretProcessByteString ::
   ∀ resource err r .
   Members [Scoped resource (SystemProcess !! err), Resource, Race, Async, Embed IO] r =>
@@ -205,6 +209,8 @@ interpretProcessByteString options =
 -- |Interpret 'Process' with a system process resource whose stdin/stdout are connected to two 'TBMQueue's,
 -- producing chunks of lines of 'ByteString's.
 -- Silently discards stderr.
+-- This variant models a daemon process that is not expected to terminate, causing 'Stop' to be sent to the scope
+-- callsite instead of individual 'Process' actions.
 interpretProcessByteStringLines ::
   ∀ resource err r .
   Members [Scoped resource (SystemProcess !! err), Resource, Race, Async, Embed IO] r =>
@@ -220,6 +226,8 @@ interpretProcessByteStringLines options =
 -- |Interpret 'Process' with a system process resource whose stdin/stdout are connected to two 'TBMQueue's,
 -- producing 'Text's.
 -- Silently discards stderr.
+-- This variant models a daemon process that is not expected to terminate, causing 'Stop' to be sent to the scope
+-- callsite instead of individual 'Process' actions.
 interpretProcessText ::
   ∀ resource err r .
   Members [Scoped resource (SystemProcess !! err), Resource, Race, Async, Embed IO] r =>
@@ -235,6 +243,8 @@ interpretProcessText options =
 -- |Interpret 'Process' with a system process resource whose stdin/stdout are connected to two 'TBMQueue's,
 -- producing chunks of lines of 'Text's.
 -- Silently discards stderr.
+-- This variant models a daemon process that is not expected to terminate, causing 'Stop' to be sent to the scope
+-- callsite instead of individual 'Process' actions.
 interpretProcessTextLines ::
   ∀ resource err r .
   Members [Scoped resource (SystemProcess !! err), Resource, Race, Async, Embed IO] r =>
