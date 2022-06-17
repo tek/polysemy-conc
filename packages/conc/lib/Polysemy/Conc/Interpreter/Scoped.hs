@@ -135,6 +135,18 @@ interpretScopedResumable ::
 interpretScopedResumable withResource scopedHandler =
   interpretScopedResumableH withResource \ r e -> liftT (scopedHandler r e)
 
+-- |Combined interpreter for 'Scoped' and 'Resumable'.
+-- This allows 'Stop' to be sent from within the resource allocator so that the consumer receives it, terminating the
+-- entire scope.
+-- In this variant, the resource allocator is a plain action.
+interpretScopedResumable_ ::
+  ∀ resource effect err r .
+  Sem (Stop err : r) resource ->
+  (∀ r0 x . resource -> effect (Sem r0) x -> Sem (Stop err : r) x) ->
+  InterpreterFor (Scoped resource effect !! err) r
+interpretScopedResumable_ resource =
+  interpretScopedResumable (=<< resource)
+
 -- |Higher-order interpreter for 'Scoped' that allows the handler to use additional effects that are interpreted by the
 -- resource allocator.
 interpretScopedWithH ::
@@ -173,7 +185,7 @@ interpretScopedWith withResource scopedHandler =
 
 -- |Interpreter for 'Scoped' that allows the handler to use additional effects that are interpreted by the resource
 -- allocator.
--- In this variant, the resource allocator is a plain action.
+-- In this variant, no resource is used and the allocator is a plain interpreter.
 interpretScopedWith_ ::
   ∀ extra effect r r1 .
   r1 ~ (extra ++ r) =>
@@ -261,7 +273,7 @@ interpretScopedResumableWith withResource scopedHandler =
 -- interpreted by the resource allocator.
 -- This allows 'Stop' to be sent from within the resource allocator so that the consumer receives it, terminating the
 -- entire scope.
--- In this variant, the resource allocator is a plain action.
+-- In this variant, no resource is used and the allocator is a plain interpreter.
 interpretScopedResumableWith_ ::
   ∀ extra effect err r r1 .
   r1 ~ (extra ++ '[Stop err]) ++ r =>
@@ -269,8 +281,8 @@ interpretScopedResumableWith_ ::
   (∀ x . Sem r1 x -> Sem (Stop err : r) x) ->
   (∀ r0 x . effect (Sem r0) x -> Sem r1 x) ->
   InterpreterFor (Scoped () effect !! err) r
-interpretScopedResumableWith_ withResource scopedHandler =
-  interpretScopedResumableWith @extra (\ f -> withResource (f ())) (const scopedHandler)
+interpretScopedResumableWith_ extra scopedHandler =
+  interpretScopedResumableWith @extra (\ f -> extra (f ())) (const scopedHandler)
 
 -- |Combined higher-order interpreter for 'Resumable' and 'Scoped'.
 -- In this variant, only the handler may send 'Stop', but this allows resumption to happen on each action inside of the
@@ -311,6 +323,18 @@ interpretResumableScoped ::
   InterpreterFor (Scoped resource (effect !! err)) r
 interpretResumableScoped withResource scopedHandler =
   interpretResumableScopedH withResource \ r e -> liftT (scopedHandler r e)
+
+-- |Combined interpreter for 'Resumable' and 'Scoped'.
+-- In this variant:
+-- - Only the handler may send 'Stop', but this allows resumption to happen on each action inside of the scope.
+-- - The resource allocator is a plain action.
+interpretResumableScoped_ ::
+  ∀ resource effect err r .
+  Sem r resource ->
+  (∀ r0 x . resource -> effect (Sem r0) x -> Sem (Stop err : r) x) ->
+  InterpreterFor (Scoped resource (effect !! err)) r
+interpretResumableScoped_ withResource =
+  interpretResumableScoped (=<< withResource)
 
 -- |Combined higher-order interpreter for 'Resumable' and 'Scoped' that allows the handler to use additional effects
 -- that are interpreted by the resource allocator.
@@ -365,3 +389,18 @@ interpretResumableScopedWith ::
   InterpreterFor (Scoped resource (effect !! err)) r
 interpretResumableScopedWith withResource scopedHandler =
   interpretResumableScopedWithH @extra withResource \ r e -> liftT (scopedHandler r e)
+
+-- |Combined interpreter for 'Resumable' and 'Scoped' that allows the handler to use additional effects that are
+-- interpreted by the resource allocator.
+-- In this variant:
+-- - Only the handler may send 'Stop', but this allows resumption to happen on each action inside of the scope.
+-- - No resource is used and the allocator is a plain interpreter.
+interpretResumableScopedWith_ ::
+  ∀ extra effect err r r1 .
+  r1 ~ extra ++ r =>
+  InsertAtIndex 1 '[Scoped () (effect !! err)] r1 r (Scoped () (effect !! err) : r1) extra =>
+  (∀ x . Sem r1 x -> Sem r x) ->
+  (∀ r0 x . effect (Sem r0) x -> Sem (Stop err : r1) x) ->
+  InterpreterFor (Scoped () (effect !! err)) r
+interpretResumableScopedWith_ extra scopedHandler =
+  interpretResumableScopedWith @extra @() @effect @err @r @r1 (\ f -> extra (f ())) (const scopedHandler)
