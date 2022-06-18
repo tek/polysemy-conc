@@ -36,7 +36,7 @@ data Sync d :: Effect where
   PutBlock :: d -> Sync d m ()
   -- |Write the variable, waiting until it is writable or the timeout has expired.
   PutWait :: TimeUnit u => u -> d -> Sync d m Bool
-  -- |Write the variable, returning 'False' immmediately if no value was available.
+  -- |Write the variable, returning 'False' immmediately if a value was available.
   PutTry :: d -> Sync d m Bool
   -- |Indicate whether the variable is empty.
   Empty :: Sync d m Bool

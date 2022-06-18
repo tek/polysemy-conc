@@ -11,8 +11,11 @@ import qualified Polysemy.Conc.Effect.Queue as Queue
 import Polysemy.Conc.Effect.Queue (Queue)
 import Polysemy.Conc.Effect.Race (Race)
 import Polysemy.Conc.Effect.Scoped (Scoped)
+import qualified Polysemy.Conc.Effect.Sync as Sync
+import Polysemy.Conc.Effect.Sync (Sync)
 import Polysemy.Conc.Interpreter.Queue.TBM (interpretQueueTBMWith, withTBMQueue)
 import Polysemy.Conc.Interpreter.Scoped (interpretScopedResumableWith_)
+import Polysemy.Conc.Interpreter.Sync (interpretSync)
 import qualified Polysemy.Conc.Race as Conc (timeout_)
 import Polysemy.Input (Input (Input))
 import Polysemy.Output (Output (Output))
@@ -75,13 +78,13 @@ handleProcessWithQueues = \case
   Process.Recv ->
     Queue.read >>= \case
       QueueResult.Closed ->
-        stop (Terminated "closed")
+        stop (Terminated "recv: closed")
       QueueResult.NotAvailable ->
-        stop (Terminated "impossible: empty")
+        stop (Terminated "recv: impossible: empty")
       QueueResult.Success (Out msg) ->
         pure msg
   Process.Send msg -> do
-    whenM (Queue.closed @(In i)) (stop (Terminated "closed"))
+    whenM (Queue.closed @(In i)) (stop (Terminated "send: closed"))
     Queue.write (In msg)
 
 withSTMResources ::
@@ -103,22 +106,32 @@ withQueues ::
 withQueues qSize action =
   withSTMResources qSize \ qs -> interpretQueues qs action
 
+-- |Call a chunk reading action repeatedly, pass the bytes to 'ProcessOutput' and enqueue its results.
+-- As soon as an empty chunk is encountered, the queue is closed if the gating action returns 'False'.
+-- The conditional closing is for the purpose of keeping the queue alive until the last producer has written all
+-- received chunks – this is important when both stdout and stderr are written to the same queue.
+-- When a process writes to stdout and terminates, the stderr reader will immediately receive an empty chunk and close
+-- the queue while the stdout reader calls 'ProcessOutput', after which 'Queue.write' will fail and the consumer won't
+-- receive the output.
 outputQueue ::
   ∀ p chunk err eff r .
   Members [eff !! err, ProcessOutput p chunk, Queue (Out chunk), Embed IO] r =>
   Bool ->
+  Sem r Bool ->
   Sem (eff : r) ByteString ->
   Sem r ()
-outputQueue discardWhenFull readChunk = do
+outputQueue discardWhenFull dontClose readChunk = do
   spin ""
   where
     spin buffer =
-      resumeOr @err readChunk (write buffer) (const (Queue.close @(Out chunk)))
+      resumeOr @err readChunk (write buffer) (const close)
     write buffer msg = do
       (chunks, newBuffer) <- ProcessOutput.chunk @p @chunk buffer msg
       for_ chunks \ (Out -> c) ->
         if discardWhenFull then void (Queue.tryWrite c) else Queue.write c
       spin newBuffer
+    close =
+      unlessM dontClose (Queue.close @(Out chunk))
 
 inputQueue ::
   ∀ i err eff r .
@@ -160,7 +173,7 @@ withKill kill ma =
     handleKill kill
 
 type ScopeEffects i o err =
-  [Queue (In i), Queue (Out o), SystemProcess !! err]
+  [Queue (In i), Queue (Out o), Sync (), SystemProcess !! err]
 
 scope ::
   ∀ i o resource err r .
@@ -170,9 +183,10 @@ scope ::
   InterpretersFor (ScopeEffects i o err) r
 scope (ProcessOptions discard qSize kill) =
   withSystemProcess @resource .
+  interpretSync .
   withQueues qSize .
-  withAsync_ (outputQueue @'Stderr @o @err @SystemProcess discard SystemProcess.readStderr) .
-  withAsync_ (outputQueue @'Stdout @o @err @SystemProcess discard SystemProcess.readStdout) .
+  withAsync_ (outputQueue @'Stderr @o @err @SystemProcess discard (Sync.putTry ()) SystemProcess.readStderr) .
+  withAsync_ (outputQueue @'Stdout @o @err @SystemProcess discard (Sync.putTry ()) SystemProcess.readStdout) .
   withAsync_ (inputQueue @i @err @SystemProcess SystemProcess.writeStdin) .
   withKill @err kill
 
@@ -318,7 +332,7 @@ interpretProcessIO ::
   InterpreterFor (Process i o !! ProcessError) r
 interpretProcessIO (ProcessOptions discard qSize _) =
   withQueues @i @o qSize .
-  withAsync_ (outputQueue @'Stdout @o @ie @(Input ByteString) discard input) .
+  withAsync_ (outputQueue @'Stdout @o @ie @(Input ByteString) discard (pure False) input) .
   withAsync_ (inputQueue @i @oe @(Output ByteString) output) .
   interpretResumable handleProcessWithQueues .
   raiseUnder2

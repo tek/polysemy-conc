@@ -91,13 +91,16 @@ test_processIncremental =
 
 test_processOneshot :: UnitTest
 test_processOneshot =
-  runTestAuto $ interpretRace $ asyncToIOFinal $ interpretProcessOneshotTextLinesNative def (Process.proc "echo" [toString message]) do
-    num :: Either Int () <- runStop @Int $ withProcessOneshot do
+  runTestAuto $ interpretRace $ asyncToIOFinal $ interpretProcessOneshotTextLinesNative def conf do
+    num <- runStop @Int $ withProcessOneshot do
       Race.timeout_ (throw "timed out") (Seconds 5) do
-        for_ @[] [1..6] \ i ->
+        for_ @[] [1..5] \ i ->
           resumeHoistAs i Process.recv
         unit
-    assertLeft 6 num
+    assertLeft 5 num
+  where
+    conf =
+      Process.proc "echo" ["-n", toString message]
 
 test_processAll :: TestTree
 test_processAll =
