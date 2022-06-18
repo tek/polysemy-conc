@@ -14,6 +14,7 @@ module Polysemy.Process (
   withProcessOneshot_,
   ProcessOptions (ProcessOptions),
   ProcessKill (..),
+  ProcessError (..),
 
   -- ** ProcessOutput
   ProcessOutput,
@@ -94,11 +95,12 @@ module Polysemy.Process (
 
 import Prelude hiding (send)
 
+import Polysemy.Process.Data.ProcessError (ProcessError (..))
 import Polysemy.Process.Data.ProcessKill (ProcessKill (..))
 import Polysemy.Process.Data.ProcessOptions (ProcessOptions (ProcessOptions))
 import Polysemy.Process.Data.ProcessOutputParseResult (ProcessOutputParseResult (..))
 import Polysemy.Process.Data.SystemProcessError (SystemProcessError)
-import Polysemy.Process.Effect.Process (Process (..), recv, send, withProcess, withProcess_, withProcessOneshot, withProcessOneshot_)
+import Polysemy.Process.Effect.Process (Process (..), recv, send, withProcess, withProcessOneshot, withProcessOneshot_, withProcess_)
 import Polysemy.Process.Effect.ProcessInput (ProcessInput)
 import Polysemy.Process.Effect.ProcessOutput (OutputPipe (Stderr, Stdout), ProcessOutput)
 import Polysemy.Process.Effect.Pty (Pty, withPty)
