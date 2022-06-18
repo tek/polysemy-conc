@@ -20,10 +20,11 @@ import Polysemy.Process.Data.ProcessKill (ProcessKill (KillNever))
 import Polysemy.Process.Data.ProcessOptions (ProcessOptions (kill))
 import Polysemy.Process.Data.ProcessOutputParseResult (ProcessOutputParseResult (Done, Partial))
 import qualified Polysemy.Process.Effect.Process as Process
-import Polysemy.Process.Effect.Process (withProcess, withProcessOneshot)
-import Polysemy.Process.Interpreter.ProcessOneshotStdio (interpretProcessOneshotTextLinesNative)
+import Polysemy.Process.Effect.Process (withProcess, withProcessOneshotParam)
+import Polysemy.Process.Interpreter.Process (interpretProcessNative_)
+import Polysemy.Process.Interpreter.ProcessIO (interpretProcessByteString, interpretProcessTextLines)
+import Polysemy.Process.Interpreter.ProcessOneshot (interpretProcessOneshotNative)
 import Polysemy.Process.Interpreter.ProcessOutput (parseMany)
-import Polysemy.Process.Interpreter.ProcessStdio (interpretProcessByteStringNative, interpretProcessTextLinesNative)
 
 config :: ProcessConfig () () ()
 config =
@@ -39,7 +40,7 @@ message =
 
 test_process :: UnitTest
 test_process =
-  runTestAuto $ interpretRace $ asyncToIOFinal $ interpretProcessByteStringNative def config do
+  runTestAuto $ interpretRace $ asyncToIOFinal $ interpretProcessByteString $ interpretProcessNative_ def config do
     response <- resumeHoistError @ProcessError @(Scoped _ _) show do
       withProcess do
         Process.send (encodeUtf8 message)
@@ -48,7 +49,7 @@ test_process =
 
 test_processLines :: UnitTest
 test_processLines =
-  runTestAuto $ interpretRace $ asyncToIOFinal $ interpretProcessTextLinesNative def config do
+  runTestAuto $ interpretRace $ asyncToIOFinal $ interpretProcessTextLines $ interpretProcessNative_ def config do
     response <- resumeHoistError @ProcessError @(Scoped _ _) show do
       withProcess do
         Process.send message
@@ -57,7 +58,7 @@ test_processLines =
 
 test_processKillNever :: UnitTest
 test_processKillNever =
-  runTestAuto $ interpretRace $ asyncToIOFinal $ interpretProcessTextLinesNative def { kill = KillNever } config do
+  runTestAuto $ interpretRace $ asyncToIOFinal $ interpretProcessTextLines $ interpretProcessNative_ def { kill = KillNever } config do
     result <- resumeHoistError @ProcessError @(Scoped _ _) show do
       Conc.timeout unit (MilliSeconds 100) do
         withProcess do
@@ -91,16 +92,17 @@ test_processIncremental =
 
 test_processOneshot :: UnitTest
 test_processOneshot =
-  runTestAuto $ interpretRace $ asyncToIOFinal $ interpretProcessOneshotTextLinesNative def conf do
-    num <- runStop @Int $ withProcessOneshot do
+  runTestAuto $ interpretRace $ asyncToIOFinal $ interpretProcessTextLines $ interpretProcessOneshotNative def conf do
+    num <- runStop @Int $ withProcessOneshotParam message do
       Race.timeout_ (throw "timed out") (Seconds 5) do
         for_ @[] [1..5] \ i ->
           resumeHoistAs i Process.recv
         unit
     assertLeft 5 num
   where
-    conf =
-      Process.proc "echo" ["-n", toString message]
+    conf msg =
+      pure (Process.proc "echo" ["-n", toString msg])
+
 
 test_processAll :: TestTree
 test_processAll =

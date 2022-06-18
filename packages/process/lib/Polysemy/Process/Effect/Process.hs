@@ -3,6 +3,7 @@
 -- |Description: Process Effect, Internal
 module Polysemy.Process.Effect.Process where
 
+import Polysemy.Conc.Effect.PScoped (PScoped, pscoped)
 import Polysemy.Conc.Effect.Scoped (Scoped, scoped)
 import Polysemy.Input (Input (Input))
 import Polysemy.Output (Output (Output))
@@ -65,6 +66,24 @@ withProcessOneshot ::
   InterpreterFor (Process i o !! err) r
 withProcessOneshot =
   scoped @resource
+
+-- |Create a scoped resource for 'Process'.
+withProcessParam ::
+  ∀ param resource i o r .
+  Member (PScoped param resource (Process i o)) r =>
+  param ->
+  InterpreterFor (Process i o) r
+withProcessParam =
+  pscoped @param @resource
+
+-- |Create a scoped resource for 'Process'.
+withProcessOneshotParam ::
+  ∀ param resource i o err r .
+  Member (PScoped param resource (Process i o !! err)) r =>
+  param ->
+  InterpreterFor (Process i o !! err) r
+withProcessOneshotParam =
+  pscoped @param @resource
 
 -- |Convert 'Output' and 'Input' to 'Process'.
 runProcessIO ::

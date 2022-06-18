@@ -7,12 +7,14 @@ import Control.Concurrent.STM.TBMQueue (TBMQueue)
 import Data.ByteString (hGetSome, hPut)
 import Polysemy.Conc.Async (withAsync_)
 import qualified Polysemy.Conc.Data.QueueResult as QueueResult
+import Polysemy.Conc.Effect.PScoped (PScoped)
 import qualified Polysemy.Conc.Effect.Queue as Queue
 import Polysemy.Conc.Effect.Queue (Queue)
 import Polysemy.Conc.Effect.Race (Race)
 import Polysemy.Conc.Effect.Scoped (Scoped)
 import qualified Polysemy.Conc.Effect.Sync as Sync
 import Polysemy.Conc.Effect.Sync (Sync)
+import Polysemy.Conc.Interpreter.PScoped (interpretPScopedResumableWith_)
 import Polysemy.Conc.Interpreter.Queue.TBM (interpretQueueTBMWith, withTBMQueue)
 import Polysemy.Conc.Interpreter.Scoped (interpretScopedResumableWith_)
 import Polysemy.Conc.Interpreter.Sync (interpretSync)
@@ -26,6 +28,7 @@ import System.IO (BufferMode (NoBuffering), Handle, hSetBuffering, stdin, stdout
 import Polysemy.Process.Data.ProcessError (ProcessError (Terminated))
 import Polysemy.Process.Data.ProcessKill (ProcessKill (KillAfter, KillImmediately, KillNever))
 import Polysemy.Process.Data.ProcessOptions (ProcessOptions (ProcessOptions))
+import Polysemy.Process.Data.SystemProcessError (SystemProcessError)
 import qualified Polysemy.Process.Effect.Process as Process
 import Polysemy.Process.Effect.Process (Process)
 import qualified Polysemy.Process.Effect.ProcessInput as ProcessInput
@@ -33,14 +36,13 @@ import Polysemy.Process.Effect.ProcessInput (ProcessInput)
 import qualified Polysemy.Process.Effect.ProcessOutput as ProcessOutput
 import Polysemy.Process.Effect.ProcessOutput (OutputPipe (Stderr, Stdout), ProcessOutput)
 import qualified Polysemy.Process.Effect.SystemProcess as SystemProcess
-import Polysemy.Process.Effect.SystemProcess (SystemProcess, withSystemProcess)
-import Polysemy.Process.Interpreter.ProcessInput (interpretProcessInputId, interpretProcessInputText)
-import Polysemy.Process.Interpreter.ProcessOutput (
-  interpretProcessOutputId,
-  interpretProcessOutputIgnore,
-  interpretProcessOutputLines,
-  interpretProcessOutputText,
-  interpretProcessOutputTextLines,
+import Polysemy.Process.Effect.SystemProcess (SystemProcess, withSystemProcess, withSystemProcessParam)
+import Polysemy.Process.Interpreter.ProcessIO (ProcessIO)
+import Polysemy.Process.Interpreter.SystemProcess (
+  PipesProcess,
+  SysProcConf,
+  interpretSystemProcessNative,
+  interpretSystemProcessNative_,
   )
 
 newtype In a =
@@ -175,14 +177,13 @@ withKill kill ma =
 type ScopeEffects i o err =
   [Queue (In i), Queue (Out o), Sync (), SystemProcess !! err]
 
-scope ::
-  ∀ i o resource err r .
-  Member (Scoped resource (SystemProcess !! err)) r =>
+queues ::
+  ∀ err i o r .
+  Member (SystemProcess !! err) r =>
   Members [ProcessInput i, ProcessOutput 'Stdout o, ProcessOutput 'Stderr o, Resource, Race, Async, Embed IO] r =>
   ProcessOptions ->
-  InterpretersFor (ScopeEffects i o err) r
-scope (ProcessOptions discard qSize kill) =
-  withSystemProcess @resource .
+  InterpretersFor [Queue (In i), Queue (Out o), Sync ()] r
+queues (ProcessOptions discard qSize kill) =
   interpretSync .
   withQueues qSize .
   withAsync_ (outputQueue @'Stderr @o @err @SystemProcess discard (Sync.putTry ()) SystemProcess.readStderr) .
@@ -190,86 +191,98 @@ scope (ProcessOptions discard qSize kill) =
   withAsync_ (inputQueue @i @err @SystemProcess SystemProcess.writeStdin) .
   withKill @err kill
 
+scope ::
+  ∀ resource err i o r .
+  Member (Scoped resource (SystemProcess !! err)) r =>
+  Members [ProcessInput i, ProcessOutput 'Stdout o, ProcessOutput 'Stderr o, Resource, Race, Async, Embed IO] r =>
+  ProcessOptions ->
+  InterpretersFor (ScopeEffects i o err) r
+scope options =
+  withSystemProcess @resource .
+  queues @err options
+
+pscope ::
+  ∀ resource i o param proc err r .
+  Member (PScoped proc resource (SystemProcess !! err)) r =>
+  Members [ProcessInput i, ProcessOutput 'Stdout o, ProcessOutput 'Stderr o, Resource, Race, Async, Embed IO] r =>
+  ProcessOptions ->
+  (param -> Sem r proc) ->
+  param ->
+  InterpretersFor (ScopeEffects i o err) r
+pscope options consResource param sem =
+  consResource param >>= \ proc ->
+    withSystemProcessParam @proc @resource proc $
+    queues @err options sem
+
 -- |Interpret 'Process' with a system process resource whose file descriptors are connected to three 'TBMQueue's,
 -- deferring decoding of stdout and stderr to the interpreters of two 'ProcessOutput' effects.
--- This variant models a daemon process that is not expected to terminate, causing 'Stop' to be sent to the scope
--- callsite instead of individual 'Process' actions.
+-- This variant:
+-- - Models a daemon process that is not expected to terminate, causing 'Stop' to be sent to the scope callsite instead
+--   of individual 'Process' actions.
+-- - Is for parameterized scopes, meaning that a value of arbitrary type may be passed to
+--   'Polysemy.Process.withProcessOneshotParam' which is then passed to the supplied function to produce a 'SysProcConf'
+--   for the native process.
 interpretProcess ::
+  ∀ resource err param proc i o r .
+  Members (ProcessIO i o) r =>
+  Member (PScoped proc resource (SystemProcess !! err)) r =>
+  Members [Resource, Race, Async, Embed IO] r =>
+  ProcessOptions ->
+  (param -> Sem (Stop ProcessError : r) proc) ->
+  InterpreterFor (PScoped param () (Process i o) !! ProcessError) r
+interpretProcess options proc =
+  interpretPScopedResumableWith_ @(ScopeEffects i o err) (\ p -> pscope @resource options proc p) handleProcessWithQueues
+
+-- |Interpret 'Process' with a system process resource whose file descriptors are connected to three 'TBMQueue's,
+-- deferring decoding of stdout and stderr to the interpreters of two 'ProcessOutput' effects.
+-- This variant:
+-- - Models a daemon process that is not expected to terminate, causing 'Stop' to be sent to the scope callsite instead
+--   of individual 'Process' actions.
+-- - Defers process config to 'SystemProcess'.
+interpretProcess_ ::
   ∀ resource err i o r .
   Member (Scoped resource (SystemProcess !! err)) r =>
   Members [ProcessOutput 'Stdout o, ProcessOutput 'Stderr o, ProcessInput i, Resource, Race, Async, Embed IO] r =>
   ProcessOptions ->
   InterpreterFor (Scoped () (Process i o) !! ProcessError) r
-interpretProcess options =
-  interpretScopedResumableWith_ @(ScopeEffects i o err) (scope @i @o @resource options) handleProcessWithQueues
+interpretProcess_ options =
+  interpretScopedResumableWith_ @(ScopeEffects i o err) (scope @resource options) handleProcessWithQueues
 
--- |Interpret 'Process' with a system process resource whose stdin/stdout are connected to two 'TBMQueue's,
--- producing 'ByteString's.
--- Silently discards stderr.
--- This variant models a daemon process that is not expected to terminate, causing 'Stop' to be sent to the scope
--- callsite instead of individual 'Process' actions.
-interpretProcessByteString ::
-  ∀ resource err r .
-  Members [Scoped resource (SystemProcess !! err), Resource, Race, Async, Embed IO] r =>
+-- |Interpret 'Process' as a native 'Polysemy.Process.SystemProcess'.
+-- This variant:
+-- - Models a daemon process that is not expected to terminate, causing 'Stop' to be sent to the scope callsite instead
+--   of individual 'Process' actions.
+-- - Is for parameterized scopes, meaning that a value of arbitrary type may be passed to
+--   'Polysemy.Process.withProcessOneshotParam' which is then passed to the supplied function to produce a 'SysProcConf'
+--   for the native process.
+interpretProcessNative ::
+  ∀ param i o r .
+  Members (ProcessIO i o) r =>
+  Members [Resource, Race, Async, Embed IO] r =>
   ProcessOptions ->
-  InterpreterFor (Scoped () (Process ByteString ByteString) !! ProcessError) r
-interpretProcessByteString options =
-  interpretProcessOutputIgnore @'Stderr @ByteString .
-  interpretProcessOutputId @'Stdout .
-  interpretProcessInputId .
-  interpretProcess @resource @err options .
-  raiseUnder3
+  (param -> Sem r SysProcConf) ->
+  InterpreterFor (PScoped param () (Process i o) !! ProcessError) r
+interpretProcessNative options proc =
+  interpretSystemProcessNative pure .
+  interpretProcess @PipesProcess @SystemProcessError options (insertAt @0 . proc) .
+  raiseUnder
 
--- |Interpret 'Process' with a system process resource whose stdin/stdout are connected to two 'TBMQueue's,
--- producing chunks of lines of 'ByteString's.
--- Silently discards stderr.
--- This variant models a daemon process that is not expected to terminate, causing 'Stop' to be sent to the scope
--- callsite instead of individual 'Process' actions.
-interpretProcessByteStringLines ::
-  ∀ resource err r .
-  Members [Scoped resource (SystemProcess !! err), Resource, Race, Async, Embed IO] r =>
+-- |Interpret 'Process' as a native 'Polysemy.Process.SystemProcess'.
+-- This variant:
+-- - Models a daemon process that is not expected to terminate, causing 'Stop' to be sent to the scope callsite instead
+--   of individual 'Process' actions.
+-- - Defers process config to 'SystemProcess'.
+interpretProcessNative_ ::
+  ∀ i o r .
+  Members (ProcessIO i o) r =>
+  Members [Resource, Race, Async, Embed IO] r =>
   ProcessOptions ->
-  InterpreterFor (Scoped () (Process ByteString ByteString) !! ProcessError) r
-interpretProcessByteStringLines options =
-  interpretProcessOutputIgnore @'Stderr @ByteString .
-  interpretProcessOutputLines @'Stdout .
-  interpretProcessInputId .
-  interpretProcess @resource @err options .
-  raiseUnder3
-
--- |Interpret 'Process' with a system process resource whose stdin/stdout are connected to two 'TBMQueue's,
--- producing 'Text's.
--- Silently discards stderr.
--- This variant models a daemon process that is not expected to terminate, causing 'Stop' to be sent to the scope
--- callsite instead of individual 'Process' actions.
-interpretProcessText ::
-  ∀ resource err r .
-  Members [Scoped resource (SystemProcess !! err), Resource, Race, Async, Embed IO] r =>
-  ProcessOptions ->
-  InterpreterFor (Scoped () (Process Text Text) !! ProcessError) r
-interpretProcessText options =
-  interpretProcessOutputIgnore @'Stderr @Text .
-  interpretProcessOutputText @'Stdout .
-  interpretProcessInputText .
-  interpretProcess @resource @err options .
-  raiseUnder3
-
--- |Interpret 'Process' with a system process resource whose stdin/stdout are connected to two 'TBMQueue's,
--- producing chunks of lines of 'Text's.
--- Silently discards stderr.
--- This variant models a daemon process that is not expected to terminate, causing 'Stop' to be sent to the scope
--- callsite instead of individual 'Process' actions.
-interpretProcessTextLines ::
-  ∀ resource err r .
-  Members [Scoped resource (SystemProcess !! err), Resource, Race, Async, Embed IO] r =>
-  ProcessOptions ->
-  InterpreterFor (Scoped () (Process Text Text) !! ProcessError) r
-interpretProcessTextLines options =
-  interpretProcessOutputIgnore @'Stderr @Text .
-  interpretProcessOutputTextLines @'Stdout .
-  interpretProcessInputText .
-  interpretProcess @resource @err options .
-  raiseUnder3
+  SysProcConf ->
+  InterpreterFor (Scoped () (Process i o) !! ProcessError) r
+interpretProcessNative_ options conf =
+  interpretSystemProcessNative_ conf .
+  interpretProcess_ @PipesProcess @SystemProcessError options .
+  raiseUnder
 
 -- |Reinterpret 'Input' and 'Output' as 'Process'.
 interpretInputOutputProcess ::

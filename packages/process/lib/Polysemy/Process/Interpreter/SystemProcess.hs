@@ -34,9 +34,11 @@ import Polysemy.Process.Data.SystemProcessError (SystemProcessError)
 import qualified Polysemy.Process.Effect.SystemProcess as SystemProcess
 import Polysemy.Process.Effect.SystemProcess (SystemProcess)
 
+-- |Convenience alias for a vanilla 'ProcessConfig', which will usually be transformed by interpreters to use 'Handle's.
 type SysProcConf =
   ProcessConfig () () ()
 
+-- |Convenience alias for the 'Process' type used by native interpreters.
 type PipesProcess =
   Process Handle Handle Handle
 
@@ -160,23 +162,26 @@ interpretSystemProcessNativeSingle config sem =
 
 -- |Interpret 'SystemProcess' as a scoped 'System.Process' that's started wherever 'Polysemy.Process.withSystemProcess'
 -- is called and terminated when the wrapped action finishes.
+-- This variant is for parameterized scopes, allowing the consumer to supply a value of type @param@ to create the
+-- process config.
 interpretSystemProcessNative ::
-  ∀ r .
-  Members [Resource, Embed IO] r =>
-  SysProcConf ->
-  InterpreterFor (Scoped PipesProcess (SystemProcess !! SystemProcessError)) r
-interpretSystemProcessNative config =
-  runScoped (withProcess config) interpretSystemProcessWithProcess
-
--- |Interpret 'SystemProcess' as a scoped 'System.Process' that's started wherever 'Polysemy.Process.withSystemProcess'
--- is called and terminated when the wrapped action finishes.
-interpretSystemProcessParamNative ::
   ∀ param r .
   Members [Resource, Embed IO] r =>
   (param -> Sem r SysProcConf) ->
   InterpreterFor (PScoped param PipesProcess (SystemProcess !! SystemProcessError)) r
-interpretSystemProcessParamNative config =
+interpretSystemProcessNative config =
   runPScoped (\ p u -> config p >>= \ c -> withProcess c u) interpretSystemProcessWithProcess
+
+-- |Interpret 'SystemProcess' as a scoped 'System.Process' that's started wherever 'Polysemy.Process.withSystemProcess'
+-- is called and terminated when the wrapped action finishes.
+-- This variant takes a static 'SysProcConf'.
+interpretSystemProcessNative_ ::
+  ∀ r .
+  Members [Resource, Embed IO] r =>
+  SysProcConf ->
+  InterpreterFor (Scoped PipesProcess (SystemProcess !! SystemProcessError)) r
+interpretSystemProcessNative_ config =
+  runScoped (withProcess config) interpretSystemProcessWithProcess
 
 -- |Interpret 'SystemProcess' with a concrete 'System.Process' with no connection to stdio.
 interpretSystemProcessWithProcessOpaque ::

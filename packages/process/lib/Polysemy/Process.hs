@@ -31,15 +31,14 @@ module Polysemy.Process (
 
   -- * Interpreters
   -- ** Process
-  interpretProcessByteStringNative,
-  interpretProcessByteStringLinesNative,
-  interpretProcessTextNative,
-  interpretProcessTextLinesNative,
   interpretProcess,
-  interpretProcessByteString,
-  interpretProcessByteStringLines,
-  interpretProcessText,
-  interpretProcessTextLines,
+  interpretProcessOneshot,
+  interpretProcessNative,
+  interpretProcessOneshotNative,
+  interpretProcess_,
+  interpretProcessOneshot_,
+  interpretProcessNative_,
+  interpretProcessOneshotNative_,
   interpretInputOutputProcess,
   interpretInputHandleBuffered,
   interpretInputHandle,
@@ -48,15 +47,13 @@ module Polysemy.Process (
   interpretProcessIO,
   interpretProcessHandles,
   interpretProcessCurrent,
-  interpretProcessOneshotByteStringNative,
-  interpretProcessOneshotByteStringLinesNative,
-  interpretProcessOneshotTextNative,
-  interpretProcessOneshotTextLinesNative,
-  interpretProcessOneshot,
-  interpretProcessOneshotByteString,
-  interpretProcessOneshotByteStringLines,
-  interpretProcessOneshotText,
-  interpretProcessOneshotTextLines,
+
+  -- ** ProcessIO
+  ProcessIO,
+  interpretProcessByteString,
+  interpretProcessByteStringLines,
+  interpretProcessText,
+  interpretProcessTextLines,
 
   -- ** ProcessOutput
   interpretProcessOutputIgnore,
@@ -73,17 +70,17 @@ module Polysemy.Process (
   interpretProcessInputText,
 
   -- ** SystemProcess
-  interpretSystemProcessWithProcess,
-  handleSystemProcessWithProcess,
-  interpretSystemProcessNativeSingle,
-  interpretSystemProcessNative,
-  interpretSystemProcessParamNative,
-  interpretSystemProcessWithProcessOpaque,
-  interpretSystemProcessNativeOpaqueSingle,
-  interpretSystemProcessNativeOpaque,
   SysProcConf,
   PipesProcess,
   SystemProcessError,
+  interpretSystemProcessNative,
+  interpretSystemProcessNative_,
+  interpretSystemProcessWithProcess,
+  handleSystemProcessWithProcess,
+  interpretSystemProcessNativeSingle,
+  interpretSystemProcessWithProcessOpaque,
+  interpretSystemProcessNativeOpaqueSingle,
+  interpretSystemProcessNativeOpaque,
 
   -- ** Pty
   interpretPty,
@@ -111,17 +108,27 @@ import Polysemy.Process.Interpreter.Process (
   interpretOutputHandle,
   interpretOutputHandleBuffered,
   interpretProcess,
-  interpretProcessByteString,
-  interpretProcessByteStringLines,
   interpretProcessCurrent,
   interpretProcessHandles,
   interpretProcessIO,
+  interpretProcessNative,
+  interpretProcessNative_,
+  interpretProcess_,
+  )
+import Polysemy.Process.Interpreter.ProcessIO (
+  ProcessIO,
+  interpretProcessByteString,
+  interpretProcessByteStringLines,
   interpretProcessText,
   interpretProcessTextLines,
   )
 import Polysemy.Process.Interpreter.ProcessInput (interpretProcessInputId, interpretProcessInputText)
-import Polysemy.Process.Interpreter.ProcessOneshot (interpretProcessOneshot, interpretProcessOneshotByteString, interpretProcessOneshotByteStringLines, interpretProcessOneshotText, interpretProcessOneshotTextLines)
-import Polysemy.Process.Interpreter.ProcessOneshotStdio (interpretProcessOneshotByteStringLinesNative, interpretProcessOneshotByteStringNative, interpretProcessOneshotTextLinesNative, interpretProcessOneshotTextNative)
+import Polysemy.Process.Interpreter.ProcessOneshot (
+  interpretProcessOneshot,
+  interpretProcessOneshotNative,
+  interpretProcessOneshotNative_,
+  interpretProcessOneshot_,
+  )
 import Polysemy.Process.Interpreter.ProcessOutput (
   interpretProcessOutputId,
   interpretProcessOutputIgnore,
@@ -132,12 +139,6 @@ import Polysemy.Process.Interpreter.ProcessOutput (
   interpretProcessOutputText,
   interpretProcessOutputTextLines,
   )
-import Polysemy.Process.Interpreter.ProcessStdio (
-  interpretProcessByteStringLinesNative,
-  interpretProcessByteStringNative,
-  interpretProcessTextLinesNative,
-  interpretProcessTextNative,
-  )
 import Polysemy.Process.Interpreter.Pty (interpretPty)
 import Polysemy.Process.Interpreter.SystemProcess (
   PipesProcess,
@@ -147,7 +148,7 @@ import Polysemy.Process.Interpreter.SystemProcess (
   interpretSystemProcessNativeOpaque,
   interpretSystemProcessNativeOpaqueSingle,
   interpretSystemProcessNativeSingle,
-  interpretSystemProcessParamNative,
+  interpretSystemProcessNative_,
   interpretSystemProcessWithProcess,
   interpretSystemProcessWithProcessOpaque,
   )
