@@ -7,20 +7,22 @@ import qualified Polysemy.Conc.Effect.Race as Conc (timeout)
 import Polysemy.Conc.Effect.Scoped (Scoped)
 import Polysemy.Conc.Interpreter.Race (interpretRace)
 import qualified Polysemy.Conc.Race as Race
-import Polysemy.Resume (resumeHoistAs, resumeHoistError, runStop)
-import Polysemy.Test (UnitTest, assertLeft, runTestAuto, unitTest, (===))
+import Polysemy.Resume (resumeHoistAs, resumeHoistError, resuming, runStop)
+import Polysemy.Test (TestError (TestError), UnitTest, assertJust, assertLeft, runTestAuto, unitTest, (===))
 import Polysemy.Time (MilliSeconds (MilliSeconds), Seconds (Seconds))
+import System.Exit (ExitCode (ExitSuccess))
 import qualified System.Process.Typed as Process
 import System.Process.Typed (ProcessConfig)
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.ExpectedFailure (ignoreTest)
 
+import qualified Polysemy.Process.Data.ProcessError as ProcessError
 import Polysemy.Process.Data.ProcessError (ProcessError)
 import Polysemy.Process.Data.ProcessKill (ProcessKill (KillNever))
 import Polysemy.Process.Data.ProcessOptions (ProcessOptions (kill))
 import Polysemy.Process.Data.ProcessOutputParseResult (ProcessOutputParseResult (Done, Partial))
 import qualified Polysemy.Process.Effect.Process as Process
-import Polysemy.Process.Effect.Process (withProcess_, withProcessOneshot)
+import Polysemy.Process.Effect.Process (withProcessOneshot, withProcess_)
 import Polysemy.Process.Interpreter.Process (interpretProcessNative_)
 import Polysemy.Process.Interpreter.ProcessIO (interpretProcessByteString, interpretProcessTextLines)
 import Polysemy.Process.Interpreter.ProcessOneshot (interpretProcessOneshotNative)
@@ -103,6 +105,18 @@ test_processOneshot =
     conf msg =
       pure (Process.proc "echo" ["-n", toString msg])
 
+test_exit :: UnitTest
+test_exit =
+  runTestAuto $ interpretRace $ asyncToIOFinal $ interpretProcessByteString $ interpretProcessNative_ def conf do
+    response <- resuming @_ @(Scoped _ _) (pure . Just) $ withProcess_ do
+      Race.timeout_ (throw (TestError "timed out")) (Seconds 5) do
+        void Process.recv
+        void Process.recv
+      pure Nothing
+    assertJust (ProcessError.Exit ExitSuccess) response
+  where
+    conf =
+      Process.proc "echo" ["-n", "text"]
 
 test_processAll :: TestTree
 test_processAll =
@@ -110,5 +124,6 @@ test_processAll =
     unitTest "read raw chunks" test_process,
     unitTest "read lines" test_processLines,
     ignoreTest (unitTest "don't kill the process at the end of the scope" test_processKillNever),
-    unitTest "expect termination" test_processOneshot
+    unitTest "expect termination" test_processOneshot,
+    unitTest "daemon exit code" test_exit
   ]

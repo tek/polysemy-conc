@@ -21,13 +21,14 @@ import Polysemy.Conc.Interpreter.Sync (interpretSync)
 import qualified Polysemy.Conc.Race as Conc (timeout_)
 import Polysemy.Input (Input (Input))
 import Polysemy.Output (Output (Output))
-import Polysemy.Resume (Stop, interpretResumable, resumeOr, resume_, stop, stopNote, type (!!))
+import Polysemy.Resume (Stop, interpretResumable, resumeHoist, resumeOr, resume_, stop, stopNote, type (!!))
 import Prelude hiding (fromException)
 import System.IO (BufferMode (NoBuffering), Handle, hSetBuffering, stdin, stdout)
 
-import Polysemy.Process.Data.ProcessError (ProcessError (Terminated))
+import Polysemy.Process.Data.ProcessError (ProcessError (Exit, Unknown))
 import Polysemy.Process.Data.ProcessKill (ProcessKill (KillAfter, KillImmediately, KillNever))
 import Polysemy.Process.Data.ProcessOptions (ProcessOptions (ProcessOptions))
+import qualified Polysemy.Process.Data.SystemProcessError as SystemProcessError
 import Polysemy.Process.Data.SystemProcessError (SystemProcessError)
 import qualified Polysemy.Process.Effect.Process as Process
 import Polysemy.Process.Effect.Process (Process)
@@ -63,6 +64,19 @@ data ProcessQueues i o =
     pqOut :: TBMQueue (Out o)
   }
 
+terminated ::
+  Members [SystemProcess !! SystemProcessError, Stop ProcessError] r =>
+  Text ->
+  Sem r a
+terminated site =
+  stop . Exit =<< resumeHoist @_ @SystemProcess fatal SystemProcess.wait
+  where
+    fatal = \case
+      SystemProcessError.Terminated reason ->
+        Unknown (site <> ": wait failed (" <> reason <> ")")
+      SystemProcessError.NoPipes ->
+        Unknown (site <> ": no pipes")
+
 interpretQueues ::
   Members [Resource, Race, Embed IO] r =>
   ProcessQueues i o ->
@@ -74,19 +88,20 @@ interpretQueues (ProcessQueues inQ outQ) =
 handleProcessWithQueues ::
   ∀ i o m r a .
   Members [Queue (In i), Queue (Out o), Stop ProcessError] r =>
+  (∀ x . Text -> Sem r x) ->
   Process i o m a ->
   Sem r a
-handleProcessWithQueues = \case
+handleProcessWithQueues onError = \case
   Process.Recv ->
     Queue.read >>= \case
       QueueResult.Closed ->
-        stop (Terminated "recv: closed")
+        onError "recv: closed"
       QueueResult.NotAvailable ->
-        stop (Terminated "recv: impossible: empty")
+        onError "recv: impossible: empty"
       QueueResult.Success (Out msg) ->
         pure msg
   Process.Send msg -> do
-    whenM (Queue.closed @(In i)) (stop (Terminated "send: closed"))
+    whenM (Queue.closed @(In i)) (onError "send: closed")
     Queue.write (In msg)
 
 withSTMResources ::
@@ -223,15 +238,16 @@ pscope options consResource param sem =
 --   'Polysemy.Process.withProcessOneshotParam' which is then passed to the supplied function to produce a 'SysProcConf'
 --   for the native process.
 interpretProcess ::
-  ∀ resource err param proc i o r .
+  ∀ resource param proc i o r .
   Members (ProcessIO i o) r =>
-  Member (PScoped proc resource (SystemProcess !! err)) r =>
+  Member (PScoped proc resource (SystemProcess !! SystemProcessError)) r =>
   Members [Resource, Race, Async, Embed IO] r =>
   ProcessOptions ->
   (param -> Sem (Stop ProcessError : r) proc) ->
   InterpreterFor (PScoped param () (Process i o) !! ProcessError) r
 interpretProcess options proc =
-  interpretPScopedResumableWith_ @(ScopeEffects i o err) (\ p -> pscope @resource options proc p) handleProcessWithQueues
+  interpretPScopedResumableWith_ @(ScopeEffects i o SystemProcessError) (\ p -> pscope @resource options proc p)
+  (handleProcessWithQueues terminated)
 
 -- |Interpret 'Process' with a system process resource whose file descriptors are connected to three 'TBMQueue's,
 -- deferring decoding of stdout and stderr to the interpreters of two 'ProcessOutput' effects.
@@ -240,13 +256,14 @@ interpretProcess options proc =
 --   of individual 'Process' actions.
 -- - Defers process config to 'SystemProcess'.
 interpretProcess_ ::
-  ∀ resource err i o r .
-  Member (Scoped resource (SystemProcess !! err)) r =>
+  ∀ resource i o r .
+  Member (Scoped resource (SystemProcess !! SystemProcessError)) r =>
   Members [ProcessOutput 'Stdout o, ProcessOutput 'Stderr o, ProcessInput i, Resource, Race, Async, Embed IO] r =>
   ProcessOptions ->
   InterpreterFor (Scoped () (Process i o) !! ProcessError) r
 interpretProcess_ options =
-  interpretScopedResumableWith_ @(ScopeEffects i o err) (scope @resource options) handleProcessWithQueues
+  interpretScopedResumableWith_ @(ScopeEffects i o SystemProcessError) (scope @resource options)
+  (handleProcessWithQueues terminated)
 
 -- |Interpret 'Process' as a native 'Polysemy.Process.SystemProcess'.
 -- This variant:
@@ -264,7 +281,7 @@ interpretProcessNative ::
   InterpreterFor (PScoped param () (Process i o) !! ProcessError) r
 interpretProcessNative options proc =
   interpretSystemProcessNative pure .
-  interpretProcess @PipesProcess @SystemProcessError options (insertAt @0 . proc) .
+  interpretProcess @PipesProcess options (insertAt @0 . proc) .
   raiseUnder
 
 -- |Interpret 'Process' as a native 'Polysemy.Process.SystemProcess'.
@@ -281,7 +298,7 @@ interpretProcessNative_ ::
   InterpreterFor (Scoped () (Process i o) !! ProcessError) r
 interpretProcessNative_ options conf =
   interpretSystemProcessNative_ conf .
-  interpretProcess_ @PipesProcess @SystemProcessError options .
+  interpretProcess_ @PipesProcess options .
   raiseUnder
 
 -- |Reinterpret 'Input' and 'Output' as 'Process'.
@@ -301,7 +318,7 @@ interpretInputHandleBuffered ::
 interpretInputHandleBuffered handle =
   interpretResumable \case
     Input ->
-      stopNote (Terminated "handle closed") =<< tryMaybe (hGetSome handle 4096)
+      stopNote (Unknown "handle closed") =<< tryMaybe (hGetSome handle 4096)
 
 -- |Interpret 'Input ByteString' by polling a 'Handle' and stopping with 'ProcessError' when it fails.
 -- This variant deactivates buffering for the 'Handle'.
@@ -321,7 +338,7 @@ interpretOutputHandleBuffered ::
 interpretOutputHandleBuffered handle =
   interpretResumable \case
     Output o ->
-      stopNote (Terminated "handle closed") =<< tryMaybe (hPut handle o)
+      stopNote (Unknown "handle closed") =<< tryMaybe (hPut handle o)
 
 -- |Interpret 'Output ByteString' by writing to a 'Handle' and stopping with 'ProcessError' when it fails.
 -- This variant deactivates buffering for the 'Handle'.
@@ -347,7 +364,7 @@ interpretProcessIO (ProcessOptions discard qSize _) =
   withQueues @i @o qSize .
   withAsync_ (outputQueue @'Stdout @o @ie @(Input ByteString) discard (pure False) input) .
   withAsync_ (inputQueue @i @oe @(Output ByteString) output) .
-  interpretResumable handleProcessWithQueues .
+  interpretResumable (handleProcessWithQueues (stop . Unknown)) .
   raiseUnder2
 
 -- |Interpret 'Process' in terms of two 'Handle's.
