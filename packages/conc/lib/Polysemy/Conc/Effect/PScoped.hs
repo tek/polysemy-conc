@@ -3,7 +3,21 @@
 -- |Description: PScoped Effect, Internal
 module Polysemy.Conc.Effect.PScoped where
 
--- |@PScoped@ is a variant of 'Polysemy.Conc.Effect.Scoped' that allows the scoped
+-- |@PScoped@ transforms a program so that @effect@ is associated with a @resource@ within that program.
+-- This requires the interpreter for @effect@ to be parameterized by @resource@ and constructed for every program using
+-- @PScoped@ separately.
+--
+-- An application for this is 'Polysemy.Conc.Events', in which each program using the effect 'Polysemy.Conc.Consume' is
+-- interpreted with its own copy of the event channel; or a database transaction, in which a transaction handle is
+-- created for the wrapped program and passed to the interpreter for the database effect.
+--
+-- Resource creation is performed by the function passed to 'Polysemy.Conc.Interpreter.interpretPScoped' and its
+-- variants.
+--
+-- The constructors are not intended to be used directly; the smart constructor 'scoped' is used like a local
+-- interpreter for @effect@.
+-- 'scoped' takes an argument of type @param@, which will be passed through to the interpreter, to be used by the
+-- resource allocation function.
 data PScoped (param :: Type) (resource :: Type) (effect :: Effect) :: Effect where
   Run :: ∀ param resource effect m a . resource -> effect m a -> PScoped param resource effect m a
   InScope :: ∀ param resource effect m a . param -> (resource -> m a) -> PScoped param resource effect m a
