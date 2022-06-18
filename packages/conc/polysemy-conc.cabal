@@ -37,6 +37,7 @@ library
       Polysemy.Conc.Effect.Queue
       Polysemy.Conc.Effect.Race
       Polysemy.Conc.Effect.Scoped
+      Polysemy.Conc.Effect.Semaphore
       Polysemy.Conc.Effect.Sync
       Polysemy.Conc.Effect.SyncRead
       Polysemy.Conc.Events
@@ -51,6 +52,7 @@ library
       Polysemy.Conc.Interpreter.Queue.TBM
       Polysemy.Conc.Interpreter.Race
       Polysemy.Conc.Interpreter.Scoped
+      Polysemy.Conc.Interpreter.Semaphore
       Polysemy.Conc.Interpreter.Stack
       Polysemy.Conc.Interpreter.Sync
       Polysemy.Conc.Interpreter.SyncRead
@@ -60,6 +62,7 @@ library
       Polysemy.Conc.Queue.Timeout
       Polysemy.Conc.Race
       Polysemy.Conc.Retry
+      Polysemy.Conc.Semaphore
       Polysemy.Conc.Sync
       Polysemy.Conc.SyncRead
   hs-source-dirs:

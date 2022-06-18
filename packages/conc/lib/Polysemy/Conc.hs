@@ -36,6 +36,13 @@ module Polysemy.Conc (
   interpretScopedSyncAs,
   syncRead,
 
+  -- * Semaphores
+  Semaphore,
+
+  -- ** Interpreters
+  interpretSemaphoreQ,
+  interpretSemaphoreT,
+
   -- * Racing
   -- $race
   Race,
@@ -198,6 +205,7 @@ import Polysemy.Conc.Effect.PScoped (PScoped, pscoped)
 import Polysemy.Conc.Effect.Queue (Queue)
 import Polysemy.Conc.Effect.Race (Race, race, timeout)
 import Polysemy.Conc.Effect.Scoped (Scoped, scoped)
+import Polysemy.Conc.Effect.Semaphore (Semaphore)
 import Polysemy.Conc.Effect.Sync (ScopedSync, Sync)
 import Polysemy.Conc.Effect.SyncRead (SyncRead)
 import Polysemy.Conc.Events (subscribeLoop, subscribeWhile)
@@ -252,6 +260,7 @@ import Polysemy.Conc.Interpreter.Scoped (
   runScoped,
   runScopedAs,
   )
+import Polysemy.Conc.Interpreter.Semaphore (interpretSemaphoreQ, interpretSemaphoreT)
 import Polysemy.Conc.Interpreter.Stack (ConcStack, runConc)
 import Polysemy.Conc.Interpreter.Sync (interpretScopedSync, interpretScopedSyncAs, interpretSync, interpretSyncAs)
 import Polysemy.Conc.Interpreter.SyncRead (syncRead)
