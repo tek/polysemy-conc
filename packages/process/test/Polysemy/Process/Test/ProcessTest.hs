@@ -20,7 +20,7 @@ import Polysemy.Process.Data.ProcessKill (ProcessKill (KillNever))
 import Polysemy.Process.Data.ProcessOptions (ProcessOptions (kill))
 import Polysemy.Process.Data.ProcessOutputParseResult (ProcessOutputParseResult (Done, Partial))
 import qualified Polysemy.Process.Effect.Process as Process
-import Polysemy.Process.Effect.Process (withProcess, withProcessOneshotParam)
+import Polysemy.Process.Effect.Process (withProcess_, withProcessOneshot)
 import Polysemy.Process.Interpreter.Process (interpretProcessNative_)
 import Polysemy.Process.Interpreter.ProcessIO (interpretProcessByteString, interpretProcessTextLines)
 import Polysemy.Process.Interpreter.ProcessOneshot (interpretProcessOneshotNative)
@@ -42,7 +42,7 @@ test_process :: UnitTest
 test_process =
   runTestAuto $ interpretRace $ asyncToIOFinal $ interpretProcessByteString $ interpretProcessNative_ def config do
     response <- resumeHoistError @ProcessError @(Scoped _ _) show do
-      withProcess do
+      withProcess_ do
         Process.send (encodeUtf8 message)
         Race.timeout_ (throw "timed out") (Seconds 5) Process.recv
     message === decodeUtf8 response
@@ -51,7 +51,7 @@ test_processLines :: UnitTest
 test_processLines =
   runTestAuto $ interpretRace $ asyncToIOFinal $ interpretProcessTextLines $ interpretProcessNative_ def config do
     response <- resumeHoistError @ProcessError @(Scoped _ _) show do
-      withProcess do
+      withProcess_ do
         Process.send message
         Race.timeout_ (throw "timed out") (Seconds 5) (replicateM 4 Process.recv)
     messageLines === response
@@ -61,7 +61,7 @@ test_processKillNever =
   runTestAuto $ interpretRace $ asyncToIOFinal $ interpretProcessTextLines $ interpretProcessNative_ def { kill = KillNever } config do
     result <- resumeHoistError @ProcessError @(Scoped _ _) show do
       Conc.timeout unit (MilliSeconds 100) do
-        withProcess do
+        withProcess_ do
           Process.send message
           Process.recv
     -- This does not succeed. It should be 'Left', but apparently the `timeout` causes the `SystemProcess` scope to stop
@@ -93,7 +93,7 @@ test_processIncremental =
 test_processOneshot :: UnitTest
 test_processOneshot =
   runTestAuto $ interpretRace $ asyncToIOFinal $ interpretProcessTextLines $ interpretProcessOneshotNative def conf do
-    num <- runStop @Int $ withProcessOneshotParam message do
+    num <- runStop @Int $ withProcessOneshot message do
       Race.timeout_ (throw "timed out") (Seconds 5) do
         for_ @[] [1..5] \ i ->
           resumeHoistAs i Process.recv

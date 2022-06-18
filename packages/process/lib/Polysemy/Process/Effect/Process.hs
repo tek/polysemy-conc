@@ -52,45 +52,71 @@ send ::
   Sem r ()
 
 -- |Create a scoped resource for 'Process'.
+-- The process configuration may depend on the provided value of type @param@.
+-- This variant models daemon processes that are expected to run forever, with 'Stop' being sent to this function, if at
+-- all.
 withProcess ::
-  ∀ resource i o r .
-  Member (Scoped resource (Process i o)) r =>
-  InterpreterFor (Process i o) r
-withProcess =
-  scoped @resource
-
--- |Create a scoped resource for 'Process'.
-withProcessOneshot ::
-  ∀ resource i o err r .
-  Member (Scoped resource (Process i o !! err)) r =>
-  InterpreterFor (Process i o !! err) r
-withProcessOneshot =
-  scoped @resource
-
--- |Create a scoped resource for 'Process'.
-withProcessParam ::
   ∀ param resource i o r .
   Member (PScoped param resource (Process i o)) r =>
   param ->
   InterpreterFor (Process i o) r
-withProcessParam =
+withProcess =
   pscoped @param @resource
 
 -- |Create a scoped resource for 'Process'.
-withProcessOneshotParam ::
+-- The process configuration may depend on the provided value of type @param@.
+-- This variant models processes that are expected to terminate, with 'Stop' being sent to individual actions within the
+-- scope.
+withProcessOneshot ::
   ∀ param resource i o err r .
   Member (PScoped param resource (Process i o !! err)) r =>
   param ->
   InterpreterFor (Process i o !! err) r
-withProcessOneshotParam =
+withProcessOneshot =
   pscoped @param @resource
 
--- |Convert 'Output' and 'Input' to 'Process'.
+-- |Create a scoped resource for 'Process'.
+-- The process configuration is provided to the interpreter statically.
+-- This variant models daemon processes that are expected to run forever, with 'Stop' being sent to this function, if at
+-- all.
+withProcess_ ::
+  ∀ resource i o r .
+  Member (Scoped resource (Process i o)) r =>
+  InterpreterFor (Process i o) r
+withProcess_ =
+  scoped @resource
+
+-- |Create a scoped resource for 'Process'.
+-- The process configuration is provided to the interpreter statically.
+-- This variant models processes that are expected to terminate, with 'Stop' being sent to individual actions within the
+-- scope.
+withProcessOneshot_ ::
+  ∀ resource i o err r .
+  Member (Scoped resource (Process i o !! err)) r =>
+  InterpreterFor (Process i o !! err) r
+withProcessOneshot_ =
+  scoped @resource
+
+-- |Convert 'Output' and 'Input' to 'Process' for a daemon process.
 runProcessIO ::
+  ∀ i o r .
+  Member (Process i o) r =>
+  InterpretersFor [Output i, Input o] r
+runProcessIO =
+  interpret \case
+    Input ->
+      recv @i @o
+  .
+  interpret \case
+    Output o ->
+      send @i @o o
+
+-- |Convert 'Output' and 'Input' to 'Process' for a oneshot process.
+runProcessOneshotIO ::
   ∀ i o err r .
   Member (Process i o !! err) r =>
   InterpretersFor [Output i !! err, Input o !! err] r
-runProcessIO =
+runProcessOneshotIO =
   interpretResumable \case
     Input ->
       restop @err @(Process i o) (recv @i @o)

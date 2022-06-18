@@ -36,7 +36,7 @@ import Polysemy.Process.Effect.ProcessInput (ProcessInput)
 import qualified Polysemy.Process.Effect.ProcessOutput as ProcessOutput
 import Polysemy.Process.Effect.ProcessOutput (OutputPipe (Stderr, Stdout), ProcessOutput)
 import qualified Polysemy.Process.Effect.SystemProcess as SystemProcess
-import Polysemy.Process.Effect.SystemProcess (SystemProcess, withSystemProcess, withSystemProcessParam)
+import Polysemy.Process.Effect.SystemProcess (SystemProcess, withSystemProcess, withSystemProcess_)
 import Polysemy.Process.Interpreter.ProcessIO (ProcessIO)
 import Polysemy.Process.Interpreter.SystemProcess (
   PipesProcess,
@@ -198,7 +198,7 @@ scope ::
   ProcessOptions ->
   InterpretersFor (ScopeEffects i o err) r
 scope options =
-  withSystemProcess @resource .
+  withSystemProcess_ @resource .
   queues @err options
 
 pscope ::
@@ -211,7 +211,7 @@ pscope ::
   InterpretersFor (ScopeEffects i o err) r
 pscope options consResource param sem =
   consResource param >>= \ proc ->
-    withSystemProcessParam @proc @resource proc $
+    withSystemProcess @proc @resource proc $
     queues @err options sem
 
 -- |Interpret 'Process' with a system process resource whose file descriptors are connected to three 'TBMQueue's,

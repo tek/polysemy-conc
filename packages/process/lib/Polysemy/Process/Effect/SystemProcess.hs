@@ -30,21 +30,23 @@ data SystemProcess :: Effect where
 makeSem ''SystemProcess
 
 -- |Create a scoped resource for 'SystemProcess'.
+-- The process configuration may depend on the provided value of type @param@.
 withSystemProcess ::
-  ∀ resource err r .
-  Member (Scoped resource (SystemProcess !! err)) r =>
-  InterpreterFor (SystemProcess !! err) r
-withSystemProcess =
-  scoped @resource
-
--- |Create a scoped resource for 'SystemProcess'.
-withSystemProcessParam ::
   ∀ param resource err r .
   Member (PScoped param resource (SystemProcess !! err)) r =>
   param ->
   InterpreterFor (SystemProcess !! err) r
-withSystemProcessParam =
+withSystemProcess =
   pscoped @param @resource
+
+-- |Create a scoped resource for 'SystemProcess'.
+-- The process configuration is provided to the interpreter statically.
+withSystemProcess_ ::
+  ∀ resource err r .
+  Member (Scoped resource (SystemProcess !! err)) r =>
+  InterpreterFor (SystemProcess !! err) r
+withSystemProcess_ =
+  scoped @resource
 
 -- |Send signal INT(2) to the process.
 interrupt ::

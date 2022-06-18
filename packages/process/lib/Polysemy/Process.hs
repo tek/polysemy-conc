@@ -9,6 +9,9 @@ module Polysemy.Process (
   recv,
   send,
   withProcess,
+  withProcess_,
+  withProcessOneshot,
+  withProcessOneshot_,
   ProcessOptions (ProcessOptions),
   ProcessKill (..),
 
@@ -23,7 +26,7 @@ module Polysemy.Process (
   -- ** SystemProcess
   SystemProcess,
   withSystemProcess,
-  withSystemProcessParam,
+  withSystemProcess_,
 
   -- ** Pty
   Pty,
@@ -95,11 +98,11 @@ import Polysemy.Process.Data.ProcessKill (ProcessKill (..))
 import Polysemy.Process.Data.ProcessOptions (ProcessOptions (ProcessOptions))
 import Polysemy.Process.Data.ProcessOutputParseResult (ProcessOutputParseResult (..))
 import Polysemy.Process.Data.SystemProcessError (SystemProcessError)
-import Polysemy.Process.Effect.Process (Process (..), recv, send, withProcess)
+import Polysemy.Process.Effect.Process (Process (..), recv, send, withProcess, withProcess_, withProcessOneshot, withProcessOneshot_)
 import Polysemy.Process.Effect.ProcessInput (ProcessInput)
 import Polysemy.Process.Effect.ProcessOutput (OutputPipe (Stderr, Stdout), ProcessOutput)
 import Polysemy.Process.Effect.Pty (Pty, withPty)
-import Polysemy.Process.Effect.SystemProcess (SystemProcess, withSystemProcess, withSystemProcessParam)
+import Polysemy.Process.Effect.SystemProcess (SystemProcess, withSystemProcess, withSystemProcess_)
 import Polysemy.Process.Executable (resolveExecutable)
 import Polysemy.Process.Interpreter.Process (
   interpretInputHandle,
