@@ -261,7 +261,7 @@ interpretScopedResumableWithH withResource scopedHandler =
 -- entire scope.
 interpretScopedResumableWith ::
   ∀ extra resource effect err r r1 .
-  r1 ~ (extra ++ '[Stop err]) ++ r =>
+  r1 ~ ((extra ++ '[Stop err]) ++ r) =>
   InsertAtIndex 1 '[Scoped resource effect !! err] r1 r (Scoped resource effect !! err : r1) (extra ++ '[Stop err]) =>
   (∀ x . (resource -> Sem r1 x) -> Sem (Stop err : r) x) ->
   (∀ r0 x . resource -> effect (Sem r0) x -> Sem r1 x) ->
@@ -276,7 +276,7 @@ interpretScopedResumableWith withResource scopedHandler =
 -- In this variant, no resource is used and the allocator is a plain interpreter.
 interpretScopedResumableWith_ ::
   ∀ extra effect err r r1 .
-  r1 ~ (extra ++ '[Stop err]) ++ r =>
+  r1 ~ ((extra ++ '[Stop err]) ++ r) =>
   InsertAtIndex 1 '[Scoped () effect !! err] r1 r (Scoped () effect !! err : r1) (extra ++ '[Stop err]) =>
   (∀ x . Sem r1 x -> Sem (Stop err : r) x) ->
   (∀ r0 x . effect (Sem r0) x -> Sem r1 x) ->
@@ -342,7 +342,7 @@ interpretResumableScoped_ withResource =
 -- scope.
 interpretResumableScopedWithH ::
   ∀ extra resource effect err r r1 .
-  r1 ~ extra ++ r =>
+  r1 ~ (extra ++ r) =>
   InsertAtIndex 1 '[Scoped resource (effect !! err)] r1 r (Scoped resource (effect !! err) : r1) extra =>
   (∀ x . (resource -> Sem r1 x) -> Sem r x) ->
   (∀ r0 x . resource -> effect (Sem r0) x -> Tactical effect (Sem r0) (Stop err : r1) x) ->
@@ -382,7 +382,7 @@ interpretResumableScopedWithH withResource scopedHandler =
 -- scope.
 interpretResumableScopedWith ::
   ∀ extra resource effect err r r1 .
-  r1 ~ extra ++ r =>
+  r1 ~ (extra ++ r) =>
   InsertAtIndex 1 '[Scoped resource (effect !! err)] r1 r (Scoped resource (effect !! err) : r1) extra =>
   (∀ x . (resource -> Sem r1 x) -> Sem r x) ->
   (∀ r0 x . resource -> effect (Sem r0) x -> Sem (Stop err : r1) x) ->
@@ -397,7 +397,7 @@ interpretResumableScopedWith withResource scopedHandler =
 -- - No resource is used and the allocator is a plain interpreter.
 interpretResumableScopedWith_ ::
   ∀ extra effect err r r1 .
-  r1 ~ extra ++ r =>
+  r1 ~ (extra ++ r) =>
   InsertAtIndex 1 '[Scoped () (effect !! err)] r1 r (Scoped () (effect !! err) : r1) extra =>
   (∀ x . Sem r1 x -> Sem r x) ->
   (∀ r0 x . effect (Sem r0) x -> Sem (Stop err : r1) x) ->
