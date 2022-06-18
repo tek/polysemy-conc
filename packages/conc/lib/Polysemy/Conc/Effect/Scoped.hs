@@ -3,6 +3,8 @@
 -- |Description: Scoped Effect, Internal
 module Polysemy.Conc.Effect.Scoped where
 
+import Polysemy.Conc.Effect.PScoped (PScoped (InScope, Run))
+
 -- |@Scoped@ transforms a program so that @effect@ is associated with a @resource@ within that program.
 -- This requires the interpreter for @effect@ to be parameterized by @resource@ and constructed for every program using
 -- @Scoped@ separately.
@@ -15,9 +17,8 @@ module Polysemy.Conc.Effect.Scoped where
 --
 -- The constructors are not intended to be used directly; the smart constructor 'scoped' is used like a local
 -- interpreter for @effect@.
-data Scoped (resource :: Type) (effect :: Effect) :: Effect where
-  Run :: ∀ resource effect m a . resource -> effect m a -> Scoped resource effect m a
-  InScope :: ∀ resource effect m a . (resource -> m a) -> Scoped resource effect m a
+type Scoped resource effect =
+  PScoped () resource effect
 
 -- |Constructor for 'Scoped', taking a nested program and transforming all instances of @effect@ to
 -- @Scoped resource effect@.
@@ -26,5 +27,5 @@ scoped ::
   Member (Scoped resource effect) r =>
   InterpreterFor effect r
 scoped main =
-  send $ InScope @resource @effect \ resource ->
-    transform @effect (Run resource) main
+  send $ InScope @() @resource @effect () \ resource ->
+    transform @effect (Run @() resource) main

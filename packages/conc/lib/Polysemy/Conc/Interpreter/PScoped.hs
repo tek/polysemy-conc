@@ -3,17 +3,25 @@
 -- |Description: PScoped Interpreters, Internal
 module Polysemy.Conc.Interpreter.PScoped where
 
-import Polysemy.Internal (liftSem)
+import Polysemy.Internal (Sem (Sem), liftSem, runSem)
 import Polysemy.Internal.Index (InsertAtIndex)
 import Polysemy.Internal.Tactics (liftT, runTactics)
-import Polysemy.Internal.Union (Weaving (Weaving), injWeaving)
+import Polysemy.Internal.Union (Weaving (Weaving), decomp, hoist, injWeaving)
 import Polysemy.Resume (Stop, runStop, type (!!))
 import Polysemy.Resume.Effect.Resumable (Resumable (Resumable))
 
 import Polysemy.Conc.Effect.PScoped (PScoped (InScope, Run))
-import Polysemy.Conc.Interpreter.Scoped (interpretH')
 
--- |Interpreter for 'Scoped', taking a @resource@ allocation function and a parameterized interpreter for the plain
+interpretH' ::
+  ∀ e r .
+  (∀ x . Weaving e (Sem (e : r)) x -> Sem r x) ->
+  InterpreterFor e r
+interpretH' h (Sem m) =
+  Sem \ k -> m $ decomp >>> \case
+    Right wav -> runSem (h wav) k
+    Left g -> k (hoist (interpretH' h) g)
+
+-- |Interpreter for 'PScoped', taking a @resource@ allocation function and a parameterized interpreter for the plain
 -- @effect@.
 --
 -- @withResource@ is a callback function, allowing the user to acquire the resource for each program from other effects.
@@ -44,7 +52,7 @@ runPScopedAs ::
   (resource -> InterpreterFor effect r) ->
   InterpreterFor (PScoped param resource effect) r
 runPScopedAs resource =
-  runPScoped \ p f -> f =<< resource p
+  runPScoped \ p use -> use =<< resource p
 
 -- |Variant of 'runPScoped' that takes a higher-order handler instead of an interpreter.
 interpretPScopedH ::
@@ -79,12 +87,13 @@ interpretPScopedAs ::
   (∀ r0 x . resource -> effect (Sem r0) x -> Sem r x) ->
   InterpreterFor (PScoped param resource effect) r
 interpretPScopedAs resource =
-  interpretPScoped \ p f -> f =<< resource p
+  interpretPScoped \ p use -> use =<< resource p
 
--- |Combined higher-order interpreter for 'Scoped' and 'Resumable'.
--- This allows 'Stop' to be sent from within the resource allocator so that the consumer receives it.
+-- |Combined higher-order interpreter for 'PScoped' and 'Resumable'.
+-- This allows 'Stop' to be sent from within the resource allocator so that the consumer receives it, terminating the
+-- entire scope.
 interpretPScopedResumableH ::
-  ∀ resource param effect err r .
+  ∀ param resource effect err r .
   (∀ x . param -> (resource -> Sem (Stop err : r) x) -> Sem (Stop err : r) x) ->
   (∀ r0 x . resource -> effect (Sem r0) x -> Tactical effect (Sem r0) (Stop err : r) x) ->
   InterpreterFor (PScoped param resource effect !! err) r
@@ -97,7 +106,7 @@ interpretPScopedResumableH withResource scopedHandler =
         case inner of
           Weaving effect s dist ex ins -> do
             let
-              handleScoped = \case
+              handlePScoped = \case
                 Run resource act ->
                   scopedHandler resource act
                 InScope param main ->
@@ -108,14 +117,15 @@ interpretPScopedResumableH withResource scopedHandler =
                 (raise . raise . run . fmap Compose . dist' . fmap dist . getCompose)
                 (ins <=< ins' . getCompose)
                 (raise . run . fmap Compose . dist' . fmap dist . getCompose)
-                (handleScoped effect)
+                (handlePScoped effect)
               exFinal = ex' . \case
                 Right (Compose a) -> Right . ex <$> a
                 Left err -> Left err <$ s'
             exFinal <$> runStop tac
 
--- |Combined interpreter for 'Scoped' and 'Resumable'.
--- This allows 'Stop' to be sent from within the resource allocator so that the consumer receives it.
+-- |Combined interpreter for 'PScoped' and 'Resumable'.
+-- This allows 'Stop' to be sent from within the resource allocator so that the consumer receives it, terminating the
+-- entire scope.
 interpretPScopedResumable ::
   ∀ param resource effect err r .
   (∀ x . param -> (resource -> Sem (Stop err : r) x) -> Sem (Stop err : r) x) ->
@@ -124,6 +134,20 @@ interpretPScopedResumable ::
 interpretPScopedResumable withResource scopedHandler =
   interpretPScopedResumableH withResource \ r e -> liftT (scopedHandler r e)
 
+-- |Combined interpreter for 'PScoped' and 'Resumable'.
+-- This allows 'Stop' to be sent from within the resource allocator so that the consumer receives it, terminating the
+-- entire scope.
+-- In this variant, the resource allocator is a plain action.
+interpretPScopedResumable_ ::
+  ∀ param resource effect err r .
+  (param -> Sem (Stop err : r) resource) ->
+  (∀ r0 x . resource -> effect (Sem r0) x -> Sem (Stop err : r) x) ->
+  InterpreterFor (PScoped param resource effect !! err) r
+interpretPScopedResumable_ resource =
+  interpretPScopedResumable \ p use -> use =<< resource p
+
+-- |Higher-order interpreter for 'PScoped' that allows the handler to use additional effects that are interpreted by the
+-- resource allocator.
 interpretPScopedWithH ::
   ∀ extra param resource effect r r1 .
   r1 ~ (extra ++ r) =>
@@ -146,6 +170,8 @@ interpretPScopedWithH withResource scopedHandler =
         _ ->
           error "nested InScope"
 
+-- |Interpreter for 'PScoped' that allows the handler to use additional effects that are interpreted by the resource
+-- allocator.
 interpretPScopedWith ::
   ∀ extra param resource effect r r1 .
   r1 ~ (extra ++ r) =>
@@ -156,6 +182,9 @@ interpretPScopedWith ::
 interpretPScopedWith withResource scopedHandler =
   interpretPScopedWithH @extra withResource \ r e -> liftT (scopedHandler r e)
 
+-- |Interpreter for 'PScoped' that allows the handler to use additional effects that are interpreted by the resource
+-- allocator.
+-- In this variant, no resource is used and the allocator is a plain interpreter.
 interpretPScopedWith_ ::
   ∀ extra param effect r r1 .
   r1 ~ (extra ++ r) =>
@@ -166,6 +195,10 @@ interpretPScopedWith_ ::
 interpretPScopedWith_ withResource scopedHandler =
   interpretPScopedWithH @extra (\ p f -> withResource p (f ())) \ () e -> liftT (scopedHandler e)
 
+-- |Combined higher-order interpreter for 'PScoped' and 'Resumable' that allows the handler to use additional effects
+-- that are interpreted by the resource allocator.
+-- This allows 'Stop' to be sent from within the resource allocator so that the consumer receives it, terminating the
+-- entire scope.
 interpretPScopedResumableWithH ::
   ∀ extra param resource effect err r r1 .
   r1 ~ ((extra ++ '[Stop err]) ++ r) =>
@@ -182,18 +215,19 @@ interpretPScopedResumableWithH withResource scopedHandler =
         case inner of
           Weaving effect s dist ex ins -> do
             let
-              handleScoped = \case
+              handlePScoped = \case
                 Run _ _ ->
                   error "top level Run"
                 InScope param main ->
-                  raise (withResource param \ resource -> Compose <$> inScope (insertAt @1 @(extra ++ '[Stop err]) (dist' (dist (main resource <$ s) <$ s'))))
+                  raise $ withResource param \ resource ->
+                    Compose <$> inScope (insertAt @1 @(extra ++ '[Stop err]) (dist' (dist (main resource <$ s) <$ s')))
               tac =
                 runTactics
                 (Compose (s <$ s'))
                 (raise . raise . run . fmap Compose . dist' . fmap dist . getCompose)
                 (ins <=< ins' . getCompose)
                 (raise . run . fmap Compose . dist' . fmap dist . getCompose)
-                (handleScoped effect)
+                (handlePScoped effect)
               exFinal = ex' . \case
                 Right (Compose a) -> Right . ex <$> a
                 Left err -> Left err <$ s'
@@ -204,7 +238,7 @@ interpretPScopedResumableWithH withResource scopedHandler =
         case inner of
           Weaving effect s dist ex ins -> do
             let
-              handleScoped = \case
+              handlePScoped = \case
                 Run resource act ->
                   scopedHandler resource act
                 InScope _ _ ->
@@ -215,12 +249,16 @@ interpretPScopedResumableWithH withResource scopedHandler =
                 (raise . inScope . fmap Compose . dist' . fmap dist . getCompose)
                 (ins <=< ins' . getCompose)
                 (inScope . fmap Compose . dist' . fmap dist . getCompose)
-                (handleScoped effect)
+                (handlePScoped effect)
               exFinal = ex' . \case
                 Right (Compose a) -> Right . ex <$> a
                 Left err -> Left err <$ s'
             exFinal <$> runStop (raise tac)
 
+-- |Combined interpreter for 'PScoped' and 'Resumable' that allows the handler to use additional effects that are
+-- interpreted by the resource allocator.
+-- This allows 'Stop' to be sent from within the resource allocator so that the consumer receives it, terminating the
+-- entire scope.
 interpretPScopedResumableWith ::
   ∀ extra param resource effect err r r1 .
   r1 ~ ((extra ++ '[Stop err]) ++ r) =>
@@ -231,6 +269,11 @@ interpretPScopedResumableWith ::
 interpretPScopedResumableWith withResource scopedHandler =
   interpretPScopedResumableWithH @extra withResource \ r e -> liftT (scopedHandler r e)
 
+-- |Combined interpreter for 'PScoped' and 'Resumable' that allows the handler to use additional effects that are
+-- interpreted by the resource allocator.
+-- This allows 'Stop' to be sent from within the resource allocator so that the consumer receives it, terminating the
+-- entire scope.
+-- In this variant, no resource is used and the allocator is a plain interpreter.
 interpretPScopedResumableWith_ ::
   ∀ extra param effect err r r1 .
   r1 ~ ((extra ++ '[Stop err]) ++ r) =>
@@ -238,5 +281,126 @@ interpretPScopedResumableWith_ ::
   (∀ x . param -> Sem r1 x -> Sem (Stop err : r) x) ->
   (∀ r0 x . effect (Sem r0) x -> Sem r1 x) ->
   InterpreterFor (PScoped param () effect !! err) r
-interpretPScopedResumableWith_ withResource scopedHandler =
-  interpretPScopedResumableWith @extra (\ p f -> withResource p (f ())) (const scopedHandler)
+interpretPScopedResumableWith_ extra scopedHandler =
+  interpretPScopedResumableWith @extra (\ p f -> extra p (f ())) (const scopedHandler)
+
+-- |Combined higher-order interpreter for 'Resumable' and 'PScoped'.
+-- In this variant, only the handler may send 'Stop', but this allows resumption to happen on each action inside of the
+-- scope.
+interpretResumablePScopedH ::
+  ∀ param resource effect err r .
+  (∀ x . param -> (resource -> Sem r x) -> Sem r x) ->
+  (∀ r0 x . resource -> effect (Sem r0) x -> Tactical effect (Sem r0) (Stop err : r) x) ->
+  InterpreterFor (PScoped param resource (effect !! err)) r
+interpretResumablePScopedH withResource scopedHandler =
+  run
+  where
+    run :: InterpreterFor (PScoped param resource (effect !! err)) r
+    run =
+      interpretH' \ (Weaving inner s' dist' ex' ins') -> case inner of
+        Run resource (Resumable (Weaving effect s dist ex ins)) ->
+          exFinal <$> runStop (tac (scopedHandler resource effect))
+          where
+            tac =
+              runTactics
+              (Compose (s <$ s'))
+              (raise . raise . run . fmap Compose . dist' . fmap dist . getCompose)
+              (ins <=< ins' . getCompose)
+              (raise . run . fmap Compose . dist' . fmap dist . getCompose)
+            exFinal = ex' . \case
+              Right (Compose a) -> Right . ex <$> a
+              Left err -> Left err <$ s'
+        InScope param main ->
+          ex' <$> withResource param \ resource -> run (dist' (main resource <$ s'))
+
+-- |Combined interpreter for 'Resumable' and 'PScoped'.
+-- In this variant, only the handler may send 'Stop', but this allows resumption to happen on each action inside of the
+-- scope.
+interpretResumablePScoped ::
+  ∀ param resource effect err r .
+  (∀ x . param -> (resource -> Sem r x) -> Sem r x) ->
+  (∀ r0 x . resource -> effect (Sem r0) x -> Sem (Stop err : r) x) ->
+  InterpreterFor (PScoped param resource (effect !! err)) r
+interpretResumablePScoped withResource scopedHandler =
+  interpretResumablePScopedH withResource \ r e -> liftT (scopedHandler r e)
+
+-- |Combined interpreter for 'Resumable' and 'PScoped'.
+-- In this variant:
+-- - Only the handler may send 'Stop', but this allows resumption to happen on each action inside of the scope.
+-- - The resource allocator is a plain action.
+interpretResumablePScoped_ ::
+  ∀ param resource effect err r .
+  (param -> Sem r resource) ->
+  (∀ r0 x . resource -> effect (Sem r0) x -> Sem (Stop err : r) x) ->
+  InterpreterFor (PScoped param resource (effect !! err)) r
+interpretResumablePScoped_ resource =
+  interpretResumablePScoped \ p use -> use =<< resource p
+
+-- |Combined higher-order interpreter for 'Resumable' and 'PScoped' that allows the handler to use additional effects
+-- that are interpreted by the resource allocator.
+-- In this variant, only the handler may send 'Stop', but this allows resumption to happen on each action inside of the
+-- scope.
+interpretResumablePScopedWithH ::
+  ∀ extra param resource effect err r r1 .
+  r1 ~ (extra ++ r) =>
+  InsertAtIndex 1 '[PScoped param resource (effect !! err)] r1 r (PScoped param resource (effect !! err) : r1) extra =>
+  (∀ x . param -> (resource -> Sem r1 x) -> Sem r x) ->
+  (∀ r0 x . resource -> effect (Sem r0) x -> Tactical effect (Sem r0) (Stop err : r1) x) ->
+  InterpreterFor (PScoped param resource (effect !! err)) r
+interpretResumablePScopedWithH withResource scopedHandler =
+  run
+  where
+    run :: InterpreterFor (PScoped param resource (effect !! err)) r
+    run =
+      interpretH' \case
+        Weaving (InScope param main) s' dist' ex' _ ->
+          ex' <$> withResource param \ resource -> inScope (insertAt @1 @extra (dist' (main resource <$ s')))
+        _ ->
+          error "top level Run"
+      where
+        inScope :: InterpreterFor (PScoped param resource (effect !! err)) r1
+        inScope =
+          interpretH' \case
+            Weaving (Run resource (Resumable (Weaving effect s dist ex ins))) s' dist' ex' ins' ->
+              exFinal <$> runStop (tac (scopedHandler resource effect))
+              where
+                tac =
+                  runTactics
+                  (Compose (s <$ s'))
+                  (raise . raise . inScope . fmap Compose . dist' . fmap dist . getCompose)
+                  (ins <=< ins' . getCompose)
+                  (raise . inScope . fmap Compose . dist' . fmap dist . getCompose)
+                exFinal = ex' . \case
+                  Right (Compose a) -> Right . ex <$> a
+                  Left err -> Left err <$ s'
+            _ ->
+              error "nested InScope"
+
+-- |Combined interpreter for 'Resumable' and 'PScoped' that allows the handler to use additional effects that are
+-- interpreted by the resource allocator.
+-- In this variant, only the handler may send 'Stop', but this allows resumption to happen on each action inside of the
+-- scope.
+interpretResumablePScopedWith ::
+  ∀ extra param resource effect err r r1 .
+  r1 ~ (extra ++ r) =>
+  InsertAtIndex 1 '[PScoped param resource (effect !! err)] r1 r (PScoped param resource (effect !! err) : r1) extra =>
+  (∀ x . param -> (resource -> Sem r1 x) -> Sem r x) ->
+  (∀ r0 x . resource -> effect (Sem r0) x -> Sem (Stop err : r1) x) ->
+  InterpreterFor (PScoped param resource (effect !! err)) r
+interpretResumablePScopedWith withResource scopedHandler =
+  interpretResumablePScopedWithH @extra withResource \ r e -> liftT (scopedHandler r e)
+
+-- |Combined interpreter for 'Resumable' and 'PScoped' that allows the handler to use additional effects that are
+-- interpreted by the resource allocator.
+-- In this variant:
+-- - Only the handler may send 'Stop', but this allows resumption to happen on each action inside of the scope.
+-- - No resource is used and the allocator is a plain interpreter.
+interpretResumablePScopedWith_ ::
+  ∀ extra param effect err r r1 .
+  r1 ~ (extra ++ r) =>
+  InsertAtIndex 1 '[PScoped param () (effect !! err)] r1 r (PScoped param () (effect !! err) : r1) extra =>
+  (∀ x . param -> Sem r1 x -> Sem r x) ->
+  (∀ r0 x . effect (Sem r0) x -> Sem (Stop err : r1) x) ->
+  InterpreterFor (PScoped param () (effect !! err)) r
+interpretResumablePScopedWith_ extra scopedHandler =
+  interpretResumablePScopedWith @extra @param @() @effect @err @r @r1 (\ p f -> extra p (f ())) (const scopedHandler)
