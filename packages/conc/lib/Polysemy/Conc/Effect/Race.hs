@@ -10,7 +10,7 @@ import Polysemy.Time (TimeUnit)
 data Race :: Effect where
   -- |Run both programs concurrently, returning the result of the faster one.
   Race :: m a -> m b -> Race m (Either a b)
-  -- |Run the fallback action if the given program doesn't finish within the specified interval.
+  -- |Run the first action if the second action doesn't finish within the specified interval.
   Timeout :: TimeUnit u => m a -> u -> m b -> Race m (Either a b)
 
 makeSem_ ''Race

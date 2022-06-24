@@ -4,6 +4,7 @@
 * Add `Queue.tryReadMaybe`, a variant of `readMaybe` that does not wait.
 * Add variants of the combined `Scoped` interpreters in which the `Resumable` is inside the scope.
 * Add `Semaphore`, abstracting `QSem` or `TSem`.
+* Add `timeoutStop`, a variant of `timeout` that calls `Polysemy.Resume.stop`.
 
 # 0.9.0.0
 
