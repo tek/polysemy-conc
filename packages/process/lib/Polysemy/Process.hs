@@ -29,6 +29,7 @@ module Polysemy.Process (
   withSystemProcess,
   withSystemProcess_,
   Pid (..),
+  currentPid,
 
   -- ** Pty
   Pty,
@@ -167,6 +168,7 @@ import Polysemy.Process.Interpreter.SystemProcess (
   interpretSystemProcessWithProcess,
   interpretSystemProcessWithProcessOpaque,
   )
+import Polysemy.Process.SystemProcess (currentPid)
 
 -- $intro
 -- This library provides an abstraction of a system process in the effect 'Process', whose constructors represent the
