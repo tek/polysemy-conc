@@ -9,7 +9,8 @@ import Polysemy.Resume (type (!!))
 import System.Exit (ExitCode)
 import qualified System.Posix as Signal
 import System.Posix (Signal)
-import System.Process (Pid)
+
+import Polysemy.Process.Data.Pid (Pid)
 
 -- |Low-level interface for a process, operating on raw chunks of bytes.
 -- Interface is modeled after "System.Process".

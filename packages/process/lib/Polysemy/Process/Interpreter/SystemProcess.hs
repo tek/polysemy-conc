@@ -128,7 +128,7 @@ handleSystemProcessWithProcess ::
 handleSystemProcessWithProcess process =
   \case
     SystemProcess.Pid ->
-      processId process
+      fromIntegral <$> processId process
     SystemProcess.Signal sig -> do
       pid <- processId process
       tryStop "signal failed" (Signal.signalProcess sig pid)
@@ -192,7 +192,7 @@ interpretSystemProcessWithProcessOpaque ::
 interpretSystemProcessWithProcessOpaque process =
   interpretResumable \case
     SystemProcess.Pid ->
-      processId process
+      fromIntegral <$> processId process
     SystemProcess.Signal sig -> do
       pid <- processId process
       tryStop "signal failed" (Signal.signalProcess sig pid)

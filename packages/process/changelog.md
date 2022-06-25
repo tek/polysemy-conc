@@ -6,6 +6,7 @@
   Don't provide loads of specializations for I/O types, rather offer interpreters that handle `ProcessOutput` and
   `ProcessInput` only.
 * Add constructors for `SysProcConf` that use `Path` and `Text`.
+* Add the newtype `Pid` for `SystemProcess`.
 
 # 0.9.0.0
 

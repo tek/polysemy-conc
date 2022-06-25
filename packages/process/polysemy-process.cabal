@@ -28,6 +28,7 @@ source-repository head
 library
   exposed-modules:
       Polysemy.Process
+      Polysemy.Process.Data.Pid
       Polysemy.Process.Data.ProcessError
       Polysemy.Process.Data.ProcessKill
       Polysemy.Process.Data.ProcessOptions
