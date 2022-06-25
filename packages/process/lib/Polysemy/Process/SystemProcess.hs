@@ -4,7 +4,12 @@
 module Polysemy.Process.SystemProcess (
   module Polysemy.Process.Effect.SystemProcess,
   module Polysemy.Process.Interpreter.SystemProcess,
+  processConfig,
+  shellConfig,
 ) where
+
+import Path (Abs, File, Path, toFilePath)
+import System.Process.Typed (proc, shell)
 
 import Polysemy.Process.Effect.SystemProcess (
   SystemProcess (..),
@@ -18,7 +23,18 @@ import Polysemy.Process.Effect.SystemProcess (
   writeStdin,
   )
 import Polysemy.Process.Interpreter.SystemProcess (
+  SysProcConf,
   interpretSystemProcessNative,
   interpretSystemProcessNativeSingle,
   interpretSystemProcessWithProcess,
   )
+
+processConfig :: Path Abs File -> [Text] -> SysProcConf
+processConfig exe args =
+  proc (toFilePath exe) (toString <$> args)
+{-# inline processConfig #-}
+
+shellConfig :: Text -> SysProcConf
+shellConfig cmd =
+  shell (toString cmd)
+{-# inline shellConfig #-}
