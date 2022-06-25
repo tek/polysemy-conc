@@ -50,6 +50,7 @@ library
       Polysemy.Process.Interpreter.SystemProcess
       Polysemy.Process.ProcessOutput
       Polysemy.Process.Pty
+      Polysemy.Process.SysProcConf
       Polysemy.Process.SystemProcess
   hs-source-dirs:
       lib

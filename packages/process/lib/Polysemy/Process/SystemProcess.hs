@@ -4,12 +4,8 @@
 module Polysemy.Process.SystemProcess (
   module Polysemy.Process.Effect.SystemProcess,
   module Polysemy.Process.Interpreter.SystemProcess,
-  processConfig,
-  shellConfig,
+  module Polysemy.Process.SysProcConf,
 ) where
-
-import Path (Abs, File, Path, toFilePath)
-import System.Process.Typed (proc, shell)
 
 import Polysemy.Process.Effect.SystemProcess (
   SystemProcess (..),
@@ -28,15 +24,4 @@ import Polysemy.Process.Interpreter.SystemProcess (
   interpretSystemProcessNativeSingle,
   interpretSystemProcessWithProcess,
   )
-
--- |Create a 'SysProcConf' from an executable path and a list of arguments.
-processConfig :: Path Abs File -> [Text] -> SysProcConf
-processConfig exe args =
-  proc (toFilePath exe) (toString <$> args)
-{-# inline processConfig #-}
-
--- |Create a 'SysProcConf' from an shell command line.
-shellConfig :: Text -> SysProcConf
-shellConfig cmd =
-  shell (toString cmd)
-{-# inline shellConfig #-}
+import Polysemy.Process.SysProcConf
