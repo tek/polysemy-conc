@@ -7,6 +7,7 @@
   `ProcessInput` only.
 * Add constructors for `SysProcConf` that use `Path` and `Text`.
 * Add the newtype `Pid` for `SystemProcess`.
+* Add `currentPid`.
 
 # 0.9.0.0
 
