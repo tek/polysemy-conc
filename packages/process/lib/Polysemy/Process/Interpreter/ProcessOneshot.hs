@@ -16,8 +16,9 @@ import Polysemy.Process.Interpreter.Process (ScopeEffects, handleProcessWithQueu
 import Polysemy.Process.Interpreter.ProcessIO (ProcessIO)
 import Polysemy.Process.Interpreter.SystemProcess (PipesProcess, SysProcConf, interpretSystemProcessNative)
 
--- |Interpret 'Process' with a system process resource whose file descriptors are connected to three 'TBMQueue's,
--- deferring decoding of stdout and stderr to the interpreters of two 'ProcessOutput' effects.
+-- |Interpret 'Process' with a system process resource whose file descriptors are connected to three
+-- 'Control.Concurrent.STM.TBMQueue.TBMQueue's, deferring decoding of stdout and stderr to the interpreters of two
+-- 'Polysemy.Process.ProcessOutput' effects.
 -- Unlike 'Polysemy.Process.interpretProcess', this variant sends errors inside the scope to the individual 'Process'
 -- actions.
 -- This variant is for parameterized scopes, meaning that a value of arbitrary type may be passed to

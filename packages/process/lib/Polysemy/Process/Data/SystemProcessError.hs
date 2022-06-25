@@ -8,5 +8,6 @@ data SystemProcessError =
   -- |The process terminated.
   Terminated Text
   |
+  -- |Stdio was requested, but the process was started without pipes.
   NoPipes
   deriving stock (Eq, Show)

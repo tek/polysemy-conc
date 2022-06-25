@@ -53,8 +53,8 @@ send ::
 
 -- |Create a scoped resource for 'Process'.
 -- The process configuration may depend on the provided value of type @param@.
--- This variant models daemon processes that are expected to run forever, with 'Stop' being sent to this function, if at
--- all.
+-- This variant models daemon processes that are expected to run forever, with 'Polysemy.Resume.Stop' being sent to this
+-- function, if at all.
 withProcess ::
   ∀ param resource i o r .
   Member (PScoped param resource (Process i o)) r =>
@@ -65,8 +65,8 @@ withProcess =
 
 -- |Create a scoped resource for 'Process'.
 -- The process configuration may depend on the provided value of type @param@.
--- This variant models processes that are expected to terminate, with 'Stop' being sent to individual actions within the
--- scope.
+-- This variant models processes that are expected to terminate, with 'Polysemy.Resume.Stop' being sent to individual
+-- actions within the scope.
 withProcessOneshot ::
   ∀ param resource i o err r .
   Member (PScoped param resource (Process i o !! err)) r =>
@@ -77,8 +77,8 @@ withProcessOneshot =
 
 -- |Create a scoped resource for 'Process'.
 -- The process configuration is provided to the interpreter statically.
--- This variant models daemon processes that are expected to run forever, with 'Stop' being sent to this function, if at
--- all.
+-- This variant models daemon processes that are expected to run forever, with 'Polysemy.Resume.Stop' being sent to this
+-- function, if at all.
 withProcess_ ::
   ∀ resource i o r .
   Member (Scoped resource (Process i o)) r =>
@@ -88,8 +88,8 @@ withProcess_ =
 
 -- |Create a scoped resource for 'Process'.
 -- The process configuration is provided to the interpreter statically.
--- This variant models processes that are expected to terminate, with 'Stop' being sent to individual actions within the
--- scope.
+-- This variant models processes that are expected to terminate, with 'Polysemy.Resume.Stop' being sent to individual
+-- actions within the scope.
 withProcessOneshot_ ::
   ∀ resource i o err r .
   Member (Scoped resource (Process i o !! err)) r =>
