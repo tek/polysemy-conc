@@ -3,9 +3,9 @@ module Polysemy.Process.SysProcConf where
 
 import Path (Abs, File, Path, Rel, toFilePath)
 import Path.IO (findExecutable)
+import System.Process.Typed (proc, shell)
 
 import Polysemy.Process.Interpreter.SystemProcess (SysProcConf)
-import System.Process.Typed (shell, proc)
 
 -- |Create a 'SysProcConf' from an executable path and a list of arguments.
 processConfig :: Path Abs File -> [Text] -> SysProcConf

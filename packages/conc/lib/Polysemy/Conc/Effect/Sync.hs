@@ -1,6 +1,6 @@
 {-# options_haddock prune #-}
 
--- |Description: Sync effect
+-- |Description: Sync effect, Internal.
 module Polysemy.Conc.Effect.Sync where
 
 import Polysemy.Time (TimeUnit)

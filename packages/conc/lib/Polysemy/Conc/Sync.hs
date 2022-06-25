@@ -12,21 +12,7 @@ import Polysemy.Time (Time, TimeUnit)
 import Polysemy.Conc.Effect.Mask (Mask, mask, restore)
 import Polysemy.Conc.Effect.Scoped (scoped)
 import qualified Polysemy.Conc.Effect.Sync as Sync
-import Polysemy.Conc.Effect.Sync (
-  ScopedSync,
-  Sync,
-  SyncResources,
-  block,
-  empty,
-  putBlock,
-  putTry,
-  putWait,
-  takeBlock,
-  takeTry,
-  takeWait,
-  try,
-  wait,
-  )
+import Polysemy.Conc.Effect.Sync
 
 -- |Run an action repeatedly until the 'Sync' variable is available.
 whileEmpty ::

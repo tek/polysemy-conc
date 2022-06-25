@@ -82,7 +82,7 @@ interpretScopedAs ::
 interpretScopedAs resource =
   interpretPScopedAs (const resource)
 
--- |Combined higher-order interpreter for 'Scoped' and 'Resumable'.
+-- |Combined higher-order interpreter for 'Scoped' and 'Polysemy.Resumable.Resumable'.
 -- This allows 'Stop' to be sent from within the resource allocator so that the consumer receives it, terminating the
 -- entire scope.
 interpretScopedResumableH ::
@@ -93,7 +93,7 @@ interpretScopedResumableH ::
 interpretScopedResumableH withResource =
   interpretPScopedResumableH (const withResource)
 
--- |Combined interpreter for 'Scoped' and 'Resumable'.
+-- |Combined interpreter for 'Scoped' and 'Polysemy.Resumable.Resumable'.
 -- This allows 'Stop' to be sent from within the resource allocator so that the consumer receives it, terminating the
 -- entire scope.
 interpretScopedResumable ::
@@ -104,7 +104,7 @@ interpretScopedResumable ::
 interpretScopedResumable withResource =
   interpretPScopedResumable (const withResource)
 
--- |Combined interpreter for 'Scoped' and 'Resumable'.
+-- |Combined interpreter for 'Scoped' and 'Polysemy.Resumable.Resumable'.
 -- This allows 'Stop' to be sent from within the resource allocator so that the consumer receives it, terminating the
 -- entire scope.
 -- In this variant, the resource allocator is a plain action.
@@ -153,8 +153,8 @@ interpretScopedWith_ ::
 interpretScopedWith_ withResource =
   interpretPScopedWith_ @extra (const withResource)
 
--- |Combined higher-order interpreter for 'Scoped' and 'Resumable' that allows the handler to use additional effects
--- that are interpreted by the resource allocator.
+-- |Combined higher-order interpreter for 'Scoped' and 'Polysemy.Resumable.Resumable' that allows the handler to use
+-- additional effects that are interpreted by the resource allocator.
 -- This allows 'Stop' to be sent from within the resource allocator so that the consumer receives it, terminating the
 -- entire scope.
 interpretScopedResumableWithH ::
@@ -167,8 +167,8 @@ interpretScopedResumableWithH ::
 interpretScopedResumableWithH withResource =
   interpretPScopedResumableWithH @extra (const withResource)
 
--- |Combined interpreter for 'Scoped' and 'Resumable' that allows the handler to use additional effects that are
--- interpreted by the resource allocator.
+-- |Combined interpreter for 'Scoped' and 'Polysemy.Resumable.Resumable' that allows the handler to use additional
+-- effects that are interpreted by the resource allocator.
 -- This allows 'Stop' to be sent from within the resource allocator so that the consumer receives it, terminating the
 -- entire scope.
 interpretScopedResumableWith ::
@@ -181,8 +181,8 @@ interpretScopedResumableWith ::
 interpretScopedResumableWith withResource =
   interpretPScopedResumableWith @extra (const withResource)
 
--- |Combined interpreter for 'Scoped' and 'Resumable' that allows the handler to use additional effects that are
--- interpreted by the resource allocator.
+-- |Combined interpreter for 'Scoped' and 'Polysemy.Resumable.Resumable' that allows the handler to use additional
+-- effects that are interpreted by the resource allocator.
 -- This allows 'Stop' to be sent from within the resource allocator so that the consumer receives it, terminating the
 -- entire scope.
 -- In this variant, no resource is used and the allocator is a plain interpreter.
@@ -196,7 +196,7 @@ interpretScopedResumableWith_ ::
 interpretScopedResumableWith_ extra =
   interpretPScopedResumableWith_ @extra (const extra)
 
--- |Combined higher-order interpreter for 'Resumable' and 'Scoped'.
+-- |Combined higher-order interpreter for 'Polysemy.Resumable.Resumable' and 'Scoped'.
 -- In this variant, only the handler may send 'Stop', but this allows resumption to happen on each action inside of the
 -- scope.
 interpretResumableScopedH ::
@@ -207,7 +207,7 @@ interpretResumableScopedH ::
 interpretResumableScopedH withResource =
   interpretResumablePScopedH (const withResource)
 
--- |Combined interpreter for 'Resumable' and 'Scoped'.
+-- |Combined interpreter for 'Polysemy.Resumable.Resumable' and 'Scoped'.
 -- In this variant, only the handler may send 'Stop', but this allows resumption to happen on each action inside of the
 -- scope.
 interpretResumableScoped ::
@@ -218,7 +218,7 @@ interpretResumableScoped ::
 interpretResumableScoped withResource =
   interpretResumablePScoped (const withResource)
 
--- |Combined interpreter for 'Resumable' and 'Scoped'.
+-- |Combined interpreter for 'Polysemy.Resumable.Resumable' and 'Scoped'.
 -- In this variant:
 -- - Only the handler may send 'Stop', but this allows resumption to happen on each action inside of the scope.
 -- - The resource allocator is a plain action.
@@ -230,8 +230,8 @@ interpretResumableScoped_ ::
 interpretResumableScoped_ resource =
   interpretResumablePScoped_ (const resource)
 
--- |Combined higher-order interpreter for 'Resumable' and 'Scoped' that allows the handler to use additional effects
--- that are interpreted by the resource allocator.
+-- |Combined higher-order interpreter for 'Polysemy.Resumable.Resumable' and 'Scoped' that allows the handler to use
+-- additional effects that are interpreted by the resource allocator.
 -- In this variant, only the handler may send 'Stop', but this allows resumption to happen on each action inside of the
 -- scope.
 interpretResumableScopedWithH ::
@@ -244,8 +244,8 @@ interpretResumableScopedWithH ::
 interpretResumableScopedWithH withResource =
   interpretResumablePScopedWithH @extra (const withResource)
 
--- |Combined interpreter for 'Resumable' and 'Scoped' that allows the handler to use additional effects that are
--- interpreted by the resource allocator.
+-- |Combined interpreter for 'Polysemy.Resumable.Resumable' and 'Scoped' that allows the handler to use additional
+-- effects that are interpreted by the resource allocator.
 -- In this variant, only the handler may send 'Stop', but this allows resumption to happen on each action inside of the
 -- scope.
 interpretResumableScopedWith ::
@@ -258,8 +258,8 @@ interpretResumableScopedWith ::
 interpretResumableScopedWith withResource =
   interpretResumablePScopedWith @extra (const withResource)
 
--- |Combined interpreter for 'Resumable' and 'Scoped' that allows the handler to use additional effects that are
--- interpreted by the resource allocator.
+-- |Combined interpreter for 'Polysemy.Resumable.Resumable' and 'Scoped' that allows the handler to use additional
+-- effects that are interpreted by the resource allocator.
 -- In this variant:
 -- - Only the handler may send 'Stop', but this allows resumption to happen on each action inside of the scope.
 -- - No resource is used and the allocator is a plain interpreter.

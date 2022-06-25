@@ -1,3 +1,4 @@
+-- |A quantity semaphore effect.
 module Polysemy.Conc.Semaphore (
   Semaphore,
   interpretSemaphoreQ,

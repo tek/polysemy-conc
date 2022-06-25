@@ -14,9 +14,9 @@ module Polysemy.Conc.Effect.PScoped where
 -- Resource creation is performed by the function passed to 'Polysemy.Conc.Interpreter.interpretPScoped' and its
 -- variants.
 --
--- The constructors are not intended to be used directly; the smart constructor 'scoped' is used like a local
+-- The constructors are not intended to be used directly; the smart constructor 'pscoped' is used like a local
 -- interpreter for @effect@.
--- 'scoped' takes an argument of type @param@, which will be passed through to the interpreter, to be used by the
+-- 'pscoped' takes an argument of type @param@, which will be passed through to the interpreter, to be used by the
 -- resource allocation function.
 data PScoped (param :: Type) (resource :: Type) (effect :: Effect) :: Effect where
   Run :: ∀ param resource effect m a . resource -> effect m a -> PScoped param resource effect m a
