@@ -79,6 +79,7 @@ module Polysemy.Process (
   SysProcConf,
   PipesProcess,
   SystemProcessError,
+  SystemProcessScopeError,
   interpretSystemProcessNative,
   interpretSystemProcessNative_,
   interpretSystemProcessWithProcess,
@@ -102,7 +103,7 @@ import Polysemy.Process.Data.ProcessError (ProcessError (..))
 import Polysemy.Process.Data.ProcessKill (ProcessKill (..))
 import Polysemy.Process.Data.ProcessOptions (ProcessOptions (ProcessOptions))
 import Polysemy.Process.Data.ProcessOutputParseResult (ProcessOutputParseResult (..))
-import Polysemy.Process.Data.SystemProcessError (SystemProcessError)
+import Polysemy.Process.Data.SystemProcessError (SystemProcessError, SystemProcessScopeError)
 import Polysemy.Process.Effect.Process (
   Process (..),
   recv,
