@@ -404,3 +404,75 @@ interpretResumablePScopedWith_ ::
   InterpreterFor (PScoped param () (effect !! err)) r
 interpretResumablePScopedWith_ extra scopedHandler =
   interpretResumablePScopedWith @extra @param @() @effect @err @r @r1 (\ p f -> extra p (f ())) (const scopedHandler)
+
+-- |Combined higher-order interpreter for 'Resumable' and 'PScoped'.
+-- In this variant, both the handler and the scope may send different errors via 'Stop', encoding the concept that the
+-- resource allocation may fail to prevent the scope from being executed, and each individual scoped action may fail,
+-- continuing the scope execution on resumption.
+interpretPScopedRH ::
+  ∀ param resource effect eo ei r .
+  (∀ x . param -> (resource -> Sem (Stop eo : r) x) -> Sem (Stop eo : r) x) ->
+  (∀ r0 x . resource -> effect (Sem r0) x -> Tactical effect (Sem r0) (Stop ei : r) x) ->
+  InterpreterFor (PScoped param resource (effect !! ei) !! eo) r
+interpretPScopedRH withResource scopedHandler =
+  run
+  where
+    run :: InterpreterFor (PScoped param resource (effect !! ei) !! eo) r
+    run =
+      interpretH' \ (Weaving (Resumable (Weaving inner s' dist' ex' ins')) s'' dist'' ex'' ins'') -> case inner of
+        Run resource (Resumable (Weaving effect s dist ex ins)) ->
+          exFinal <$> runStop @ei (tac (scopedHandler resource effect))
+          where
+            tac =
+              runTactics
+              (Compose (Compose (s <$ s') <$ s''))
+              (raise . raise . run . fmap Compose . fmap (fmap Compose) . dist'' . fmap dist' . fmap (fmap dist . getCompose) . getCompose)
+              (ins <=< ins' . getCompose <=< ins'' . getCompose)
+              (raise . run . fmap Compose . fmap (fmap Compose) . dist'' . fmap dist' . fmap (fmap dist . getCompose) . getCompose)
+            exFinal = \case
+              Right (Compose fffa) ->
+                ex'' $ fffa <&> Right . \ (Compose ffa) ->
+                  ex' (Right . ex <$> ffa)
+              Left err ->
+                ex'' (Right (ex' (Left err <$ s')) <$ s'')
+        InScope param main -> do
+          let
+            inScope =
+                raise (withResource param \ resource -> Compose <$> raise (run (dist'' (dist' (main resource <$ s') <$ s''))))
+            tac =
+              runTactics
+              (Compose (s' <$ s''))
+              (raise . raise . run . fmap Compose . dist'' . fmap dist' . getCompose)
+              (ins' <=< ins'' . getCompose)
+              (raise . run . fmap Compose . dist'' . fmap dist' . getCompose)
+              inScope
+            exFinal = ex'' . \case
+              Right (Compose a) -> Right . ex' <$> a
+              Left err -> Left err <$ s''
+          exFinal <$> runStop tac
+
+-- |Combined interpreter for 'PScoped' and 'Resumable'.
+-- In this variant, both the handler and the scope may send different errors via 'Stop', encoding the concept that the
+-- resource allocation may fail to prevent the scope from being executed, and each individual scoped action may fail,
+-- continuing the scope execution on resumption.
+interpretPScopedR ::
+  ∀ param resource effect eo ei r .
+  (∀ x . param -> (resource -> Sem (Stop eo : r) x) -> Sem (Stop eo : r) x) ->
+  (∀ r0 x . resource -> effect (Sem r0) x -> Sem (Stop ei : r) x) ->
+  InterpreterFor (PScoped param resource (effect !! ei) !! eo) r
+interpretPScopedR withResource scopedHandler =
+  interpretPScopedRH withResource \ r e -> liftT (scopedHandler r e)
+
+-- |Combined interpreter for 'PScoped' and 'Resumable'.
+-- In this variant:
+-- - Both the handler and the scope may send different errors via 'Stop', encoding the concept that the
+--   resource allocation may fail to prevent the scope from being executed, and each individual scoped action may fail,
+--   continuing the scope execution on resumption.
+-- - The resource allocator is a plain action.
+interpretPScopedR_ ::
+  ∀ param resource effect eo ei r .
+  (param -> Sem (Stop eo : r) resource) ->
+  (∀ r0 x . resource -> effect (Sem r0) x -> Sem (Stop ei : r) x) ->
+  InterpreterFor (PScoped param resource (effect !! ei) !! eo) r
+interpretPScopedR_ resource =
+  interpretPScopedR \ p use -> use =<< resource p
