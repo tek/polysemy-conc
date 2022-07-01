@@ -6,9 +6,9 @@ module Polysemy.Process.Interpreter.SystemProcess where
 import Data.ByteString (hGetSome, hPut)
 import Polysemy.Conc.Effect.PScoped (PScoped)
 import Polysemy.Conc.Effect.Scoped (Scoped)
-import Polysemy.Conc.Interpreter.PScoped (runPScoped)
+import Polysemy.Conc.Interpreter.PScoped (interpretPScopedR)
 import Polysemy.Conc.Interpreter.Scoped (runScoped)
-import Polysemy.Resume (Stop, interpretResumable, stop, stopNote, type (!!))
+import Polysemy.Resume (Stop, interpretResumable, stop, stopNote, stopTryIOError, type (!!))
 import Prelude hiding (fromException)
 import System.IO (BufferMode (NoBuffering), Handle, hSetBuffering)
 import qualified System.Posix as Signal
@@ -30,7 +30,7 @@ import System.Process.Typed (
   )
 
 import qualified Polysemy.Process.Data.SystemProcessError as SystemProcessError
-import Polysemy.Process.Data.SystemProcessError (SystemProcessError)
+import Polysemy.Process.Data.SystemProcessError (SystemProcessError, SystemProcessScopeError)
 import qualified Polysemy.Process.Effect.SystemProcess as SystemProcess
 import Polysemy.Process.Effect.SystemProcess (SystemProcess)
 
@@ -49,14 +49,16 @@ processWithPipes =
   setStderr createPipe
 
 start ::
-  Member (Embed IO) r =>
+  Members [Stop SystemProcessScopeError, Embed IO] r =>
   SysProcConf ->
   Sem r PipesProcess
 start =
-  startProcess . processWithPipes
+  stopTryIOError SystemProcessError.StartFailed .
+  startProcess .
+  processWithPipes
 
 withProcess ::
-  Members [Resource, Embed IO] r =>
+  Members [Resource, Stop SystemProcessScopeError, Embed IO] r =>
   SysProcConf ->
   (PipesProcess -> Sem r a) ->
   Sem r a
@@ -125,21 +127,20 @@ handleSystemProcessWithProcess ::
   Process Handle Handle Handle ->
   SystemProcess (Sem r0) a ->
   Sem r a
-handleSystemProcessWithProcess process =
-  \case
-    SystemProcess.Pid ->
-      fromIntegral <$> processId process
-    SystemProcess.Signal sig -> do
-      pid <- processId process
-      tryStop "signal failed" (Signal.signalProcess sig pid)
-    SystemProcess.ReadStdout ->
-      checkEof =<< tryStop "stdout failed" (hGetSome (getStdout process) 4096)
-    SystemProcess.ReadStderr ->
-      checkEof =<< tryStop "stderr failed" (hGetSome (getStderr process) 4096)
-    SystemProcess.WriteStdin msg ->
-      tryStop "stdin failed" (hPut (getStdin process) msg)
-    SystemProcess.Wait ->
-      tryStop "wait failed" (waitExitCode process)
+handleSystemProcessWithProcess process = \case
+  SystemProcess.Pid ->
+    fromIntegral <$> processId process
+  SystemProcess.Signal sig -> do
+    pid <- processId process
+    tryStop "signal failed" (Signal.signalProcess sig pid)
+  SystemProcess.ReadStdout ->
+    checkEof =<< tryStop "stdout failed" (hGetSome (getStdout process) 4096)
+  SystemProcess.ReadStderr ->
+    checkEof =<< tryStop "stderr failed" (hGetSome (getStderr process) 4096)
+  SystemProcess.WriteStdin msg ->
+    tryStop "stdin failed" (hPut (getStdin process) msg)
+  SystemProcess.Wait ->
+    tryStop "wait failed" (waitExitCode process)
 
 -- |Interpret 'SystemProcess' with a concrete 'System.Process' with connected pipes.
 interpretSystemProcessWithProcess ::
@@ -153,7 +154,7 @@ interpretSystemProcessWithProcess process =
 -- |Interpret 'SystemProcess' as a single global 'System.Process' that's started immediately.
 interpretSystemProcessNativeSingle ::
   ∀ r .
-  Members [Resource, Embed IO] r =>
+  Members [Stop SystemProcessScopeError, Resource, Embed IO] r =>
   SysProcConf ->
   InterpreterFor (SystemProcess !! SystemProcessError) r
 interpretSystemProcessNativeSingle config sem =
@@ -168,9 +169,9 @@ interpretSystemProcessNative ::
   ∀ param r .
   Members [Resource, Embed IO] r =>
   (param -> Sem r SysProcConf) ->
-  InterpreterFor (PScoped param PipesProcess (SystemProcess !! SystemProcessError)) r
+  InterpreterFor (PScoped param PipesProcess (SystemProcess !! SystemProcessError) !! SystemProcessScopeError) r
 interpretSystemProcessNative config =
-  runPScoped (\ p u -> config p >>= \ c -> withProcess c u) interpretSystemProcessWithProcess
+  interpretPScopedR (\ p u -> raise (config p) >>= \ c -> withProcess c u) handleSystemProcessWithProcess
 
 -- |Interpret 'SystemProcess' as a scoped 'System.Process' that's started wherever 'Polysemy.Process.withSystemProcess'
 -- is called and terminated when the wrapped action finishes.
@@ -179,9 +180,9 @@ interpretSystemProcessNative_ ::
   ∀ r .
   Members [Resource, Embed IO] r =>
   SysProcConf ->
-  InterpreterFor (Scoped PipesProcess (SystemProcess !! SystemProcessError)) r
+  InterpreterFor (Scoped PipesProcess (SystemProcess !! SystemProcessError) !! SystemProcessScopeError) r
 interpretSystemProcessNative_ config =
-  runScoped (withProcess config) interpretSystemProcessWithProcess
+  interpretPScopedR (const (withProcess config)) handleSystemProcessWithProcess
 
 -- |Interpret 'SystemProcess' with a concrete 'System.Process' with no connection to stdio.
 interpretSystemProcessWithProcessOpaque ::

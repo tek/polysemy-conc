@@ -4,12 +4,12 @@ module Polysemy.Process.Interpreter.ProcessOneshot where
 import Polysemy.Conc.Effect.PScoped (PScoped)
 import Polysemy.Conc.Effect.Race (Race)
 import Polysemy.Conc.Effect.Scoped (Scoped)
-import Polysemy.Conc.Interpreter.PScoped (interpretResumablePScopedWith_)
-import Polysemy.Resume (type (!!))
+import Polysemy.Conc.Interpreter.PScoped (interpretPScopedRWith_)
+import Polysemy.Resume (Stop, type (!!))
 
 import Polysemy.Process.Data.ProcessError (ProcessError)
 import Polysemy.Process.Data.ProcessOptions (ProcessOptions)
-import Polysemy.Process.Data.SystemProcessError (SystemProcessError)
+import Polysemy.Process.Data.SystemProcessError (SystemProcessError, SystemProcessScopeError)
 import Polysemy.Process.Effect.Process (Process)
 import Polysemy.Process.Effect.SystemProcess (SystemProcess)
 import Polysemy.Process.Interpreter.Process (ScopeEffects, handleProcessWithQueues, pscope, terminated)
@@ -27,24 +27,25 @@ import Polysemy.Process.Interpreter.SystemProcess (PipesProcess, SysProcConf, in
 interpretProcessOneshot ::
   ∀ resource param proc i o r .
   Members (ProcessIO i o) r =>
-  Member (PScoped proc resource (SystemProcess !! SystemProcessError)) r =>
+  Member (PScoped proc resource (SystemProcess !! SystemProcessError) !! SystemProcessScopeError) r =>
   Members [Resource, Race, Async, Embed IO] r =>
   ProcessOptions ->
-  (param -> Sem r proc) ->
-  InterpreterFor (PScoped param () (Process i o !! ProcessError)) r
+  (param -> Sem (Stop SystemProcessScopeError : r) proc) ->
+  InterpreterFor (PScoped param () (Process i o !! ProcessError) !! SystemProcessScopeError) r
 interpretProcessOneshot options proc =
-  interpretResumablePScopedWith_ @(ScopeEffects i o SystemProcessError) (\ p -> pscope @resource options proc p)
+  interpretPScopedRWith_ @(ScopeEffects i o SystemProcessError)
+  (\ p -> pscope @resource @SystemProcessScopeError options proc p)
   (handleProcessWithQueues terminated)
 
 -- |Variant of 'interpretProcessOneshot' that takes a static 'SysProcConf'.
 interpretProcessOneshot_ ::
   ∀ proc resource i o r .
   Members (ProcessIO i o) r =>
-  Member (PScoped proc resource (SystemProcess !! SystemProcessError)) r =>
+  Member (PScoped proc resource (SystemProcess !! SystemProcessError) !! SystemProcessScopeError) r =>
   Members [Resource, Race, Async, Embed IO] r =>
   ProcessOptions ->
   proc ->
-  InterpreterFor (Scoped () (Process i o !! ProcessError)) r
+  InterpreterFor (Scoped () (Process i o !! ProcessError) !! SystemProcessScopeError) r
 interpretProcessOneshot_ options proc =
   interpretProcessOneshot @resource options (const (pure proc))
 
@@ -58,10 +59,10 @@ interpretProcessOneshotNative ::
   Members [Resource, Race, Async, Embed IO] r =>
   ProcessOptions ->
   (param -> Sem r SysProcConf) ->
-  InterpreterFor (PScoped param () (Process i o !! ProcessError)) r
+  InterpreterFor (PScoped param () (Process i o !! ProcessError) !! SystemProcessScopeError) r
 interpretProcessOneshotNative options proc =
   interpretSystemProcessNative pure .
-  interpretProcessOneshot @PipesProcess options (raise . proc) .
+  interpretProcessOneshot @PipesProcess options (insertAt @0 . proc) .
   raiseUnder
 
 -- |Interpret 'Process' as a native 'Polysemy.Process.SystemProcess'.
@@ -72,7 +73,7 @@ interpretProcessOneshotNative_ ::
   Members [Resource, Race, Async, Embed IO] r =>
   ProcessOptions ->
   SysProcConf ->
-  InterpreterFor (Scoped () (Process i o !! ProcessError)) r
+  InterpreterFor (Scoped () (Process i o !! ProcessError) !! SystemProcessScopeError) r
 interpretProcessOneshotNative_ options proc =
   interpretSystemProcessNative pure .
   interpretProcessOneshot @PipesProcess options (const (pure proc)) .

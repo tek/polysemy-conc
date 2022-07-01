@@ -8,6 +8,7 @@
 * Add constructors for `SysProcConf` that use `Path` and `Text`.
 * Add the newtype `Pid` for `SystemProcess`.
 * Add `currentPid`.
+* Catch exceptions when starting a system process and send them to the scope.
 
 # 0.9.0.0
 

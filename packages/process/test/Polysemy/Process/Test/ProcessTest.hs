@@ -7,8 +7,8 @@ import qualified Polysemy.Conc.Effect.Race as Conc (timeout)
 import Polysemy.Conc.Effect.Scoped (Scoped)
 import Polysemy.Conc.Interpreter.Race (interpretRace)
 import qualified Polysemy.Conc.Race as Race
-import Polysemy.Resume (resumeHoistAs, resumeHoistError, resuming, runStop)
-import Polysemy.Test (TestError (TestError), UnitTest, assertJust, assertLeft, runTestAuto, unitTest, (===))
+import Polysemy.Resume (resumeHoistAs, resumeHoistError, resuming, runStop, type (!!), (<!), resumeEither)
+import Polysemy.Test (TestError (TestError), UnitTest, assertJust, assertLeft, runTestAuto, unitTest, (===), evalLeft)
 import Polysemy.Time (MilliSeconds (MilliSeconds), Seconds (Seconds))
 import System.Exit (ExitCode (ExitSuccess))
 import qualified System.Process.Typed as Process
@@ -22,11 +22,17 @@ import Polysemy.Process.Data.ProcessKill (ProcessKill (KillNever))
 import Polysemy.Process.Data.ProcessOptions (ProcessOptions (kill))
 import Polysemy.Process.Data.ProcessOutputParseResult (ProcessOutputParseResult (Done, Partial))
 import qualified Polysemy.Process.Effect.Process as Process
-import Polysemy.Process.Effect.Process (withProcessOneshot, withProcess_)
+import Polysemy.Process.Effect.Process (withProcessOneshot, withProcess_, Process)
 import Polysemy.Process.Interpreter.Process (interpretProcessNative_)
-import Polysemy.Process.Interpreter.ProcessIO (interpretProcessByteString, interpretProcessTextLines)
+import Polysemy.Process.Interpreter.ProcessIO (interpretProcessByteString, interpretProcessTextLines, ProcessIO)
 import Polysemy.Process.Interpreter.ProcessOneshot (interpretProcessOneshotNative)
 import Polysemy.Process.Interpreter.ProcessOutput (parseMany)
+import Polysemy.Conc.Effect.PScoped (PScoped)
+import Polysemy.Process.Interpreter.SystemProcess (SysProcConf, interpretSystemProcessNative_)
+import Polysemy.Process.Data.SystemProcessError (SystemProcessScopeError (StartFailed))
+import Polysemy.Conc.Effect.Race (Race)
+import Polysemy.Process.Effect.SystemProcess (withSystemProcess_)
+import qualified Polysemy.Process.Effect.SystemProcess as SystemProcess
 
 config :: ProcessConfig () () ()
 config =
@@ -92,9 +98,19 @@ test_processIncremental =
       | otherwise =
         Done (ByteString.take 2 b) (ByteString.drop 2 b)
 
+interpretOneshot ::
+  Members [Error TestError, Resource, Race, Async, Embed IO] r =>
+  (Text -> SysProcConf) ->
+  InterpretersFor (PScoped Text () (Process Text Text !! ProcessError) : ProcessIO Text Text) r
+interpretOneshot conf =
+  interpretProcessTextLines .
+  interpretProcessOneshotNative def (pure . conf) .
+  resumeHoistError (TestError . show @Text @SystemProcessScopeError) .
+  insertAt @1
+
 test_processOneshot :: UnitTest
 test_processOneshot =
-  runTestAuto $ interpretRace $ asyncToIOFinal $ interpretProcessTextLines $ interpretProcessOneshotNative def conf do
+  runTestAuto $ interpretRace $ asyncToIOFinal $ interpretOneshot conf do
     num <- runStop @Int $ withProcessOneshot message do
       Race.timeout_ (throw "timed out") (Seconds 5) do
         for_ @[] [1..5] \ i ->
@@ -103,7 +119,7 @@ test_processOneshot =
     assertLeft 5 num
   where
     conf msg =
-      pure (Process.proc "echo" ["-n", toString msg])
+      Process.proc "echo" ["-n", toString msg]
 
 test_exit :: UnitTest
 test_exit =
@@ -118,6 +134,18 @@ test_exit =
     conf =
       Process.proc "echo" ["-n", "text"]
 
+test_startFailed :: UnitTest
+test_startFailed =
+  runTestAuto $ interpretRace $ asyncToIOFinal $ interpretSystemProcessNative_ conf do
+    result <- resumeEither $ withSystemProcess_ do
+      Nothing <! (Just <$> SystemProcess.wait)
+    evalLeft result >>= \case
+      StartFailed _ ->
+        unit
+  where
+    conf =
+      Process.proc "fnord-detector" []
+
 test_processAll :: TestTree
 test_processAll =
   testGroup "process" [
@@ -125,5 +153,6 @@ test_processAll =
     unitTest "read lines" test_processLines,
     ignoreTest (unitTest "don't kill the process at the end of the scope" test_processKillNever),
     unitTest "expect termination" test_processOneshot,
-    unitTest "daemon exit code" test_exit
+    unitTest "daemon exit code" test_exit,
+    unitTest "system process start error" test_startFailed
   ]
