@@ -12,7 +12,7 @@ import System.Posix (getProcessID)
 
 import Polysemy.Process.Data.Pid (Pid)
 import Polysemy.Process.Effect.SystemProcess (
-  SystemProcess (..),
+  SystemProcess,
   interrupt,
   pid,
   readStderr,

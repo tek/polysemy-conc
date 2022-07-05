@@ -1,26 +1,57 @@
+{-# options_ghc -fplugin=Polysemy.Plugin #-}
+
 module Polysemy.Conc.Test.LockTest where
 
-import Data.Time (Day, UTCTime)
-import Polysemy.Test (UnitTest, assertEq, runTestAuto)
-import qualified Polysemy.Time as Time
-import Polysemy.Time (MicroSeconds (MicroSeconds), interpretTimeGhc)
+import Polysemy.Test (UnitTest, assert, assertJust, runTestAuto, unitTest)
+import Polysemy.Time (GhcTime, Seconds (Seconds), interpretTimeGhc, MilliSeconds (MilliSeconds))
 
-import Polysemy.Conc.AtomicState (interpretAtomic)
+import qualified Polysemy.Conc.Effect.Lock as Lock
+import Polysemy.Conc.Effect.Lock (Lock)
+import Polysemy.Conc.Effect.Mask (Mask)
+import Polysemy.Conc.Effect.Race (Race)
+import qualified Polysemy.Conc.Effect.Sync as Sync
+import Polysemy.Conc.Interpreter.Lock (interpretLockReentrant)
+import Polysemy.Conc.Interpreter.Mask (Restoration, interpretMaskFinal)
 import Polysemy.Conc.Interpreter.Race (interpretRace)
-import Polysemy.Conc.Interpreter.Sync (interpretSyncAs)
-import Polysemy.Conc.Sync (lock)
+import Polysemy.Conc.Interpreter.Sync (interpretSync)
+import Test.Tasty (TestTree, testGroup)
+import Polysemy.Conc.Race (timeout_)
 
-test_lock :: UnitTest
+interpretLockTest ::
+  Members [Resource, Embed IO, Final IO] r =>
+  InterpretersFor [Lock, Mask Restoration, Race, Async, GhcTime] r
+interpretLockTest =
+  interpretTimeGhc .
+  asyncToIOFinal .
+  interpretRace .
+  interpretMaskFinal .
+  interpretLockReentrant
+
+test_lockBasic :: UnitTest
+test_lockBasic =
+  runTestAuto $ interpretLockTest $ interpretSync @(Proxy 1) $ interpretSync @(Proxy 2) do
+    t1 <- async do
+      Lock.lock do
+        assert =<< Sync.putTry (Proxy @1)
+        assertJust Proxy =<< Sync.wait @(Proxy 2) (Seconds 5)
+    assertJust Proxy =<< Sync.wait @(Proxy 1) (Seconds 5)
+    assert =<< Lock.lockOr (pure True) (pure False)
+    assert =<< timeout_ (pure True) (MilliSeconds 50) (Lock.lock (pure False))
+    assert =<< Sync.putTry (Proxy @2)
+    assertJust () =<< await t1
+
+test_lockReentry :: UnitTest
+test_lockReentry =
+  runTestAuto $ interpretLockTest do
+    Lock.lock do
+      assert =<< Lock.lockOr (pure False) (pure True)
+      assertJust True =<< await =<< async do
+        assert =<< timeout_ (pure True) (MilliSeconds 50) (Lock.lock (pure False))
+        Lock.lockOr (pure True) (pure False)
+
+test_lock :: TestTree
 test_lock =
-  runTestAuto $
-  interpretTimeGhc $
-  asyncToIOFinal $
-  interpretRace $
-  interpretSyncAs () $
-  interpretAtomic (0 :: Int) do
-    void $ sequenceConcurrently @[] $ [(1 :: Int)..100] $> do
-      lock () do
-        cur <- atomicGet @Int
-        Time.sleep @UTCTime @Day (MicroSeconds 100)
-        atomicPut (cur + 1)
-    assertEq @Int @IO 100 =<< atomicGet
+  testGroup "lock" [
+    unitTest "basic" test_lockBasic,
+    unitTest "reentry" test_lockReentry
+  ]

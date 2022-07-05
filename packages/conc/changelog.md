@@ -5,6 +5,7 @@
 * Add variants of the combined `Scoped` interpreters in which the `Resumable` is inside the scope.
 * Add `Semaphore`, abstracting `QSem` or `TSem`.
 * Add `timeoutStop`, a variant of `timeout` that calls `Polysemy.Resume.stop`.
+* Add `Lock`, a mutex effect.
 
 # 0.9.0.0
 

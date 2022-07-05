@@ -3,6 +3,7 @@ module Main where
 import Hedgehog (property, test, withTests)
 import Polysemy.Conc.Test.EventsTest (test_events)
 import Polysemy.Conc.Test.InterruptTest (test_interrupt)
+import Polysemy.Conc.Test.LockTest (test_lock)
 import Polysemy.Conc.Test.MaskTest (test_mask)
 import Polysemy.Conc.Test.MonitorTest (test_monitorBasic, test_monitorClockSkew)
 import Polysemy.Conc.Test.QueueTest (
@@ -14,7 +15,7 @@ import Polysemy.Conc.Test.QueueTest (
   test_queueTimeoutTBM,
   )
 import Polysemy.Conc.Test.ScopedTest (test_scopedResumableWith, test_scopedWith)
-import Polysemy.Conc.Test.SyncTest (test_sync)
+import Polysemy.Conc.Test.SyncTest (test_sync, test_syncLock)
 import Polysemy.Test (unitTest)
 import Test.Tasty (TestTree, defaultMain, testGroup)
 import Test.Tasty.Hedgehog (testProperty)
@@ -34,8 +35,10 @@ tests =
       testProperty "events" (withTests 100 (property (test test_events)))
     ],
     testGroup "sync" [
-      unitTest "sync" test_sync
+      unitTest "sync" test_sync,
+      unitTest "lock" test_syncLock
     ],
+    test_lock,
     testGroup "interrupt" [
       unitTest "interrupt" test_interrupt
     ],

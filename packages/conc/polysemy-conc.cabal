@@ -34,6 +34,7 @@ library
       Polysemy.Conc.Effect.Critical
       Polysemy.Conc.Effect.Events
       Polysemy.Conc.Effect.Interrupt
+      Polysemy.Conc.Effect.Lock
       Polysemy.Conc.Effect.Mask
       Polysemy.Conc.Effect.Monitor
       Polysemy.Conc.Effect.PScoped
@@ -47,6 +48,7 @@ library
       Polysemy.Conc.Interpreter.Critical
       Polysemy.Conc.Interpreter.Events
       Polysemy.Conc.Interpreter.Interrupt
+      Polysemy.Conc.Interpreter.Lock
       Polysemy.Conc.Interpreter.Mask
       Polysemy.Conc.Interpreter.Monitor
       Polysemy.Conc.Interpreter.PScoped

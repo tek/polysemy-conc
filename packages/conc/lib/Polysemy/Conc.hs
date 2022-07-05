@@ -31,10 +31,18 @@ module Polysemy.Conc (
   interpretSync,
   interpretSyncAs,
   withSync,
-  lock,
   interpretScopedSync,
   interpretScopedSyncAs,
   syncRead,
+
+  -- * Lock
+  Lock,
+  lock,
+  lockOr,
+
+  -- ** Interpreters
+  interpretLockReentrant,
+  interpretLockPermissive,
 
   -- * Semaphores
   Semaphore,
@@ -192,6 +200,7 @@ import Polysemy.Conc.Data.QueueResult (QueueResult)
 import Polysemy.Conc.Effect.Critical (Critical)
 import Polysemy.Conc.Effect.Events (Consume, EventResource, Events, consume, publish, subscribe)
 import Polysemy.Conc.Effect.Interrupt (Interrupt)
+import Polysemy.Conc.Effect.Lock (Lock, lock, lockOr)
 import Polysemy.Conc.Effect.Mask (Mask, UninterruptibleMask, mask, restore, uninterruptibleMask)
 import Polysemy.Conc.Effect.Monitor (
   Monitor,
@@ -214,6 +223,7 @@ import Polysemy.Conc.Events (subscribeLoop, subscribeWhile)
 import Polysemy.Conc.Interpreter.Critical (interpretCritical, interpretCriticalNull)
 import Polysemy.Conc.Interpreter.Events (ChanConsumer, ChanEvents, EventChan, EventConsumer, interpretEventsChan)
 import Polysemy.Conc.Interpreter.Interrupt (interpretInterrupt, interpretInterruptNull, interpretInterruptOnce)
+import Polysemy.Conc.Interpreter.Lock (interpretLockPermissive, interpretLockReentrant)
 import Polysemy.Conc.Interpreter.Mask (Restoration, interpretMaskFinal, interpretUninterruptibleMaskFinal)
 import Polysemy.Conc.Interpreter.Monitor (interpretMonitorPure, interpretMonitorRestart)
 import Polysemy.Conc.Interpreter.PScoped (
@@ -272,7 +282,7 @@ import Polysemy.Conc.Queue (loop, loopOr)
 import Polysemy.Conc.Queue.Result (resultToMaybe)
 import Polysemy.Conc.Race (race_, timeoutAs, timeoutAs_, timeoutMaybe, timeoutStop, timeoutU, timeout_)
 import Polysemy.Conc.Retry (retrying, retryingWithError)
-import Polysemy.Conc.Sync (lock, withSync)
+import Polysemy.Conc.Sync (withSync)
 
 -- $intro
 -- This library provides an assortment of tools for concurrency-related tasks:
