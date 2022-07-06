@@ -39,6 +39,8 @@ module Polysemy.Conc (
   Lock,
   lock,
   lockOr,
+  lockOrSkip,
+  lockOrSkip_,
 
   -- ** Interpreters
   interpretLockReentrant,
@@ -200,7 +202,7 @@ import Polysemy.Conc.Data.QueueResult (QueueResult)
 import Polysemy.Conc.Effect.Critical (Critical)
 import Polysemy.Conc.Effect.Events (Consume, EventResource, Events, consume, publish, subscribe)
 import Polysemy.Conc.Effect.Interrupt (Interrupt)
-import Polysemy.Conc.Effect.Lock (Lock, lock, lockOr)
+import Polysemy.Conc.Effect.Lock (Lock, lock, lockOr, lockOrSkip, lockOrSkip_)
 import Polysemy.Conc.Effect.Mask (Mask, UninterruptibleMask, mask, restore, uninterruptibleMask)
 import Polysemy.Conc.Effect.Monitor (
   Monitor,
