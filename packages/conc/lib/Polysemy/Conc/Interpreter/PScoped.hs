@@ -153,7 +153,7 @@ interpretPScopedWithH ::
   r1 ~ (extra ++ r) =>
   InsertAtIndex 1 '[PScoped param resource effect] r1 r (PScoped param resource effect : r1) extra =>
   (∀ x . param -> (resource -> Sem r1 x) -> Sem r x) ->
-  (∀ m x . resource -> effect m x -> Tactical effect m r1 x) ->
+  (∀ r0 x . resource -> effect (Sem r0) x -> Tactical effect (Sem r0) r1 x) ->
   InterpreterFor (PScoped param resource effect) r
 interpretPScopedWithH withResource scopedHandler =
   interpretH' \case

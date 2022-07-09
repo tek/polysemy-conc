@@ -123,7 +123,7 @@ interpretScopedWithH ::
   r1 ~ (extra ++ r) =>
   InsertAtIndex 1 '[Scoped resource effect] r1 r (Scoped resource effect : r1) extra =>
   (∀ x . (resource -> Sem r1 x) -> Sem r x) ->
-  (∀ m x . resource -> effect m x -> Tactical effect m r1 x) ->
+  (∀ r0 x . resource -> effect (Sem r0) x -> Tactical effect (Sem r0) r1 x) ->
   InterpreterFor (Scoped resource effect) r
 interpretScopedWithH withResource =
   interpretPScopedWithH @extra (const withResource)
