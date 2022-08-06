@@ -25,7 +25,7 @@ withAsyncBlock mb use = do
   finally (use handle) (cancel handle)
 
 -- |Run the first action asynchronously while the second action executes, then cancel the first action.
--- Passes the handle into the action to allow it to await its result.
+-- Passes the handle into the sync action to allow it to await the async action's result.
 --
 -- When cancelling, this variant will wait for the specified interval for the thread to be gone.
 withAsyncWait ::
@@ -40,7 +40,7 @@ withAsyncWait interval mb use = do
   finally (use handle) (Race.timeoutU interval (cancel handle))
 
 -- |Run the first action asynchronously while the second action executes, then cancel the first action.
--- Passes the handle into the action to allow it to await its result.
+-- Passes the handle into the sync action to allow it to await the async action's result.
 --
 -- When cancelling, this variant will wait for 500ms for the thread to be gone.
 withAsync ::
@@ -105,3 +105,77 @@ scheduleAsyncIO mb f =
       Sync.block @()
       raise mb
     f h (Sync.putBlock ())
+
+-- |Run the first action asynchronously while the second action executes, then cancel the first action.
+--
+-- The first action is called with another action as its argument.
+-- The second action will only start when that argument action is sequenced.
+-- Passes the handle into the sync action to allow it to await the async action's result.
+--
+-- This can be used to ensure that the async action has acquired its resources before the main action starts.
+withAsyncTrigger ::
+  ∀ res b r a .
+  Members [ScopedSync res (), Resource, Race, Async] r =>
+  (Sem (Sync () : r) () -> Sem r b) ->
+  (Base.Async (Maybe b) -> Sem r a) ->
+  Sem r a
+withAsyncTrigger mb use =
+  withSync @() @res $ withAsync (raise (mb (Sync.putBlock ()))) \ h -> do
+    Sync.block @()
+    raise (use h)
+
+-- |Run the first action asynchronously while the second action executes, then cancel the first action.
+--
+-- The first action is called with another action as its argument.
+-- The second action will only start when that argument action is sequenced.
+-- Passes the handle into the sync action to allow it to await the async action's result.
+--
+-- This can be used to ensure that the async action has acquired its resources before the main action starts.
+--
+-- Variant of 'withAsyncTrigger' that directly interprets the 'Control.Concurrent.MVar' used for signalling.
+withAsyncTriggerIO ::
+  ∀ b r a .
+  Members [Resource, Race, Async, Embed IO] r =>
+  (Sem (Sync () : r) () -> Sem r b) ->
+  (Base.Async (Maybe b) -> Sem r a) ->
+  Sem r a
+withAsyncTriggerIO mb use =
+  interpretSync @() $ withAsync (raise (mb (Sync.putBlock ()))) \ h -> do
+    Sync.block @()
+    raise (use h)
+
+-- |Run the first action asynchronously while the second action executes, then cancel the first action.
+--
+-- The first action is called with another action as its argument.
+-- The second action will only start when that argument action is sequenced.
+--
+-- This can be used to ensure that the async action has acquired its resources before the main action starts.
+withAsyncTrigger_ ::
+  ∀ res b r a .
+  Members [ScopedSync res (), Resource, Race, Async] r =>
+  (Sem (Sync () : r) () -> Sem r b) ->
+  Sem r a ->
+  Sem r a
+withAsyncTrigger_ mb use =
+  withSync @() @res $ withAsync_ (raise (mb (Sync.putBlock ()))) do
+    Sync.block @()
+    raise use
+
+-- |Run the first action asynchronously while the second action executes, then cancel the first action.
+--
+-- The first action is called with another action as its argument.
+-- The second action will only start when that argument action is sequenced.
+--
+-- This can be used to ensure that the async action has acquired its resources before the main action starts.
+--
+-- Variant of 'withAsyncTrigger_' that directly interprets the 'Control.Concurrent.MVar' used for signalling.
+withAsyncTriggerIO_ ::
+  ∀ b r a .
+  Members [Resource, Race, Async, Embed IO] r =>
+  (Sem (Sync () : r) () -> Sem r b) ->
+  Sem r a ->
+  Sem r a
+withAsyncTriggerIO_ mb use =
+  interpretSync @() $ withAsync_ (raise (mb (Sync.putBlock ()))) do
+    Sync.block @()
+    raise use

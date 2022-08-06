@@ -188,6 +188,10 @@ module Polysemy.Conc (
   withAsync_,
   scheduleAsync,
   scheduleAsyncIO,
+  withAsyncTrigger,
+  withAsyncTriggerIO,
+  withAsyncTrigger_,
+  withAsyncTriggerIO_,
 ) where
 
 import Polysemy.Conc.Async (
@@ -195,6 +199,10 @@ import Polysemy.Conc.Async (
   scheduleAsyncIO,
   withAsync,
   withAsyncBlock,
+  withAsyncTrigger,
+  withAsyncTriggerIO,
+  withAsyncTriggerIO_,
+  withAsyncTrigger_,
   withAsync_,
   )
 import Polysemy.Conc.AtomicState (interpretAtomic)
