@@ -18,6 +18,10 @@ makeSem ''Gate
 type Gates res =
   Scoped res Gate
 
+-- |Convenience alias for the usual resource for 'Gates'.
+type GatesIO =
+  Gates (MVar ())
+
 -- |Run an action with a locally scoped 'Gate' effect.
 --
 -- This avoids a dependency on @'Embed' 'IO'@ in application logic while still allowing the effect to be scoped.
