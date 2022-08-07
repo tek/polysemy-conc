@@ -6,11 +6,17 @@ module Polysemy.Conc.Effect.Gate where
 import Polysemy.Conc.Effect.Scoped (Scoped, scoped)
 
 -- |A single-use synchronization point that blocks all consumers who called 'gate' until 'signal' is called.
+--
+-- The constructors are exported from [Polysemy.Conc.Gate]("Polysemy.Conc.Gate").
 data Gate :: Effect where
   Signal :: Gate m ()
   Gate :: Gate m ()
 
 makeSem ''Gate
+
+-- |Convenience alias for scoped 'Gate'.
+type Gates res =
+  Scoped res Gate
 
 -- |Run an action with a locally scoped 'Gate' effect.
 --

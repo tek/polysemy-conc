@@ -55,6 +55,7 @@ module Polysemy.Conc (
 
   -- * Gate
   Gate,
+  Gates,
 
   -- ** Interpreters
   interpretGates,
@@ -217,7 +218,7 @@ import Polysemy.Conc.AtomicState (interpretAtomic)
 import Polysemy.Conc.Data.QueueResult (QueueResult)
 import Polysemy.Conc.Effect.Critical (Critical)
 import Polysemy.Conc.Effect.Events (Consume, EventResource, Events, consume, publish, subscribe)
-import Polysemy.Conc.Effect.Gate (Gate)
+import Polysemy.Conc.Effect.Gate (Gate, Gates)
 import Polysemy.Conc.Effect.Interrupt (Interrupt)
 import Polysemy.Conc.Effect.Lock (Lock, lock, lockOr, lockOrSkip, lockOrSkip_)
 import Polysemy.Conc.Effect.Mask (Mask, UninterruptibleMask, mask, restore, uninterruptibleMask)
@@ -239,12 +240,13 @@ import Polysemy.Conc.Effect.Semaphore (Semaphore)
 import Polysemy.Conc.Effect.Sync (ScopedSync, Sync)
 import Polysemy.Conc.Effect.SyncRead (SyncRead)
 import Polysemy.Conc.Events (
+  subscribeFind,
   subscribeLoop,
   subscribeLoopAsync,
   subscribeLoopGated,
   subscribeWhile,
   subscribeWhileAsync,
-  subscribeWhileGated, subscribeFind,
+  subscribeWhileGated,
   )
 import Polysemy.Conc.Interpreter.Critical (interpretCritical, interpretCriticalNull)
 import Polysemy.Conc.Interpreter.Events (ChanConsumer, ChanEvents, EventChan, EventConsumer, interpretEventsChan)
