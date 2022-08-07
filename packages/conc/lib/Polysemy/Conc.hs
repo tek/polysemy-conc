@@ -94,7 +94,12 @@ module Polysemy.Conc (
   consume,
   subscribe,
   subscribeWhile,
+  subscribeWhileGated,
+  subscribeWhileAsync,
   subscribeLoop,
+  subscribeLoopGated,
+  subscribeLoopAsync,
+  subscribeFind,
   EventResource,
   EventChan,
   ChanEvents,
@@ -233,7 +238,14 @@ import Polysemy.Conc.Effect.Scoped (Scoped, scoped)
 import Polysemy.Conc.Effect.Semaphore (Semaphore)
 import Polysemy.Conc.Effect.Sync (ScopedSync, Sync)
 import Polysemy.Conc.Effect.SyncRead (SyncRead)
-import Polysemy.Conc.Events (subscribeLoop, subscribeWhile)
+import Polysemy.Conc.Events (
+  subscribeLoop,
+  subscribeLoopAsync,
+  subscribeLoopGated,
+  subscribeWhile,
+  subscribeWhileAsync,
+  subscribeWhileGated, subscribeFind,
+  )
 import Polysemy.Conc.Interpreter.Critical (interpretCritical, interpretCriticalNull)
 import Polysemy.Conc.Interpreter.Events (ChanConsumer, ChanEvents, EventChan, EventConsumer, interpretEventsChan)
 import Polysemy.Conc.Interpreter.Gate (interpretGate, interpretGates)

@@ -22,7 +22,7 @@ interpretGate sem = do
         Gate ->
           embed (readMVar mv)
 
--- |Interpret @'Scoped' ('MVar' '()') 'Gate'@.
+-- |Interpret @'Scoped' ('MVar' ()) 'Gate'@.
 interpretGates ::
   Member (Embed IO) r =>
   InterpreterFor (Scoped (MVar ()) Gate) r
