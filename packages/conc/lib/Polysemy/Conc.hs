@@ -102,6 +102,9 @@ module Polysemy.Conc (
   subscribeLoopGated,
   subscribeLoopAsync,
   subscribeFind,
+  consumeWhile,
+  consumeLoop,
+  consumeFind,
   EventResource,
   EventChan,
   ChanEvents,
@@ -247,7 +250,7 @@ import Polysemy.Conc.Events (
   subscribeLoopGated,
   subscribeWhile,
   subscribeWhileAsync,
-  subscribeWhileGated,
+  subscribeWhileGated, consumeWhile, consumeLoop, consumeFind,
   )
 import Polysemy.Conc.Interpreter.Critical (interpretCritical, interpretCriticalNull)
 import Polysemy.Conc.Interpreter.Events (ChanConsumer, ChanEvents, EventChan, EventConsumer, interpretEventsChan)

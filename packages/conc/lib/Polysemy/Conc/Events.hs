@@ -3,10 +3,23 @@ module Polysemy.Conc.Events where
 
 import Polysemy.Conc.Async (withAsync_)
 import qualified Polysemy.Conc.Effect.Events as Events
+import Polysemy.Conc.Effect.Events (Consume)
 import Polysemy.Conc.Effect.Gate (Gate, gate, signal, withGate)
 import Polysemy.Conc.Effect.Race (Race)
 import Polysemy.Conc.Effect.Scoped (Scoped)
 import Polysemy.Conc.Interpreter.Events (EventConsumer)
+
+-- |Pull repeatedly from 'Polysemy.Conc.Consume', passing the event to the supplied callback.
+-- Stop when the action returns @False@.
+consumeWhile ::
+  Member (Consume e) r =>
+  (e -> Sem r Bool) ->
+  Sem r ()
+consumeWhile action =
+  spin
+  where
+    spin =
+      whenM (action =<< Events.consume) spin
 
 -- |Pull repeatedly from the 'Polysemy.Conc.Events' channel, passing the event to the supplied callback.
 -- Stop when the action returns @False@.
@@ -16,10 +29,7 @@ subscribeWhile ::
   (e -> Sem r Bool) ->
   Sem r ()
 subscribeWhile action =
-  Events.subscribe @e @token spin
-  where
-    spin =
-      whenM (raise . action =<< Events.consume) spin
+  Events.subscribe @e @token (consumeWhile (raise . action))
 
 -- |Pull repeatedly from the 'Polysemy.Conc.Events' channel, passing the event to the supplied callback.
 -- Stop when the action returns @False@.
@@ -33,10 +43,7 @@ subscribeWhileGated ::
 subscribeWhileGated action =
   Events.subscribe @e @token do
     signal
-    spin
-  where
-    spin =
-      whenM (raise . action =<< Events.consume) spin
+    consumeWhile (raise . action)
 
 -- |Start a new thread that pulls repeatedly from the 'Polysemy.Conc.Events' channel, passing the event to the supplied
 -- callback and stops when the action returns @False@.
@@ -51,6 +58,14 @@ subscribeWhileAsync action ma =
     gate
     raise ma
 
+-- |Pull repeatedly from 'Polysemy.Conc.Consume', passing the event to the supplied callback.
+consumeLoop ::
+  Member (Consume e) r =>
+  (e -> Sem r ()) ->
+  Sem r ()
+consumeLoop action =
+  forever (action =<< Events.consume)
+
 -- |Pull repeatedly from the 'Polysemy.Conc.Events' channel, passing the event to the supplied callback.
 subscribeLoop ::
   ∀ e token r .
@@ -58,7 +73,7 @@ subscribeLoop ::
   (e -> Sem r ()) ->
   Sem r ()
 subscribeLoop action =
-  Events.subscribe @e @token (forever (raise . action =<< Events.consume))
+  Events.subscribe @e @token (consumeLoop (raise . action))
 
 -- |Pull repeatedly from the 'Polysemy.Conc.Events' channel, passing the event to the supplied callback.
 --
@@ -71,7 +86,7 @@ subscribeLoopGated ::
 subscribeLoopGated action =
   Events.subscribe @e @token do
     signal
-    forever (raise . action =<< Events.consume)
+    consumeLoop (raise . action)
 
 -- |Start a new thread that pulls repeatedly from the 'Polysemy.Conc.Events' channel, passing the event to the supplied
 -- callback.
@@ -85,6 +100,16 @@ subscribeLoopAsync action ma =
   withGate @gres $ withAsync_ (subscribeLoopGated @_ @token (raise . action)) do
     gate
     raise ma
+
+-- |Block until the specified value has been returned by 'Polysemy.Conc.Consume'.
+consumeFind ::
+  ∀ e r .
+  Eq e =>
+  Member (Consume e) r =>
+  e ->
+  Sem r ()
+consumeFind target =
+  consumeWhile @e (pure . (target /=))
 
 -- |Block until the specified value has been published to the 'Polysemy.Conc.Events' channel.
 subscribeFind ::
