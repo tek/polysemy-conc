@@ -66,7 +66,7 @@ subscribeLoop action =
 subscribeLoopGated ::
   ∀ e token r .
   Members [EventConsumer token e, Gate] r =>
-  (e -> Sem r Bool) ->
+  (e -> Sem r ()) ->
   Sem r ()
 subscribeLoopGated action =
   Events.subscribe @e @token do
@@ -78,7 +78,7 @@ subscribeLoopGated action =
 subscribeLoopAsync ::
   ∀ e token gres r a .
   Members [EventConsumer token e, Scoped gres Gate, Resource, Race, Async] r =>
-  (e -> Sem r Bool) ->
+  (e -> Sem r ()) ->
   Sem r a ->
   Sem r a
 subscribeLoopAsync action ma =
