@@ -4,7 +4,9 @@ module Polysemy.Conc.Async where
 import qualified Control.Concurrent.Async as Base
 import Polysemy.Time (MilliSeconds (MilliSeconds), TimeUnit)
 
+import Polysemy.Conc.Effect.Gate (Gate, gate, withGate)
 import Polysemy.Conc.Effect.Race (Race)
+import Polysemy.Conc.Effect.Scoped (Scoped)
 import qualified Polysemy.Conc.Effect.Sync as Sync
 import Polysemy.Conc.Effect.Sync (ScopedSync, Sync)
 import Polysemy.Conc.Interpreter.Sync (interpretSync)
@@ -108,74 +110,34 @@ scheduleAsyncIO mb f =
 
 -- |Run the first action asynchronously while the second action executes, then cancel the first action.
 --
--- The first action is called with another action as its argument.
--- The second action will only start when that argument action is sequenced.
+-- The second action will only start when the first action calls 'Polysemy.Conc.Gate.signal'.
+--
 -- Passes the handle into the sync action to allow it to await the async action's result.
 --
 -- This can be used to ensure that the async action has acquired its resources before the main action starts.
-withAsyncTrigger ::
+withAsyncGated ::
   ∀ res b r a .
-  Members [ScopedSync res (), Resource, Race, Async] r =>
-  (Sem (Sync () : r) () -> Sem r b) ->
+  Members [Scoped res Gate, Resource, Race, Async] r =>
+  Sem (Gate : r) b ->
   (Base.Async (Maybe b) -> Sem r a) ->
   Sem r a
-withAsyncTrigger mb use =
-  withSync @() @res $ withAsync (raise (mb (Sync.putBlock ()))) \ h -> do
-    Sync.block @()
+withAsyncGated mb use =
+  withGate @res $ withAsync mb \ h -> do
+    gate
     raise (use h)
 
 -- |Run the first action asynchronously while the second action executes, then cancel the first action.
 --
--- The first action is called with another action as its argument.
--- The second action will only start when that argument action is sequenced.
--- Passes the handle into the sync action to allow it to await the async action's result.
+-- The second action will only start when the first action calls 'Polysemy.Conc.Gate.signal'.
 --
 -- This can be used to ensure that the async action has acquired its resources before the main action starts.
---
--- Variant of 'withAsyncTrigger' that directly interprets the 'Control.Concurrent.MVar' used for signalling.
-withAsyncTriggerIO ::
-  ∀ b r a .
-  Members [Resource, Race, Async, Embed IO] r =>
-  (Sem (Sync () : r) () -> Sem r b) ->
-  (Base.Async (Maybe b) -> Sem r a) ->
-  Sem r a
-withAsyncTriggerIO mb use =
-  interpretSync @() $ withAsync (raise (mb (Sync.putBlock ()))) \ h -> do
-    Sync.block @()
-    raise (use h)
-
--- |Run the first action asynchronously while the second action executes, then cancel the first action.
---
--- The first action is called with another action as its argument.
--- The second action will only start when that argument action is sequenced.
---
--- This can be used to ensure that the async action has acquired its resources before the main action starts.
-withAsyncTrigger_ ::
+withAsyncGated_ ::
   ∀ res b r a .
-  Members [ScopedSync res (), Resource, Race, Async] r =>
-  (Sem (Sync () : r) () -> Sem r b) ->
+  Members [Scoped res Gate, Resource, Race, Async] r =>
+  Sem (Gate : r) b ->
   Sem r a ->
   Sem r a
-withAsyncTrigger_ mb use =
-  withSync @() @res $ withAsync_ (raise (mb (Sync.putBlock ()))) do
-    Sync.block @()
-    raise use
-
--- |Run the first action asynchronously while the second action executes, then cancel the first action.
---
--- The first action is called with another action as its argument.
--- The second action will only start when that argument action is sequenced.
---
--- This can be used to ensure that the async action has acquired its resources before the main action starts.
---
--- Variant of 'withAsyncTrigger_' that directly interprets the 'Control.Concurrent.MVar' used for signalling.
-withAsyncTriggerIO_ ::
-  ∀ b r a .
-  Members [Resource, Race, Async, Embed IO] r =>
-  (Sem (Sync () : r) () -> Sem r b) ->
-  Sem r a ->
-  Sem r a
-withAsyncTriggerIO_ mb use =
-  interpretSync @() $ withAsync_ (raise (mb (Sync.putBlock ()))) do
-    Sync.block @()
+withAsyncGated_ mb use =
+  withGate @res $ withAsync_ mb do
+    gate
     raise use

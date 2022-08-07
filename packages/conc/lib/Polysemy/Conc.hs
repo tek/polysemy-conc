@@ -53,6 +53,13 @@ module Polysemy.Conc (
   interpretSemaphoreQ,
   interpretSemaphoreT,
 
+  -- * Gate
+  Gate,
+
+  -- ** Interpreters
+  interpretGates,
+  interpretGate,
+
   -- * Racing
   -- $race
   Race,
@@ -188,10 +195,8 @@ module Polysemy.Conc (
   withAsync_,
   scheduleAsync,
   scheduleAsyncIO,
-  withAsyncTrigger,
-  withAsyncTriggerIO,
-  withAsyncTrigger_,
-  withAsyncTriggerIO_,
+  withAsyncGated,
+  withAsyncGated_,
 ) where
 
 import Polysemy.Conc.Async (
@@ -199,16 +204,15 @@ import Polysemy.Conc.Async (
   scheduleAsyncIO,
   withAsync,
   withAsyncBlock,
-  withAsyncTrigger,
-  withAsyncTriggerIO,
-  withAsyncTriggerIO_,
-  withAsyncTrigger_,
+  withAsyncGated,
+  withAsyncGated_,
   withAsync_,
   )
 import Polysemy.Conc.AtomicState (interpretAtomic)
 import Polysemy.Conc.Data.QueueResult (QueueResult)
 import Polysemy.Conc.Effect.Critical (Critical)
 import Polysemy.Conc.Effect.Events (Consume, EventResource, Events, consume, publish, subscribe)
+import Polysemy.Conc.Effect.Gate (Gate)
 import Polysemy.Conc.Effect.Interrupt (Interrupt)
 import Polysemy.Conc.Effect.Lock (Lock, lock, lockOr, lockOrSkip, lockOrSkip_)
 import Polysemy.Conc.Effect.Mask (Mask, UninterruptibleMask, mask, restore, uninterruptibleMask)
@@ -232,6 +236,7 @@ import Polysemy.Conc.Effect.SyncRead (SyncRead)
 import Polysemy.Conc.Events (subscribeLoop, subscribeWhile)
 import Polysemy.Conc.Interpreter.Critical (interpretCritical, interpretCriticalNull)
 import Polysemy.Conc.Interpreter.Events (ChanConsumer, ChanEvents, EventChan, EventConsumer, interpretEventsChan)
+import Polysemy.Conc.Interpreter.Gate (interpretGate, interpretGates)
 import Polysemy.Conc.Interpreter.Interrupt (interpretInterrupt, interpretInterruptNull, interpretInterruptOnce)
 import Polysemy.Conc.Interpreter.Lock (interpretLockPermissive, interpretLockReentrant)
 import Polysemy.Conc.Interpreter.Mask (Restoration, interpretMaskFinal, interpretUninterruptibleMaskFinal)
