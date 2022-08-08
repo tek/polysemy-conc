@@ -23,9 +23,6 @@ restore ::
 newtype Restoration =
   Restoration { unRestoration :: ∀ a . IO a -> IO a }
 
-newtype UninterruptibleMaskResource resource =
-  UninterruptibleMaskResource { unUninterruptibleMaskResource :: resource }
-
 -- |The scoped masking effect.
 type Mask resource =
   Scoped resource RestoreMask
@@ -36,7 +33,7 @@ type MaskIO =
 
 -- |The scoped uninterruptible masking effect.
 type UninterruptibleMask resource =
-  Scoped (UninterruptibleMaskResource resource) RestoreMask
+  Scoped resource RestoreMask
 
 -- |Convenience alias for the default implementation of 'UninterruptibleMask'.
 type UninterruptibleMaskIO =
@@ -58,4 +55,4 @@ uninterruptibleMask ::
   Member (UninterruptibleMask resource) r =>
   InterpreterFor RestoreMask r
 uninterruptibleMask =
-  scoped @(UninterruptibleMaskResource resource)
+  scoped @resource

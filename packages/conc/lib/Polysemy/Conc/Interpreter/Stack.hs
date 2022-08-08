@@ -3,16 +3,16 @@
 -- |Description: Convenience Interpreters for all Conc Effects, Internal
 module Polysemy.Conc.Interpreter.Stack where
 
-import Polysemy.Conc.Effect.Mask (Mask, UninterruptibleMask)
+import Polysemy.Conc.Effect.Mask (MaskIO, UninterruptibleMaskIO)
 import Polysemy.Conc.Effect.Race (Race)
-import Polysemy.Conc.Interpreter.Mask (Restoration, interpretMaskFinal, interpretUninterruptibleMaskFinal)
+import Polysemy.Conc.Interpreter.Mask (interpretMaskFinal, interpretUninterruptibleMaskFinal)
 import Polysemy.Conc.Interpreter.Race (interpretRace)
 
 -- |A default basic stack with 'Final' for _polysemy-conc_.
 type ConcStack =
   [
-    UninterruptibleMask Restoration,
-    Mask Restoration,
+    UninterruptibleMaskIO,
+    MaskIO,
     Race,
     Async,
     Resource,

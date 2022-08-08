@@ -8,11 +8,11 @@ import Polysemy.Final (runS, withStrategicToFinal, withWeavingToFinal)
 
 import Polysemy.Conc.Effect.Mask (
   Mask,
+  Restoration (Restoration),
   RestoreMask (Restore),
   UninterruptibleMask,
-  UninterruptibleMaskResource (UninterruptibleMaskResource), Restoration (Restoration),
   )
-import Polysemy.Conc.Interpreter.Scoped (runScoped)
+import Polysemy.Conc.Interpreter.Scoped (interpretScopedH, runScoped)
 
 mask ::
   Member (Final IO) r =>
@@ -24,11 +24,11 @@ mask f =
 
 uninterruptibleMask ::
   Member (Final IO) r =>
-  (UninterruptibleMaskResource Restoration -> Sem r a) ->
+  (Restoration -> Sem r a) ->
   Sem r a
 uninterruptibleMask f =
   withWeavingToFinal @IO \ s lower _ ->
-    Base.uninterruptibleMask \ restore -> lower (f (UninterruptibleMaskResource (Restoration restore)) <$ s)
+    Base.uninterruptibleMask \ restore -> lower (f (Restoration restore) <$ s)
 
 interpretRestoreMask ::
   ∀ r .
@@ -37,11 +37,14 @@ interpretRestoreMask ::
   InterpreterFor RestoreMask r
 interpretRestoreMask (Restoration restore) =
   interpretH \case
-    Restore ma -> do
-      let
-        restoreSem m =
-          withStrategicToFinal (restore <$> runS m)
-      restoreSem (runTSimple ma)
+    Restore ma ->
+      withStrategicToFinal (restore <$> runS (runTSimple ma))
+
+-- |Interpret 'Mask' by sequencing the action without masking.
+interpretMaskPure :: InterpreterFor (Mask ()) r
+interpretMaskPure =
+  interpretScopedH ($ ()) \ () -> \case
+    Restore ma -> runTSimple ma
 
 -- |Interpret 'Mask' in 'IO'.
 interpretMaskFinal ::
@@ -50,9 +53,15 @@ interpretMaskFinal ::
 interpretMaskFinal =
   runScoped mask \ r -> interpretRestoreMask r
 
+-- |Interpret 'UninterruptibleMask' by sequencing the action without masking.
+interpretUninterruptibleMaskPure :: InterpreterFor (UninterruptibleMask ()) r
+interpretUninterruptibleMaskPure =
+  interpretScopedH ($ ()) \ () -> \case
+    Restore ma -> runTSimple ma
+
 -- |Interpret 'UninterruptibleMask' in 'IO'.
 interpretUninterruptibleMaskFinal ::
   Member (Final IO) r =>
   InterpreterFor (UninterruptibleMask Restoration) r
 interpretUninterruptibleMaskFinal =
-  runScoped uninterruptibleMask \ (UninterruptibleMaskResource r) -> interpretRestoreMask r
+  runScoped uninterruptibleMask \ r -> interpretRestoreMask r

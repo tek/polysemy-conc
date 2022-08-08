@@ -3,18 +3,18 @@
 module Polysemy.Conc.Test.LockTest where
 
 import Polysemy.Test (UnitTest, assert, assertJust, runTestAuto, unitTest)
-import Polysemy.Time (GhcTime, Seconds (Seconds), interpretTimeGhc, MilliSeconds (MilliSeconds))
+import Polysemy.Time (GhcTime, MilliSeconds (MilliSeconds), Seconds (Seconds), interpretTimeGhc)
+import Test.Tasty (TestTree, testGroup)
 
 import qualified Polysemy.Conc.Effect.Lock as Lock
 import Polysemy.Conc.Effect.Lock (Lock)
-import Polysemy.Conc.Effect.Mask (Mask)
+import Polysemy.Conc.Effect.Mask (Mask, Restoration)
 import Polysemy.Conc.Effect.Race (Race)
 import qualified Polysemy.Conc.Effect.Sync as Sync
 import Polysemy.Conc.Interpreter.Lock (interpretLockReentrant)
-import Polysemy.Conc.Interpreter.Mask (Restoration, interpretMaskFinal)
+import Polysemy.Conc.Interpreter.Mask (interpretMaskFinal)
 import Polysemy.Conc.Interpreter.Race (interpretRace)
 import Polysemy.Conc.Interpreter.Sync (interpretSync)
-import Test.Tasty (TestTree, testGroup)
 import Polysemy.Conc.Race (timeout_)
 
 interpretLockTest ::

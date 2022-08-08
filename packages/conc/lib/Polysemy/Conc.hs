@@ -134,6 +134,8 @@ module Polysemy.Conc (
   -- * Interpreters
   interpretMaskFinal,
   interpretUninterruptibleMaskFinal,
+  interpretMaskPure,
+  interpretUninterruptibleMaskPure,
 
   -- * Scoped Effects
   Scoped,
@@ -271,7 +273,7 @@ import Polysemy.Conc.Interpreter.Events (ChanConsumer, ChanEvents, EventChan, Ev
 import Polysemy.Conc.Interpreter.Gate (interpretGate, interpretGates)
 import Polysemy.Conc.Interpreter.Interrupt (interpretInterrupt, interpretInterruptNull, interpretInterruptOnce)
 import Polysemy.Conc.Interpreter.Lock (interpretLockPermissive, interpretLockReentrant)
-import Polysemy.Conc.Interpreter.Mask (interpretMaskFinal, interpretUninterruptibleMaskFinal)
+import Polysemy.Conc.Interpreter.Mask (interpretMaskFinal, interpretMaskPure, interpretUninterruptibleMaskFinal, interpretUninterruptibleMaskPure)
 import Polysemy.Conc.Interpreter.Monitor (interpretMonitorPure, interpretMonitorRestart)
 import Polysemy.Conc.Interpreter.PScoped (
   interpretPScoped,

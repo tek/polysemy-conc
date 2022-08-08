@@ -9,6 +9,8 @@
 * Add `withAsyncGated`, a variant of `withAsync` that requires the async action to signal the sync action to start.
 * Add `Gate`, an synchronization point effect.
 * Add variants of `subscribeWhile` and `subscribeLoop` that use `Gate` for synchronization and run in a new thread.
+* Add pure interpreters for `Mask`.
+* Add alias `MaskIO` for `Mask Restoration`.
 
 # 0.9.0.0
 
