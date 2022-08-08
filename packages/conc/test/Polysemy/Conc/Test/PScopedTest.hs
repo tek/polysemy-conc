@@ -88,8 +88,8 @@ scopeR (Par n) use = do
   _ <- interpretF tv (use tv)
   stop . (50 +) =<< embed (readTVarIO tv)
 
-test_scopedResumableWith :: UnitTest
-test_scopedResumableWith =
+test_pscopedResumableWith :: UnitTest
+test_pscopedResumableWith =
   runTestAuto $ interpretPScopedResumableWithH @'[F] scopeR handleRE do
     i1 <- pscoped 20 e1 !! pure
     i2 <- pscoped 23 e2 !! pure

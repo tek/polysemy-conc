@@ -6,6 +6,7 @@ import Polysemy.Conc.Test.InterruptTest (test_interrupt)
 import Polysemy.Conc.Test.LockTest (test_lock)
 import Polysemy.Conc.Test.MaskTest (test_mask)
 import Polysemy.Conc.Test.MonitorTest (test_monitorBasic, test_monitorClockSkew)
+import Polysemy.Conc.Test.PScopedTest (test_pscopedResumableWith, test_pscopedWith)
 import Polysemy.Conc.Test.QueueTest (
   test_queueBlockTB,
   test_queueBlockTBM,
@@ -52,6 +53,10 @@ tests =
     testGroup "scoped" [
       unitTest "scopedWith" test_scopedWith,
       unitTest "scopedResumableWith" test_scopedResumableWith
+    ],
+    testGroup "pscoped" [
+      unitTest "pscopedWith" test_pscopedWith,
+      unitTest "pscopedResumableWith" test_pscopedResumableWith
     ]
   ]
 
