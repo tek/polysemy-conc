@@ -128,6 +128,8 @@ module Polysemy.Conc (
   uninterruptibleMask,
   restore,
   Restoration,
+  MaskIO,
+  UninterruptibleMaskIO,
 
   -- * Interpreters
   interpretMaskFinal,
@@ -225,7 +227,16 @@ import Polysemy.Conc.Effect.Events (Consume, EventResource, Events, consume, pub
 import Polysemy.Conc.Effect.Gate (Gate, Gates, GatesIO)
 import Polysemy.Conc.Effect.Interrupt (Interrupt)
 import Polysemy.Conc.Effect.Lock (Lock, lock, lockOr, lockOrSkip, lockOrSkip_)
-import Polysemy.Conc.Effect.Mask (Mask, UninterruptibleMask, mask, restore, uninterruptibleMask)
+import Polysemy.Conc.Effect.Mask (
+  Mask,
+  MaskIO,
+  Restoration,
+  UninterruptibleMask,
+  UninterruptibleMaskIO,
+  mask,
+  restore,
+  uninterruptibleMask,
+  )
 import Polysemy.Conc.Effect.Monitor (
   Monitor,
   MonitorResource (MonitorResource),
@@ -244,20 +255,23 @@ import Polysemy.Conc.Effect.Semaphore (Semaphore)
 import Polysemy.Conc.Effect.Sync (ScopedSync, Sync)
 import Polysemy.Conc.Effect.SyncRead (SyncRead)
 import Polysemy.Conc.Events (
+  consumeFind,
+  consumeLoop,
+  consumeWhile,
   subscribeFind,
   subscribeLoop,
   subscribeLoopAsync,
   subscribeLoopGated,
   subscribeWhile,
   subscribeWhileAsync,
-  subscribeWhileGated, consumeWhile, consumeLoop, consumeFind,
+  subscribeWhileGated,
   )
 import Polysemy.Conc.Interpreter.Critical (interpretCritical, interpretCriticalNull)
 import Polysemy.Conc.Interpreter.Events (ChanConsumer, ChanEvents, EventChan, EventConsumer, interpretEventsChan)
 import Polysemy.Conc.Interpreter.Gate (interpretGate, interpretGates)
 import Polysemy.Conc.Interpreter.Interrupt (interpretInterrupt, interpretInterruptNull, interpretInterruptOnce)
 import Polysemy.Conc.Interpreter.Lock (interpretLockPermissive, interpretLockReentrant)
-import Polysemy.Conc.Interpreter.Mask (Restoration, interpretMaskFinal, interpretUninterruptibleMaskFinal)
+import Polysemy.Conc.Interpreter.Mask (interpretMaskFinal, interpretUninterruptibleMaskFinal)
 import Polysemy.Conc.Interpreter.Monitor (interpretMonitorPure, interpretMonitorRestart)
 import Polysemy.Conc.Interpreter.PScoped (
   interpretPScoped,
