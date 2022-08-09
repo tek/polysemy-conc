@@ -175,7 +175,7 @@ consumeElem ::
   e ->
   Sem r ()
 consumeElem target =
-  void (consumeFind (pure . (target /=)))
+  void (consumeFind (pure . (target ==)))
 
 -- |Block until the specified value has been published to the 'Polysemy.Conc.Events' channel.
 subscribeElem ::
