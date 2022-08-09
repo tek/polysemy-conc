@@ -9,6 +9,34 @@ import Polysemy.Conc.Effect.Race (Race)
 import Polysemy.Conc.Effect.Scoped (Scoped)
 import Polysemy.Conc.Interpreter.Events (EventConsumer)
 
+-- |Create a new scope for 'Events', causing the nested program to get its own copy of the event stream.
+--
+-- Calls 'signal' before running the argument to ensure that 'Events.subscribe' has finished creating a channel, for use
+-- with asynchronous execution.
+subscribeGated ::
+  ∀ e token r .
+  Members [EventConsumer token e, Gate] r =>
+  InterpreterFor (Consume e) r
+subscribeGated action =
+  Events.subscribe @e @token do
+    signal
+    action
+
+-- |Create a new scope for 'Events', causing the nested program to get its own copy of the event stream.
+--
+-- Executes in a new thread, ensuring that the main thread blocks until 'Events.subscribe' has finished creating a
+-- channel.
+subscribeAsync ::
+  ∀ e token gres r a .
+  Members [EventConsumer token e, Scoped gres Gate, Resource, Race, Async] r =>
+  Sem (Consume e : r) () ->
+  Sem r a ->
+  Sem r a
+subscribeAsync consumer ma =
+  withGate @gres $ withAsync_ (subscribeGated @_ @token (raiseUnder @Gate consumer)) do
+    gate
+    raise @Gate ma
+
 -- |Pull repeatedly from 'Polysemy.Conc.Consume', passing the event to the supplied callback.
 -- Stop when the action returns @False@.
 consumeWhile ::
@@ -41,8 +69,7 @@ subscribeWhileGated ::
   (e -> Sem r Bool) ->
   Sem r ()
 subscribeWhileGated action =
-  Events.subscribe @e @token do
-    signal
+  subscribeGated @e @token do
     consumeWhile (raise . action)
 
 -- |Start a new thread that pulls repeatedly from the 'Polysemy.Conc.Events' channel, passing the event to the supplied
@@ -50,13 +77,11 @@ subscribeWhileGated action =
 subscribeWhileAsync ::
   ∀ e token gres r a .
   Members [EventConsumer token e, Scoped gres Gate, Resource, Race, Async] r =>
-  (e -> Sem r Bool) ->
+  (e -> Sem (Consume e : r) Bool) ->
   Sem r a ->
   Sem r a
-subscribeWhileAsync action ma =
-  withGate @gres $ withAsync_ (subscribeWhileGated @_ @token (raise . action)) do
-    gate
-    raise ma
+subscribeWhileAsync action =
+  subscribeAsync @e @token @gres (consumeWhile action)
 
 -- |Pull repeatedly from 'Polysemy.Conc.Consume', passing the event to the supplied callback.
 consumeLoop ::
@@ -84,8 +109,7 @@ subscribeLoopGated ::
   (e -> Sem r ()) ->
   Sem r ()
 subscribeLoopGated action =
-  Events.subscribe @e @token do
-    signal
+  subscribeGated @e @token do
     consumeLoop (raise . action)
 
 -- |Start a new thread that pulls repeatedly from the 'Polysemy.Conc.Events' channel, passing the event to the supplied
@@ -93,30 +117,72 @@ subscribeLoopGated action =
 subscribeLoopAsync ::
   ∀ e token gres r a .
   Members [EventConsumer token e, Scoped gres Gate, Resource, Race, Async] r =>
-  (e -> Sem r ()) ->
+  (e -> Sem (Consume e : r) ()) ->
   Sem r a ->
   Sem r a
-subscribeLoopAsync action ma =
-  withGate @gres $ withAsync_ (subscribeLoopGated @_ @token (raise . action)) do
-    gate
-    raise ma
+subscribeLoopAsync action =
+  subscribeAsync @e @token @gres (consumeLoop action)
+
+-- |Block until a value matching the predicate has been returned by 'Polysemy.Conc.Consume'.
+consumeFind ::
+  ∀ e r .
+  Member (Consume e) r =>
+  (e -> Sem r Bool) ->
+  Sem r e
+consumeFind f =
+  spin
+  where
+    spin = do
+      e <- Events.consume
+      ifM (f e) (pure e) spin
+
+-- |Block until a value matching the predicate has been published to the 'Polysemy.Conc.Events' channel.
+subscribeFind ::
+  ∀ e token r .
+  Member (EventConsumer token e) r =>
+  (e -> Sem (Consume e : r) Bool) ->
+  Sem r e
+subscribeFind f =
+  Events.subscribe @e @token (consumeFind f)
+
+-- |Return the first value returned by 'Polysemy.Conc.Consume' for which the function produces 'Just'.
+consumeFirstJust ::
+  ∀ e a r .
+  Member (Consume e) r =>
+  (e -> Sem r (Maybe a)) ->
+  Sem r a
+consumeFirstJust f =
+  spin
+  where
+    spin = do
+      e <- Events.consume
+      maybe spin pure =<< f e
+
+-- |Return the first value published to the 'Polysemy.Conc.Events' channel for which the function produces 'Just'.
+subscribeFirstJust ::
+  ∀ e a token r .
+  Member (EventConsumer token e) r =>
+  (e -> Sem (Consume e : r) (Maybe a)) ->
+  Sem r a
+subscribeFirstJust f =
+  Events.subscribe @e @token (consumeFirstJust f)
 
 -- |Block until the specified value has been returned by 'Polysemy.Conc.Consume'.
-consumeFind ::
+consumeElem ::
   ∀ e r .
   Eq e =>
   Member (Consume e) r =>
   e ->
   Sem r ()
-consumeFind target =
-  consumeWhile @e (pure . (target /=))
+consumeElem target =
+  void (consumeFind (pure . (target /=)))
 
 -- |Block until the specified value has been published to the 'Polysemy.Conc.Events' channel.
-subscribeFind ::
+subscribeElem ::
   ∀ e token r .
   Eq e =>
   Member (EventConsumer token e) r =>
   e ->
   Sem r ()
-subscribeFind target =
-  subscribeWhile @e @token (pure . (target /=))
+subscribeElem target =
+  Events.subscribe @e @token (consumeElem target)

@@ -11,6 +11,7 @@
 * Add variants of `subscribeWhile` and `subscribeLoop` that use `Gate` for synchronization and run in a new thread.
 * Add pure interpreters for `Mask`.
 * Add alias `MaskIO` for `Mask Restoration`.
+* Add more variants of `subscribeLoop` that return matching elements.
 
 # 0.9.0.0
 
