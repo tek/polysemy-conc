@@ -3,8 +3,10 @@
 -- |Description: Convenience Interpreters for all Conc Effects, Internal
 module Polysemy.Conc.Interpreter.Stack where
 
+import Polysemy.Conc.Effect.Gate (GatesIO)
 import Polysemy.Conc.Effect.Mask (MaskIO, UninterruptibleMaskIO)
 import Polysemy.Conc.Effect.Race (Race)
+import Polysemy.Conc.Interpreter.Gate (interpretGates)
 import Polysemy.Conc.Interpreter.Mask (interpretMaskFinal, interpretUninterruptibleMaskFinal)
 import Polysemy.Conc.Interpreter.Race (interpretRace)
 
@@ -13,6 +15,7 @@ type ConcStack =
   [
     UninterruptibleMaskIO,
     MaskIO,
+    GatesIO,
     Race,
     Async,
     Resource,
@@ -31,5 +34,6 @@ runConc =
   resourceToIOFinal .
   asyncToIOFinal .
   interpretRace .
+  interpretGates .
   interpretMaskFinal .
   interpretUninterruptibleMaskFinal

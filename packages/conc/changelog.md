@@ -12,6 +12,7 @@
 * Add pure interpreters for `Mask`.
 * Add alias `MaskIO` for `Mask Restoration`.
 * Add more variants of `subscribeLoop` that return matching elements.
+* Add `GatesIO` to `ConcStack`.
 
 # 0.9.0.0
 
