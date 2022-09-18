@@ -18,7 +18,7 @@
 * Add alias `MaskIO` for `Mask Restoration`.
 * Add more variants of `subscribeLoop` that return matching elements.
 * Add `GatesIO` to `ConcStack`.
-* Add `rescope`, a reinterpreter for `Scoped` that may extend the parameter and resource types.
+* Add `rescope`, a reinterpreter for `Scoped` that may extend the scope parameters.
 
 # 0.9.0.0
 
