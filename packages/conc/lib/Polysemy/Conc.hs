@@ -148,6 +148,7 @@ module Polysemy.Conc (
   Scoped_,
   scoped,
   scoped_,
+  rescope,
 
   -- ** Interpreters
   interpretScoped,
@@ -245,7 +246,7 @@ import Polysemy.Conc.Effect.Monitor (
   )
 import Polysemy.Conc.Effect.Queue (Queue)
 import Polysemy.Conc.Effect.Race (Race, race, timeout)
-import Polysemy.Conc.Effect.Scoped (Scoped, Scoped_, scoped, scoped_)
+import Polysemy.Conc.Effect.Scoped (Scoped, Scoped_, scoped, scoped_, rescope)
 import Polysemy.Conc.Effect.Semaphore (Semaphore)
 import Polysemy.Conc.Effect.Sync (ScopedSync, Sync)
 import Polysemy.Conc.Effect.SyncRead (SyncRead)
