@@ -2,7 +2,7 @@
 
 * Add `oneshot` variants of `Process` interpreters that send `Stop` to the individual actions inside the scope, modeling
   a process that is expected to terminate.
-* Refactor interpreters to use `PScoped` as the basis and specialize unparameterized ones.
+* Refactor interpreters to use `Scoped` as the basis and specialize unparameterized ones.
   Don't provide loads of specializations for I/O types, rather offer interpreters that handle `ProcessOutput` and
   `ProcessInput` only.
 * Add constructors for `SysProcConf` that use `Path` and `Text`.

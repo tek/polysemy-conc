@@ -7,21 +7,30 @@ import Control.Concurrent.STM.TBMQueue (TBMQueue)
 import Data.ByteString (hGetSome, hPut)
 import Polysemy.Conc.Async (withAsync_)
 import qualified Polysemy.Conc.Data.QueueResult as QueueResult
-import Polysemy.Conc.Effect.PScoped (PScoped)
 import qualified Polysemy.Conc.Effect.Queue as Queue
 import Polysemy.Conc.Effect.Queue (Queue)
 import Polysemy.Conc.Effect.Race (Race)
-import Polysemy.Conc.Effect.Scoped (Scoped)
+import Polysemy.Conc.Effect.Scoped (Scoped, Scoped_)
 import qualified Polysemy.Conc.Effect.Sync as Sync
 import Polysemy.Conc.Effect.Sync (Sync)
-import Polysemy.Conc.Interpreter.PScoped (interpretPScopedResumableWith_)
 import Polysemy.Conc.Interpreter.Queue.TBM (interpretQueueTBMWith, withTBMQueue)
 import Polysemy.Conc.Interpreter.Scoped (interpretScopedResumableWith_)
 import Polysemy.Conc.Interpreter.Sync (interpretSync)
 import qualified Polysemy.Conc.Race as Conc (timeout_)
 import Polysemy.Input (Input (Input))
 import Polysemy.Output (Output (Output))
-import Polysemy.Resume (Stop, interpretResumable, mapStop, restop, resumeHoist, resumeOr, resume_, stop, stopNote, type (!!))
+import Polysemy.Resume (
+  Stop,
+  interpretResumable,
+  mapStop,
+  restop,
+  resumeHoist,
+  resumeOr,
+  resume_,
+  stop,
+  stopNote,
+  type (!!),
+  )
 import Prelude hiding (fromException)
 import System.IO (BufferMode (NoBuffering), Handle, hSetBuffering, stdin, stdout)
 
@@ -209,19 +218,19 @@ queues (ProcessOptions discard qSize kill) =
 
 scope ::
   ∀ resource serr err i o r .
-  Members [Scoped resource (SystemProcess !! err) !! serr, Stop serr] r =>
+  Members [Scoped_ resource (SystemProcess !! err) !! serr, Stop serr] r =>
   Members [ProcessInput i, ProcessOutput 'Stdout o, ProcessOutput 'Stderr o, Resource, Race, Async, Embed IO] r =>
   ProcessOptions ->
   InterpretersFor (ScopeEffects i o err) r
 scope options =
-  restop @serr @(Scoped resource (SystemProcess !! err)) .
+  restop @serr @(Scoped_ resource (SystemProcess !! err)) .
   withSystemProcess_ @resource .
   raiseUnder .
   queues @err options
 
 pscope ::
   ∀ resource serr i o param proc err r .
-  Members [PScoped proc resource (SystemProcess !! err) !! serr, Stop serr] r =>
+  Members [Scoped proc resource (SystemProcess !! err) !! serr, Stop serr] r =>
   Members [ProcessInput i, ProcessOutput 'Stdout o, ProcessOutput 'Stderr o, Resource, Race, Async, Embed IO] r =>
   ProcessOptions ->
   (param -> Sem r proc) ->
@@ -229,7 +238,7 @@ pscope ::
   InterpretersFor (ScopeEffects i o err) r
 pscope options consResource param sem =
   consResource param >>= \ proc ->
-    restop @serr @(PScoped proc resource (SystemProcess !! err)) $
+    restop @serr @(Scoped proc resource (SystemProcess !! err)) $
     withSystemProcess @proc @resource proc $
     raiseUnder $
     queues @err options sem
@@ -245,13 +254,13 @@ pscope options consResource param sem =
 interpretProcess ::
   ∀ resource param proc i o r .
   Members (ProcessIO i o) r =>
-  Member (PScoped proc resource (SystemProcess !! SystemProcessError) !! SystemProcessScopeError) r =>
+  Member (Scoped proc resource (SystemProcess !! SystemProcessError) !! SystemProcessScopeError) r =>
   Members [Resource, Race, Async, Embed IO] r =>
   ProcessOptions ->
   (param -> Sem (Stop ProcessError : r) proc) ->
-  InterpreterFor (PScoped param () (Process i o) !! ProcessError) r
+  InterpreterFor (Scoped param () (Process i o) !! ProcessError) r
 interpretProcess options proc =
-  interpretPScopedResumableWith_ @(ScopeEffects i o SystemProcessError) acq (handleProcessWithQueues terminated)
+  interpretScopedResumableWith_ @(ScopeEffects i o SystemProcessError) acq (handleProcessWithQueues terminated)
   where
     acq ::
       param ->
@@ -269,17 +278,18 @@ interpretProcess options proc =
 -- - Defers process config to 'SystemProcess'.
 interpretProcess_ ::
   ∀ resource i o r .
-  Member (Scoped resource (SystemProcess !! SystemProcessError) !! SystemProcessScopeError) r =>
+  Member (Scoped_ resource (SystemProcess !! SystemProcessError) !! SystemProcessScopeError) r =>
   Members [ProcessOutput 'Stdout o, ProcessOutput 'Stderr o, ProcessInput i, Resource, Race, Async, Embed IO] r =>
   ProcessOptions ->
-  InterpreterFor (Scoped () (Process i o) !! ProcessError) r
+  InterpreterFor (Scoped_ () (Process i o) !! ProcessError) r
 interpretProcess_ options =
   interpretScopedResumableWith_ @(ScopeEffects i o SystemProcessError) acq (handleProcessWithQueues terminated)
   where
     acq ::
+      () ->
       Sem (ScopeEffects i o SystemProcessError ++ Stop ProcessError : r) a ->
       Sem (Stop ProcessError : r) a
-    acq sem =
+    acq () sem =
       mapStop ProcessError.StartFailed do
         scope @resource @SystemProcessScopeError options (insertAt @4 sem)
 
@@ -296,7 +306,7 @@ interpretProcessNative ::
   Members [Resource, Race, Async, Embed IO] r =>
   ProcessOptions ->
   (param -> Sem r SysProcConf) ->
-  InterpreterFor (PScoped param () (Process i o) !! ProcessError) r
+  InterpreterFor (Scoped param () (Process i o) !! ProcessError) r
 interpretProcessNative options proc =
   interpretSystemProcessNative pure .
   interpretProcess @PipesProcess options (insertAt @0 . proc) .
@@ -313,7 +323,7 @@ interpretProcessNative_ ::
   Members [Resource, Race, Async, Embed IO] r =>
   ProcessOptions ->
   SysProcConf ->
-  InterpreterFor (Scoped () (Process i o) !! ProcessError) r
+  InterpreterFor (Scoped_ () (Process i o) !! ProcessError) r
 interpretProcessNative_ options conf =
   interpretSystemProcessNative_ conf .
   interpretProcess_ @PipesProcess options .

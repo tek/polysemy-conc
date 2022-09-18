@@ -9,7 +9,7 @@ import Polysemy.Conc.Async (withAsync_)
 import qualified Polysemy.Conc.Effect.Events as Events
 import Polysemy.Conc.Effect.Events (Consume, EventResource (EventResource), Events)
 import Polysemy.Conc.Effect.Race (Race)
-import Polysemy.Conc.Effect.Scoped (Scoped)
+import Polysemy.Conc.Effect.Scoped (Scoped_)
 import Polysemy.Conc.Interpreter.Scoped (runScopedAs)
 
 -- |Convenience alias for the default 'Events' that uses an 'OutChan'.
@@ -22,11 +22,11 @@ type EventChan e =
 
 -- |Convenience alias for the consumer effect.
 type EventConsumer token e =
-  Scoped (EventResource token) (Consume e)
+  Scoped_ (EventResource token) (Consume e)
 
 -- |Convenience alias for the consumer effect using the default implementation.
 type ChanConsumer e =
-  Scoped (EventChan e) (Consume e)
+  Scoped_ (EventChan e) (Consume e)
 
 -- |Interpret 'Consume' by reading from an 'OutChan'.
 -- Used internally by 'interpretEventsChan', not safe to use directly.
@@ -75,4 +75,4 @@ interpretEventsChan ::
 interpretEventsChan sem = do
   (inChan, outChan) <- embed (newChan @e 64)
   withAsync_ (forever (embed (readChan outChan))) do
-    runScopedAs (EventResource <$> embed (dupChan inChan)) interpretConsumeChan (interpretEventsInChan inChan sem)
+    runScopedAs (const (EventResource <$> embed (dupChan inChan))) interpretConsumeChan (interpretEventsInChan inChan sem)

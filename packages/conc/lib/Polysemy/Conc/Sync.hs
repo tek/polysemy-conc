@@ -10,7 +10,7 @@ import qualified Polysemy.Time as Time
 import Polysemy.Time (Time, TimeUnit)
 
 import Polysemy.Conc.Effect.Mask (Mask, mask, restore)
-import Polysemy.Conc.Effect.Scoped (scoped)
+import Polysemy.Conc.Effect.Scoped (scoped_)
 import qualified Polysemy.Conc.Effect.Sync as Sync
 import Polysemy.Conc.Effect.Sync
 
@@ -50,7 +50,7 @@ withSync ::
   Member (ScopedSync res d) r =>
   InterpreterFor (Sync d) r
 withSync =
-  scoped @(SyncResources res)
+  scoped_ @(SyncResources res)
 
 -- |Run the action @ma@ with an exclusive lock (mutex).
 -- When multiple threads call the action concurrently, only one is allowed to execute it at a time.

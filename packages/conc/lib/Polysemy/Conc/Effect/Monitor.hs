@@ -5,7 +5,7 @@ module Polysemy.Conc.Effect.Monitor where
 
 import Polysemy.Time (NanoSeconds)
 
-import Polysemy.Conc.Effect.Scoped (Scoped, scoped)
+import Polysemy.Conc.Effect.Scoped (Scoped_, scoped_)
 
 -- |Marker type for the restarting action for 'Monitor'.
 data Restart =
@@ -34,7 +34,7 @@ newtype MonitorResource a =
 
 -- |Convenience alias for a 'Scoped' 'Monitor'.
 type ScopedMonitor (resource :: Type) (action :: Type) =
-  Scoped (MonitorResource resource) (Monitor action)
+  Scoped_ (MonitorResource resource) (Monitor action)
 
 -- |'Monitor' specialized to the 'Restart' action.
 type RestartingMonitor (resource :: Type) =
@@ -53,7 +53,7 @@ withMonitor ::
   Member (ScopedMonitor resource action) r =>
   InterpreterFor (Monitor action) r
 withMonitor =
-  scoped @(MonitorResource resource)
+  scoped_ @(MonitorResource resource)
 
 -- |Variant of 'withMonitor' that uses the 'Restart' strategy.
 restart ::

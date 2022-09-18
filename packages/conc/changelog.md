@@ -1,13 +1,18 @@
-# Unreleased
+# 1.0.0.0
 
-* Add `PScoped`, a variant of `Scoped` that allows passing arguments to the scope.
+## Breaking
+
+* Add a parameter to `Scoped` that allows arbitrary data to be passed to the scoped interpreter via `scoped`.
+
+## Other
+
 * Add `Queue.tryReadMaybe`, a variant of `readMaybe` that does not wait.
 * Add variants of the combined `Scoped` interpreters in which the `Resumable` is inside the scope.
 * Add `Semaphore`, abstracting `QSem` or `TSem`.
 * Add `timeoutStop`, a variant of `timeout` that calls `Polysemy.Resume.stop`.
 * Add `Lock`, a mutex effect.
 * Add `withAsyncGated`, a variant of `withAsync` that requires the async action to signal the sync action to start.
-* Add `Gate`, an synchronization point effect.
+* Add `Gate`, a synchronization point effect.
 * Add variants of `subscribeWhile` and `subscribeLoop` that use `Gate` for synchronization and run in a new thread.
 * Add pure interpreters for `Mask`.
 * Add alias `MaskIO` for `Mask Restoration`.

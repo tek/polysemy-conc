@@ -6,7 +6,7 @@ import Polysemy.Time (MilliSeconds (MilliSeconds), TimeUnit)
 
 import Polysemy.Conc.Effect.Gate (Gate, gate, withGate)
 import Polysemy.Conc.Effect.Race (Race)
-import Polysemy.Conc.Effect.Scoped (Scoped)
+import Polysemy.Conc.Effect.Scoped (Scoped_)
 import qualified Polysemy.Conc.Effect.Sync as Sync
 import Polysemy.Conc.Effect.Sync (ScopedSync, Sync)
 import Polysemy.Conc.Interpreter.Sync (interpretSync)
@@ -117,7 +117,7 @@ scheduleAsyncIO mb f =
 -- This can be used to ensure that the async action has acquired its resources before the main action starts.
 withAsyncGated ::
   ∀ res b r a .
-  Members [Scoped res Gate, Resource, Race, Async] r =>
+  Members [Scoped_ res Gate, Resource, Race, Async] r =>
   Sem (Gate : r) b ->
   (Base.Async (Maybe b) -> Sem r a) ->
   Sem r a
@@ -133,7 +133,7 @@ withAsyncGated mb use =
 -- This can be used to ensure that the async action has acquired its resources before the main action starts.
 withAsyncGated_ ::
   ∀ res b r a .
-  Members [Scoped res Gate, Resource, Race, Async] r =>
+  Members [Scoped_ res Gate, Resource, Race, Async] r =>
   Sem (Gate : r) b ->
   Sem r a ->
   Sem r a

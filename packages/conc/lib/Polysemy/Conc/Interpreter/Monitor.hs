@@ -60,7 +60,7 @@ interpretMonitorRestart ::
   MonitorCheck r ->
   InterpreterFor (RestartingMonitor CancelResource) r
 interpretMonitorRestart check =
-  runScoped (monitorRestart @t @d check) interpretMonitorCancel
+  runScoped (const (monitorRestart @t @d check)) interpretMonitorCancel
 
 interpretMonitorPure' :: MonitorResource () -> InterpreterFor (Monitor action) r
 interpretMonitorPure' _ =
@@ -71,4 +71,4 @@ interpretMonitorPure' _ =
 -- |Run 'Monitor' as a no-op.
 interpretMonitorPure :: InterpreterFor (ScopedMonitor () action) r
 interpretMonitorPure =
-  runScopedAs (pure (MonitorResource ())) interpretMonitorPure'
+  runScopedAs (const (pure (MonitorResource ()))) interpretMonitorPure'

@@ -145,14 +145,16 @@ module Polysemy.Conc (
 
   -- * Scoped Effects
   Scoped,
+  Scoped_,
   scoped,
+  scoped_,
 
   -- ** Interpreters
-  runScoped,
-  runScopedAs,
   interpretScoped,
   interpretScopedH,
   interpretScopedAs,
+  runScoped,
+  runScopedAs,
   interpretScopedResumable,
   interpretScopedResumableH,
   interpretScopedResumable_,
@@ -168,26 +170,6 @@ module Polysemy.Conc (
   interpretResumableScopedWith,
   interpretResumableScopedWithH,
   interpretResumableScopedWith_,
-
-  -- * Scoped Effects with scope parameter
-  PScoped,
-  pscoped,
-
-  -- ** Interpreters
-  runPScoped,
-  runPScopedAs,
-  interpretPScoped,
-  interpretPScopedH,
-  interpretPScopedAs,
-  interpretPScopedResumable,
-  interpretPScopedResumableH,
-  interpretPScopedResumable_,
-  interpretPScopedWith,
-  interpretPScopedWithH,
-  interpretPScopedWith_,
-  interpretPScopedResumableWith,
-  interpretPScopedResumableWithH,
-  interpretPScopedResumableWith_,
 
   -- * Monitoring
   Monitor,
@@ -255,10 +237,9 @@ import Polysemy.Conc.Effect.Monitor (
   restart,
   withMonitor,
   )
-import Polysemy.Conc.Effect.PScoped (PScoped, pscoped)
 import Polysemy.Conc.Effect.Queue (Queue)
 import Polysemy.Conc.Effect.Race (Race, race, timeout)
-import Polysemy.Conc.Effect.Scoped (Scoped, scoped)
+import Polysemy.Conc.Effect.Scoped (Scoped, Scoped_, scoped, scoped_)
 import Polysemy.Conc.Effect.Semaphore (Semaphore)
 import Polysemy.Conc.Effect.Sync (ScopedSync, Sync)
 import Polysemy.Conc.Effect.SyncRead (SyncRead)
@@ -287,22 +268,6 @@ import Polysemy.Conc.Interpreter.Interrupt (interpretInterrupt, interpretInterru
 import Polysemy.Conc.Interpreter.Lock (interpretLockPermissive, interpretLockReentrant)
 import Polysemy.Conc.Interpreter.Mask (interpretMaskFinal, interpretMaskPure, interpretUninterruptibleMaskFinal, interpretUninterruptibleMaskPure)
 import Polysemy.Conc.Interpreter.Monitor (interpretMonitorPure, interpretMonitorRestart)
-import Polysemy.Conc.Interpreter.PScoped (
-  interpretPScoped,
-  interpretPScopedAs,
-  interpretPScopedH,
-  interpretPScopedResumable,
-  interpretPScopedResumableH,
-  interpretPScopedResumableWith,
-  interpretPScopedResumableWithH,
-  interpretPScopedResumableWith_,
-  interpretPScopedResumable_,
-  interpretPScopedWith,
-  interpretPScopedWithH,
-  interpretPScopedWith_,
-  runPScoped,
-  runPScopedAs,
-  )
 import Polysemy.Conc.Interpreter.Queue.Pure (
   interpretQueueListReadOnlyAtomic,
   interpretQueueListReadOnlyAtomicWith,

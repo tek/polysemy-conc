@@ -8,9 +8,9 @@ import Control.Concurrent (ThreadId, myThreadId)
 import Polysemy.Conc.Effect.Lock (Lock (Lock, LockOr))
 import Polysemy.Conc.Effect.Mask (Mask, mask, restore)
 import Polysemy.Conc.Effect.Race (Race)
+import qualified Polysemy.Conc.Effect.Sync as Sync (putTry, takeBlock, takeTry)
+import Polysemy.Conc.Effect.Sync (Sync)
 import Polysemy.Conc.Interpreter.Sync (interpretSyncAs)
-import qualified Polysemy.Conc.Sync as Sync
-import Polysemy.Conc.Sync (Sync)
 
 currentThread ::
   Member (Embed IO) r =>

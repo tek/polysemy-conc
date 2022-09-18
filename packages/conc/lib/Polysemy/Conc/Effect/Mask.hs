@@ -3,7 +3,7 @@
 -- |Description: Mask Effect, Internal
 module Polysemy.Conc.Effect.Mask where
 
-import Polysemy.Conc.Effect.Scoped (Scoped, scoped)
+import Polysemy.Conc.Effect.Scoped (Scoped_, scoped_)
 
 -- |Part of an effect abstracting 'Control.Exception.mask'.
 data RestoreMask :: Effect where
@@ -25,7 +25,7 @@ newtype Restoration =
 
 -- |The scoped masking effect.
 type Mask resource =
-  Scoped resource RestoreMask
+  Scoped_ resource RestoreMask
 
 -- |Convenience alias for the default implementation of 'Mask'.
 type MaskIO =
@@ -33,7 +33,7 @@ type MaskIO =
 
 -- |The scoped uninterruptible masking effect.
 type UninterruptibleMask resource =
-  Scoped resource RestoreMask
+  Scoped_ resource RestoreMask
 
 -- |Convenience alias for the default implementation of 'UninterruptibleMask'.
 type UninterruptibleMaskIO =
@@ -46,7 +46,7 @@ mask ::
   Member (Mask resource) r =>
   InterpreterFor RestoreMask r
 mask =
-  scoped @resource
+  scoped_ @resource
 
 -- |Mark a region as uninterruptibly masked.
 -- Uses the 'Scoped' pattern.
@@ -55,4 +55,4 @@ uninterruptibleMask ::
   Member (UninterruptibleMask resource) r =>
   InterpreterFor RestoreMask r
 uninterruptibleMask =
-  scoped @resource
+  scoped_ @resource

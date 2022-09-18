@@ -43,7 +43,7 @@ interpretRestoreMask (Restoration restore) =
 -- |Interpret 'Mask' by sequencing the action without masking.
 interpretMaskPure :: InterpreterFor (Mask ()) r
 interpretMaskPure =
-  interpretScopedH ($ ()) \ () -> \case
+  interpretScopedH (const ($ ())) \ () -> \case
     Restore ma -> runTSimple ma
 
 -- |Interpret 'Mask' in 'IO'.
@@ -51,12 +51,12 @@ interpretMaskFinal ::
   Member (Final IO) r =>
   InterpreterFor (Mask Restoration) r
 interpretMaskFinal =
-  runScoped mask \ r -> interpretRestoreMask r
+  runScoped (const mask) \ r -> interpretRestoreMask r
 
 -- |Interpret 'UninterruptibleMask' by sequencing the action without masking.
 interpretUninterruptibleMaskPure :: InterpreterFor (UninterruptibleMask ()) r
 interpretUninterruptibleMaskPure =
-  interpretScopedH ($ ()) \ () -> \case
+  interpretScopedH (const ($ ())) \ () -> \case
     Restore ma -> runTSimple ma
 
 -- |Interpret 'UninterruptibleMask' in 'IO'.
@@ -64,4 +64,4 @@ interpretUninterruptibleMaskFinal ::
   Member (Final IO) r =>
   InterpreterFor (UninterruptibleMask Restoration) r
 interpretUninterruptibleMaskFinal =
-  runScoped uninterruptibleMask \ r -> interpretRestoreMask r
+  runScoped (const uninterruptibleMask) \ r -> interpretRestoreMask r

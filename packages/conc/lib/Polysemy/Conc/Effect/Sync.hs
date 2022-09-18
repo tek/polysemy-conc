@@ -4,7 +4,7 @@
 module Polysemy.Conc.Effect.Sync where
 
 import Polysemy.Time (TimeUnit)
-import Polysemy.Conc.Effect.Scoped (Scoped)
+import Polysemy.Conc.Effect.Scoped (Scoped_)
 
 -- |Abstracts an 'Control.Concurrent.MVar'.
 --
@@ -48,4 +48,4 @@ newtype SyncResources a =
 
 -- |Convenience alias.
 type ScopedSync res a =
-  Scoped (SyncResources res) (Sync a)
+  Scoped_ (SyncResources res) (Sync a)

@@ -3,7 +3,7 @@
 -- |Description: Pty Interpreters, Internal
 module Polysemy.Process.Interpreter.Pty where
 
-import Polysemy.Conc.Effect.Scoped (Scoped)
+import Polysemy.Conc.Effect.Scoped (Scoped_)
 import Polysemy.Conc.Interpreter.Scoped (interpretScopedResumable)
 import Polysemy.Resume (Stop, stopEitherWith, stopNote, type (!!))
 import System.Posix (closeFd, fdToHandle, openPseudoTerminal)
@@ -47,9 +47,9 @@ withPty =
 -- |Interpret Pty as a 'System.Posix.Pty'.
 interpretPty ::
   Members [Resource, Embed IO] r =>
-  InterpreterFor (Scoped PtyResources Pty !! PtyError) r
+  InterpreterFor (Scoped_ PtyResources Pty !! PtyError) r
 interpretPty =
-  interpretScopedResumable withPty \ PtyResources {..} -> \case
+  interpretScopedResumable (const withPty) \ PtyResources {..} -> \case
     Handle ->
       pure handle
     Resize rows cols -> do

@@ -3,7 +3,7 @@
 -- |Description: Events/Consume Effects, Internal
 module Polysemy.Conc.Effect.Events where
 
-import Polysemy.Conc.Effect.Scoped (Scoped, scoped)
+import Polysemy.Conc.Effect.Scoped (Scoped_, scoped_)
 
 -- |Marker for the 'Scoped' resource for 'Events'.
 newtype EventResource resource =
@@ -39,7 +39,7 @@ consume ::
 -- To be used with 'Polysemy.Conc.interpretEventsChan'.
 subscribe ::
   ∀ e resource r .
-  Member (Scoped (EventResource resource) (Consume e)) r =>
+  Member (Scoped_ (EventResource resource) (Consume e)) r =>
   InterpreterFor (Consume e) r
 subscribe =
-  scoped @(EventResource resource)
+  scoped_ @(EventResource resource)

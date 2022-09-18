@@ -3,7 +3,7 @@
 -- |Description: Pty Effect, Internal
 module Polysemy.Process.Effect.Pty where
 
-import Polysemy.Conc.Effect.Scoped (Scoped, scoped)
+import Polysemy.Conc.Effect.Scoped (Scoped_, scoped_)
 import System.IO (Handle)
 
 -- |Horizontal size of a pseudo terminal in characters.
@@ -32,7 +32,7 @@ makeSem ''Pty
 -- |Bracket an action with the creation and destruction of a pseudo terminal.
 withPty ::
   ∀ resource r .
-  Member (Scoped resource Pty) r =>
+  Member (Scoped_ resource Pty) r =>
   InterpreterFor Pty r
 withPty =
-  scoped @resource
+  scoped_ @resource

@@ -3,8 +3,7 @@
 -- |Description: SystemProcess Effect, Internal
 module Polysemy.Process.Effect.SystemProcess where
 
-import Polysemy.Conc.Effect.PScoped (PScoped, pscoped)
-import Polysemy.Conc.Effect.Scoped (Scoped, scoped)
+import Polysemy.Conc.Effect.Scoped (Scoped, Scoped_, scoped, scoped_)
 import Polysemy.Resume (type (!!))
 import System.Exit (ExitCode)
 import qualified System.Posix as Signal
@@ -34,20 +33,20 @@ makeSem ''SystemProcess
 -- The process configuration may depend on the provided value of type @param@.
 withSystemProcess ::
   ∀ param resource err r .
-  Member (PScoped param resource (SystemProcess !! err)) r =>
+  Member (Scoped param resource (SystemProcess !! err)) r =>
   param ->
   InterpreterFor (SystemProcess !! err) r
 withSystemProcess =
-  pscoped @param @resource
+  scoped @param @resource
 
 -- |Create a scoped resource for 'SystemProcess'.
 -- The process configuration is provided to the interpreter statically.
 withSystemProcess_ ::
   ∀ resource err r .
-  Member (Scoped resource (SystemProcess !! err)) r =>
+  Member (Scoped_ resource (SystemProcess !! err)) r =>
   InterpreterFor (SystemProcess !! err) r
 withSystemProcess_ =
-  scoped @resource
+  scoped_ @resource
 
 -- |Send signal INT(2) to the process.
 interrupt ::

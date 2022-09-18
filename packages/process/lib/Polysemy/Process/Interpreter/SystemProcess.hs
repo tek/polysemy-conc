@@ -4,10 +4,8 @@
 module Polysemy.Process.Interpreter.SystemProcess where
 
 import Data.ByteString (hGetSome, hPut)
-import Polysemy.Conc.Effect.PScoped (PScoped)
-import Polysemy.Conc.Effect.Scoped (Scoped)
-import Polysemy.Conc.Interpreter.PScoped (interpretPScopedR)
-import Polysemy.Conc.Interpreter.Scoped (runScoped)
+import Polysemy.Conc.Effect.Scoped (Scoped, Scoped_)
+import Polysemy.Conc.Interpreter.Scoped (interpretScopedR, runScoped)
 import Polysemy.Resume (Stop, interpretResumable, stop, stopNote, stopTryIOError, type (!!))
 import Prelude hiding (fromException)
 import System.IO (BufferMode (NoBuffering), Handle, hSetBuffering)
@@ -169,9 +167,9 @@ interpretSystemProcessNative ::
   ∀ param r .
   Members [Resource, Embed IO] r =>
   (param -> Sem r SysProcConf) ->
-  InterpreterFor (PScoped param PipesProcess (SystemProcess !! SystemProcessError) !! SystemProcessScopeError) r
+  InterpreterFor (Scoped param PipesProcess (SystemProcess !! SystemProcessError) !! SystemProcessScopeError) r
 interpretSystemProcessNative config =
-  interpretPScopedR (\ p u -> raise (config p) >>= \ c -> withProcess c u) handleSystemProcessWithProcess
+  interpretScopedR (\ p u -> raise (config p) >>= \ c -> withProcess c u) handleSystemProcessWithProcess
 
 -- |Interpret 'SystemProcess' as a scoped 'System.Process' that's started wherever 'Polysemy.Process.withSystemProcess'
 -- is called and terminated when the wrapped action finishes.
@@ -180,9 +178,9 @@ interpretSystemProcessNative_ ::
   ∀ r .
   Members [Resource, Embed IO] r =>
   SysProcConf ->
-  InterpreterFor (Scoped PipesProcess (SystemProcess !! SystemProcessError) !! SystemProcessScopeError) r
+  InterpreterFor (Scoped_ PipesProcess (SystemProcess !! SystemProcessError) !! SystemProcessScopeError) r
 interpretSystemProcessNative_ config =
-  interpretPScopedR (const (withProcess config)) handleSystemProcessWithProcess
+  interpretScopedR (const (withProcess config)) handleSystemProcessWithProcess
 
 -- |Interpret 'SystemProcess' with a concrete 'System.Process' with no connection to stdio.
 interpretSystemProcessWithProcessOpaque ::
@@ -222,6 +220,6 @@ interpretSystemProcessNativeOpaque ::
   ∀ i o e r .
   Members [Resource, Embed IO] r =>
   ProcessConfig i o e ->
-  InterpreterFor (Scoped (Process i o e) (SystemProcess !! SystemProcessError)) r
+  InterpreterFor (Scoped_ (Process i o e) (SystemProcess !! SystemProcessError)) r
 interpretSystemProcessNativeOpaque config =
-  runScoped (withProcessOpaque config) interpretSystemProcessWithProcessOpaque
+  runScoped (const (withProcessOpaque config)) interpretSystemProcessWithProcessOpaque

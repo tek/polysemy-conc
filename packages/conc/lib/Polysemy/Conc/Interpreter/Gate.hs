@@ -2,7 +2,7 @@
 module Polysemy.Conc.Interpreter.Gate where
 
 import Polysemy.Conc.Effect.Gate (Gate (Gate, Signal))
-import Polysemy.Conc.Effect.Scoped (Scoped)
+import Polysemy.Conc.Effect.Scoped (Scoped_)
 import Polysemy.Conc.Interpreter.Scoped (interpretScopedAs)
 
 -- |Interpret 'Gate' with an 'MVar'.
@@ -25,9 +25,9 @@ interpretGate sem = do
 -- |Interpret @'Scoped' ('MVar' ()) 'Gate'@.
 interpretGates ::
   Member (Embed IO) r =>
-  InterpreterFor (Scoped (MVar ()) Gate) r
+  InterpreterFor (Scoped_ (MVar ()) Gate) r
 interpretGates =
-  interpretScopedAs (embed newEmptyMVar) \ mv -> \case
+  interpretScopedAs (const (embed newEmptyMVar)) \ mv -> \case
     Signal ->
       void (embed (tryPutMVar mv ()))
     Gate ->

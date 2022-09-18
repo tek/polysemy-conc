@@ -6,7 +6,7 @@ import qualified Polysemy.Conc.Effect.Events as Events
 import Polysemy.Conc.Effect.Events (Consume)
 import Polysemy.Conc.Effect.Gate (Gate, gate, signal, withGate)
 import Polysemy.Conc.Effect.Race (Race)
-import Polysemy.Conc.Effect.Scoped (Scoped)
+import Polysemy.Conc.Effect.Scoped (Scoped_)
 import Polysemy.Conc.Interpreter.Events (EventConsumer)
 
 -- |Create a new scope for 'Events', causing the nested program to get its own copy of the event stream.
@@ -28,7 +28,7 @@ subscribeGated action =
 -- channel.
 subscribeAsync ::
   ∀ e token gres r a .
-  Members [EventConsumer token e, Scoped gres Gate, Resource, Race, Async] r =>
+  Members [EventConsumer token e, Scoped_ gres Gate, Resource, Race, Async] r =>
   Sem (Consume e : r) () ->
   Sem r a ->
   Sem r a
@@ -76,7 +76,7 @@ subscribeWhileGated action =
 -- callback and stops when the action returns @False@.
 subscribeWhileAsync ::
   ∀ e token gres r a .
-  Members [EventConsumer token e, Scoped gres Gate, Resource, Race, Async] r =>
+  Members [EventConsumer token e, Scoped_ gres Gate, Resource, Race, Async] r =>
   (e -> Sem (Consume e : r) Bool) ->
   Sem r a ->
   Sem r a
@@ -116,7 +116,7 @@ subscribeLoopGated action =
 -- callback.
 subscribeLoopAsync ::
   ∀ e token gres r a .
-  Members [EventConsumer token e, Scoped gres Gate, Resource, Race, Async] r =>
+  Members [EventConsumer token e, Scoped_ gres Gate, Resource, Race, Async] r =>
   (e -> Sem (Consume e : r) ()) ->
   Sem r a ->
   Sem r a

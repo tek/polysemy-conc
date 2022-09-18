@@ -3,7 +3,7 @@
 -- |Description: Gate effect, Internal
 module Polysemy.Conc.Effect.Gate where
 
-import Polysemy.Conc.Effect.Scoped (Scoped, scoped)
+import Polysemy.Conc.Effect.Scoped (Scoped_, scoped_)
 
 -- |A single-use synchronization point that blocks all consumers who called 'gate' until 'signal' is called.
 --
@@ -16,7 +16,7 @@ makeSem ''Gate
 
 -- |Convenience alias for scoped 'Gate'.
 type Gates res =
-  Scoped res Gate
+  Scoped_ res Gate
 
 -- |Convenience alias for the usual resource for 'Gates'.
 type GatesIO =
@@ -27,7 +27,7 @@ type GatesIO =
 -- This avoids a dependency on @'Embed' 'IO'@ in application logic while still allowing the effect to be scoped.
 withGate ::
   ∀ res r .
-  Member (Scoped res Gate) r =>
+  Member (Scoped_ res Gate) r =>
   InterpreterFor Gate r
 withGate =
-  scoped @res
+  scoped_ @res
