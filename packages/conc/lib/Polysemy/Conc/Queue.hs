@@ -3,8 +3,10 @@
 module Polysemy.Conc.Queue (
   module Polysemy.Conc.Queue,
   module Polysemy.Conc.Effect.Queue,
+  module Polysemy.Conc.Data.QueueResult,
 ) where
 
+import Polysemy.Conc.Data.QueueResult
 import qualified Polysemy.Conc.Data.QueueResult as QueueResult
 import qualified Polysemy.Conc.Effect.Queue as Queue
 import Polysemy.Conc.Effect.Queue (
