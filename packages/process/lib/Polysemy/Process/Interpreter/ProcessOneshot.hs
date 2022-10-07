@@ -1,9 +1,8 @@
 -- |Description: Process Interpreters, Internal
 module Polysemy.Process.Interpreter.ProcessOneshot where
 
-import Polysemy.Conc.Effect.Scoped (Scoped)
 import Polysemy.Conc.Effect.Race (Race)
-import Polysemy.Conc.Effect.Scoped (Scoped_)
+import Polysemy.Conc.Effect.Scoped (Scoped, Scoped_)
 import Polysemy.Conc.Interpreter.Scoped (interpretScopedRWith_)
 import Polysemy.Resume (Stop, type (!!))
 
@@ -58,7 +57,7 @@ interpretProcessOneshotNative ::
   Members (ProcessIO i o) r =>
   Members [Resource, Race, Async, Embed IO] r =>
   ProcessOptions ->
-  (param -> Sem r SysProcConf) ->
+  (param -> Sem r (Either Text SysProcConf)) ->
   InterpreterFor (Scoped param () (Process i o !! ProcessError) !! SystemProcessScopeError) r
 interpretProcessOneshotNative options proc =
   interpretSystemProcessNative pure .
@@ -75,6 +74,6 @@ interpretProcessOneshotNative_ ::
   SysProcConf ->
   InterpreterFor (Scoped_ () (Process i o !! ProcessError) !! SystemProcessScopeError) r
 interpretProcessOneshotNative_ options proc =
-  interpretSystemProcessNative pure .
+  interpretSystemProcessNative (pure . Right) .
   interpretProcessOneshot @PipesProcess options (const (pure proc)) .
   raiseUnder

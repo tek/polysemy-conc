@@ -28,7 +28,7 @@ import System.Process.Typed (
   )
 
 import qualified Polysemy.Process.Data.SystemProcessError as SystemProcessError
-import Polysemy.Process.Data.SystemProcessError (SystemProcessError, SystemProcessScopeError)
+import Polysemy.Process.Data.SystemProcessError (SystemProcessError, SystemProcessScopeError (StartFailed))
 import qualified Polysemy.Process.Effect.SystemProcess as SystemProcess
 import Polysemy.Process.Effect.SystemProcess (SystemProcess)
 
@@ -61,7 +61,7 @@ withProcess ::
   (PipesProcess -> Sem r a) ->
   Sem r a
 withProcess config use =
-  bracket (start config) (tryAny . stopProcess) \ p -> do
+  bracket (start config) (tryIOError . stopProcess) \ p -> do
     unbuffer (getStdin p)
     unbuffer (getStdout p)
     unbuffer (getStderr p)
@@ -70,20 +70,13 @@ withProcess config use =
     unbuffer h =
       void $ tryMaybe (hSetBuffering h NoBuffering)
 
-startOpaque ::
-  Member (Embed IO) r =>
-  ProcessConfig i o e ->
-  Sem r (Process i o e)
-startOpaque =
-  startProcess
-
 withProcessOpaque ::
   Members [Resource, Embed IO] r =>
   ProcessConfig i o e ->
   (Process i o e -> Sem r a) ->
   Sem r a
 withProcessOpaque config =
-  bracket (startOpaque config) (tryAny . stopProcess)
+  bracket (startProcess config) (tryIOError . stopProcess)
 
 terminate ::
   Member (Stop SystemProcessError) r =>
@@ -159,6 +152,18 @@ interpretSystemProcessNativeSingle config sem =
   withProcess config \ process ->
     interpretSystemProcessWithProcess process sem
 
+withProcConf ::
+  Members [Stop SystemProcessScopeError, Resource, Embed IO] r =>
+  (PipesProcess -> Sem r a) ->
+  Either Text SysProcConf ->
+  Sem r a
+withProcConf use = \case
+  Right conf ->
+    withProcess conf use
+  Left err ->
+    stop (StartFailed err)
+{-# inline withProcConf #-}
+
 -- |Interpret 'SystemProcess' as a scoped 'System.Process' that's started wherever 'Polysemy.Process.withSystemProcess'
 -- is called and terminated when the wrapped action finishes.
 -- This variant is for parameterized scopes, allowing the consumer to supply a value of type @param@ to create the
@@ -166,10 +171,10 @@ interpretSystemProcessNativeSingle config sem =
 interpretSystemProcessNative ::
   ∀ param r .
   Members [Resource, Embed IO] r =>
-  (param -> Sem r SysProcConf) ->
+  (param -> Sem r (Either Text SysProcConf)) ->
   InterpreterFor (Scoped param PipesProcess (SystemProcess !! SystemProcessError) !! SystemProcessScopeError) r
 interpretSystemProcessNative config =
-  interpretScopedR (\ p u -> raise (config p) >>= \ c -> withProcess c u) handleSystemProcessWithProcess
+  interpretScopedR (\ p u -> raise (config p) >>= withProcConf u) handleSystemProcessWithProcess
 
 -- |Interpret 'SystemProcess' as a scoped 'System.Process' that's started wherever 'Polysemy.Process.withSystemProcess'
 -- is called and terminated when the wrapped action finishes.

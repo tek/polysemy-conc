@@ -9,6 +9,8 @@
 * Add the newtype `Pid` for `SystemProcess`.
 * Add `currentPid`.
 * Catch exceptions when starting a system process and send them to the scope.
+* Change the process config constructor expected by `interpretSystemProcessNative` to return `Either Text SysProcConf`,
+  throwing the error as `SystemProcessScopeError`.
 
 # 0.9.0.0
 

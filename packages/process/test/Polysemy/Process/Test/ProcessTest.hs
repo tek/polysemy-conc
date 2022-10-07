@@ -103,7 +103,7 @@ interpretOneshot ::
   InterpretersFor (Scoped Text () (Process Text Text !! ProcessError) : ProcessIO Text Text) r
 interpretOneshot conf =
   interpretProcessTextLines .
-  interpretProcessOneshotNative def (pure . conf) .
+  interpretProcessOneshotNative def (pure . Right . conf) .
   resumeHoistError (TestError . show @Text @SystemProcessScopeError) .
   insertAt @1
 

@@ -13,7 +13,7 @@ checkExecutable ::
   Path Abs File ->
   Sem r (Either Text (Path Abs File))
 checkExecutable name path =
-  tryAny (getPermissions path) <&> \case
+  tryIOError (getPermissions path) <&> \case
     Right (executable -> True) ->
       Right path
     Right _ ->
@@ -38,7 +38,7 @@ resolveExecutable exe = \case
   Just path ->
     checkExecutable name path
   Nothing ->
-    tryAny (Path.findExecutable exe) <&> \case
+    tryIOError (Path.findExecutable exe) <&> \case
       Right (Just path) ->
         Right path
       _ ->

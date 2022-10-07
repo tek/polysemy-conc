@@ -27,6 +27,9 @@ interpretWeaving h (Sem m) =
 -- @withResource@ is a callback function, allowing the user to acquire the resource for each program from other effects.
 --
 -- @scopedInterpreter@ is a regular interpreter that is called with the @resource@ argument produced by @scope@.
+-- This is mostly useful if you want to reuse an interpreter that you cannot easily rewrite (like from another library).
+-- If you have full control over the implementation, 'interpreterScoped' should be preferred.
+--
 -- /Note/: This function will be called for each action in the program, so if the interpreter allocates any resources,
 -- they will be scoped to a single action. Move them to @withResource@ instead.
 runScoped ::
@@ -54,7 +57,14 @@ runScopedAs ::
 runScopedAs resource =
   runScoped \ p use -> use =<< resource p
 
--- |Variant of 'runScoped' that takes a higher-order handler instead of an interpreter.
+-- |Interpreter for 'Scoped', taking a @resource@ allocation function and a parameterized handler for the plain
+-- @effect@.
+--
+-- @withResource@ is a callback function, allowing the user to acquire the resource for each program wrapped by 'scoped'
+-- using other effects, with an additional argument that contains the call site parameter passed to 'scoped'.
+--
+-- @scopedHandler@ is a handler like the one expected by 'interpretH' with an additional parameter that contains the
+-- @resource@ allocated by @withResource@.
 interpretScopedH ::
   ∀ param resource effect r .
   (∀ x . param -> (resource -> Sem r x) -> Sem r x) ->
@@ -71,7 +81,7 @@ interpretScopedH withResource scopedHandler =
         InScope param main ->
           withResource param \ resource -> ex <$> run (wv (main resource <$ s))
 
--- |Variant of 'runScoped' that takes a higher-order handler instead of an interpreter.
+-- |Variant of 'interpretScopedH' that allows the resource acquisition function to use 'Tactical'.
 interpretScopedH' ::
   ∀ param resource effect r .
   (∀ e m x . param -> (resource -> Tactical e m r x) -> Tactical e m r x) ->
@@ -85,7 +95,7 @@ interpretScopedH' withResource scopedHandler =
       withResource param \ resource ->
         runTSimple (main resource)
 
--- |Variant of 'runScoped' that takes a handler instead of an interpreter.
+-- |First-order variant of 'interpretScopedH'.
 interpretScoped ::
   ∀ param resource effect r .
   (∀ x . param -> (resource -> Sem r x) -> Sem r x) ->

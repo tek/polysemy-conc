@@ -305,7 +305,7 @@ interpretProcessNative ::
   Members (ProcessIO i o) r =>
   Members [Resource, Race, Async, Embed IO] r =>
   ProcessOptions ->
-  (param -> Sem r SysProcConf) ->
+  (param -> Sem r (Either Text SysProcConf)) ->
   InterpreterFor (Scoped param () (Process i o) !! ProcessError) r
 interpretProcessNative options proc =
   interpretSystemProcessNative pure .

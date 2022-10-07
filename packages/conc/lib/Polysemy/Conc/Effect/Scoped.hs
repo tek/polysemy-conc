@@ -22,6 +22,7 @@ data Scoped (param :: Type) (resource :: Type) (effect :: Effect) :: Effect wher
   Run :: ∀ param resource effect m a . resource -> effect m a -> Scoped param resource effect m a
   InScope :: ∀ param resource effect m a . param -> (resource -> m a) -> Scoped param resource effect m a
 
+-- |A convenience alias for a scope without parameters.
 type Scoped_ resource effect =
   Scoped () resource effect
 

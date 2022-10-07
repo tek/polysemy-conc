@@ -18,7 +18,7 @@ tryStop ::
   IO a ->
   Sem r a
 tryStop =
-  stopEitherWith PtyError <=< tryAny
+  stopEitherWith PtyError <=< tryIOError
 
 acquirePty ::
   Member (Embed IO) r =>
