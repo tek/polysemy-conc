@@ -1,8 +1,9 @@
-# 1.0.0.0
+# 0.10.0.0
 
 ## Breaking
 
 * Add a parameter to `Scoped` that allows arbitrary data to be passed to the scoped interpreter via `scoped`.
+* Remove the `resource` parameter from `Scoped`.
 
 ## Other
 
@@ -15,9 +16,8 @@
 * Add `Gate`, a synchronization point effect.
 * Add variants of `subscribeWhile` and `subscribeLoop` that use `Gate` for synchronization and run in a new thread.
 * Add pure interpreters for `Mask`.
-* Add alias `MaskIO` for `Mask Restoration`.
 * Add more variants of `subscribeLoop` that return matching elements.
-* Add `GatesIO` to `ConcStack`.
+* Add `Gates` to `ConcStack`.
 * Add `rescope`, a reinterpreter for `Scoped` that may extend the scope parameters.
 
 # 0.9.0.0

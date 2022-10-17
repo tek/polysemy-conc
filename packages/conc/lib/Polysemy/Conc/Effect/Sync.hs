@@ -43,9 +43,6 @@ data Sync d :: Effect where
 
 makeSem ''Sync
 
-newtype SyncResources a =
-  SyncResources { unSyncResources :: a }
-
 -- |Convenience alias.
-type ScopedSync res a =
-  Scoped_ (SyncResources res) (Sync a)
+type ScopedSync a =
+  Scoped_ (Sync a)

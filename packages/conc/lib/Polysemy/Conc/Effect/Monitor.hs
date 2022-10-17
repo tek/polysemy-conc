@@ -15,7 +15,7 @@ data Restart =
 -- |Mark a region as being subject to intervention by a monitoring program.
 -- This can mean that a thread is repeatedly checking a condition and cancelling this region when it is unmet.
 -- A use case could be checking whether a remote service is available, or whether the system was suspended and resumed.
--- This should be used in a 'Scoped' context, like 'withMonitor'.
+-- This should be used in a 'Scoped_' context, like 'withMonitor'.
 data Monitor (action :: Type) :: Effect where
   Monitor :: m a -> Monitor action m a
 
@@ -28,19 +28,15 @@ monitor ::
   Sem r a ->
   Sem r a
 
--- |Marker type for a 'Scoped' 'Monitor'.
-newtype MonitorResource a =
-  MonitorResource { unMonitorResource :: a }
-
--- |Convenience alias for a 'Scoped' 'Monitor'.
-type ScopedMonitor (resource :: Type) (action :: Type) =
-  Scoped_ (MonitorResource resource) (Monitor action)
+-- |Convenience alias for a 'Scoped_' 'Monitor'.
+type ScopedMonitor (action :: Type) =
+  Scoped_ (Monitor action)
 
 -- |'Monitor' specialized to the 'Restart' action.
-type RestartingMonitor (resource :: Type) =
-  ScopedMonitor resource Restart
+type RestartingMonitor =
+  ScopedMonitor Restart
 
--- |Resources for a 'Scoped' 'Monitor'.
+-- |Resources for a 'Scoped_' 'Monitor'.
 data MonitorCheck r =
   MonitorCheck {
     interval :: NanoSeconds,
@@ -49,16 +45,15 @@ data MonitorCheck r =
 
 -- |Start a region that can contain monitor-intervention regions.
 withMonitor ::
-  ∀ resource action r .
-  Member (ScopedMonitor resource action) r =>
+  ∀ action r .
+  Member (ScopedMonitor action) r =>
   InterpreterFor (Monitor action) r
 withMonitor =
-  scoped_ @(MonitorResource resource)
+  scoped_
 
 -- |Variant of 'withMonitor' that uses the 'Restart' strategy.
 restart ::
-  ∀ resource r .
-  Member (ScopedMonitor resource Restart) r =>
+  Member (ScopedMonitor Restart) r =>
   InterpreterFor (Monitor Restart) r
 restart =
-  withMonitor @resource
+  withMonitor

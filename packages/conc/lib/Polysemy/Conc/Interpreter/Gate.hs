@@ -22,12 +22,12 @@ interpretGate sem = do
         Gate ->
           embed (readMVar mv)
 
--- |Interpret @'Scoped' ('MVar' ()) 'Gate'@.
+-- |Interpret @'Scoped_' 'Gate'@ with an @'MVar' ()@.
 interpretGates ::
   Member (Embed IO) r =>
-  InterpreterFor (Scoped_ (MVar ()) Gate) r
+  InterpreterFor (Scoped_ Gate) r
 interpretGates =
-  interpretScopedAs (const (embed newEmptyMVar)) \ mv -> \case
+  interpretScopedAs @(MVar ()) (const (embed newEmptyMVar)) \ mv -> \case
     Signal ->
       void (embed (tryPutMVar mv ()))
     Gate ->

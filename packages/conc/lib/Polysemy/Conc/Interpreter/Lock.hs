@@ -30,8 +30,8 @@ interpretLockPermissive =
 {-# inline interpretLockPermissive #-}
 
 lockOnDifferentThread ::
-  ∀ mres f m r a .
-  Members [Sync (), Resource, Race, Mask mres, Embed IO] r =>
+  ∀ f m r a .
+  Members [Sync (), Resource, Race, Mask, Embed IO] r =>
   ThreadId ->
   m a ->
   (Sem (Lock : r) (f a) -> Sem (Lock : r) (f a)) ->
@@ -39,44 +39,44 @@ lockOnDifferentThread ::
 lockOnDifferentThread lockThread maI f = do
   thread <- currentThread
   ma <- runT maI
-  raise $ interpretLockReentrantEntered @mres thread do
+  raise $ interpretLockReentrantEntered thread do
     if thread == lockThread
     then ma
     else f ma
 {-# inline lockOnDifferentThread #-}
 
 enter ::
-  ∀ mres f m r a .
-  Members [Sync (), Resource, Race, Mask mres, Embed IO] r =>
+  ∀ f m r a .
+  Members [Sync (), Resource, Race, Mask, Embed IO] r =>
   m a ->
   (Sem (Lock : r) (f a) -> Sem (Lock : r) (f a)) ->
   Sem (WithTactics Lock f m r) (f a)
 enter maI f = do
   thread <- currentThread
   ma <- runT maI
-  raise $ interpretLockReentrantEntered @mres thread do
+  raise $ interpretLockReentrantEntered thread do
     f ma
 {-# inline enter #-}
 
 lockWait ::
-  ∀ mres r a .
-  Members [Sync (), Resource, Mask mres] r =>
+  ∀ r a .
+  Members [Sync (), Resource, Mask] r =>
   Sem r a ->
   Sem r a
 lockWait ma =
-  mask @mres do
+  mask do
     Sync.takeBlock @()
     finally (restore (raise ma)) (Sync.putTry ())
 {-# inline lockWait #-}
 
 lockAlt ::
-  ∀ mres r a .
-  Members [Sync (), Resource, Mask mres] r =>
+  ∀ r a .
+  Members [Sync (), Resource, Mask] r =>
   Sem r a ->
   Sem r a ->
   Sem r a
 lockAlt alt ma =
-  mask @mres do
+  mask do
     Sync.takeTry >>= \case
       Just () ->
         finally (restore (raise ma)) (Sync.putTry ())
@@ -87,31 +87,29 @@ lockAlt alt ma =
 -- |Subinterpreter for 'interpretLockReentrant' that checks whether the current thread is equal to the lock-acquiring
 -- thread to allow reentry into the lock.
 interpretLockReentrantEntered ::
-  ∀ mres r .
-  Members [Sync (), Resource, Race, Mask mres, Embed IO] r =>
+  Members [Sync (), Resource, Race, Mask, Embed IO] r =>
   ThreadId ->
   InterpreterFor Lock r
 interpretLockReentrantEntered lockThread =
   interpretH \case
     Lock maI ->
-      lockOnDifferentThread @mres lockThread maI (lockWait @mres)
+      lockOnDifferentThread lockThread maI (lockWait)
     LockOr altI maI -> do
       alt <- runT altI
-      lockOnDifferentThread @mres lockThread maI (lockAlt @mres alt)
+      lockOnDifferentThread lockThread maI (lockAlt alt)
 {-# inline interpretLockReentrantEntered #-}
 
 -- |Interpret 'Lock' as a reentrant lock, allowing nested calls to 'Polysemy.Conc.lock' unless called from a different
 -- thread (as in, @async@ was called in a higher-order action passed to 'Polysemy.Conc.lock'.)
 interpretLockReentrant ::
-  ∀ mres r .
-  Members [Resource, Race, Mask mres, Embed IO] r =>
+  Members [Resource, Race, Mask, Embed IO] r =>
   InterpreterFor Lock r
 interpretLockReentrant =
   interpretSyncAs () .
   reinterpretH \case
     Lock maI ->
-      enter @mres maI (lockWait @mres)
+      enter maI (lockWait)
     LockOr altI maI -> do
       alt <- runT altI
-      enter @mres maI (lockAlt @mres alt)
+      enter maI (lockAlt alt)
 {-# inline interpretLockReentrant #-}

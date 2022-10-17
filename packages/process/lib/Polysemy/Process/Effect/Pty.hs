@@ -31,8 +31,7 @@ makeSem ''Pty
 
 -- |Bracket an action with the creation and destruction of a pseudo terminal.
 withPty ::
-  ∀ resource r .
-  Member (Scoped_ resource Pty) r =>
+  Member (Scoped_ Pty) r =>
   InterpreterFor Pty r
 withPty =
-  scoped_ @resource
+  scoped_

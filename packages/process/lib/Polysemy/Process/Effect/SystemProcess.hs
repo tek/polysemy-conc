@@ -32,21 +32,21 @@ makeSem ''SystemProcess
 -- |Create a scoped resource for 'SystemProcess'.
 -- The process configuration may depend on the provided value of type @param@.
 withSystemProcess ::
-  ∀ param resource err r .
-  Member (Scoped param resource (SystemProcess !! err)) r =>
+  ∀ param err r .
+  Member (Scoped param (SystemProcess !! err)) r =>
   param ->
   InterpreterFor (SystemProcess !! err) r
 withSystemProcess =
-  scoped @param @resource
+  scoped @param
 
 -- |Create a scoped resource for 'SystemProcess'.
 -- The process configuration is provided to the interpreter statically.
 withSystemProcess_ ::
-  ∀ resource err r .
-  Member (Scoped_ resource (SystemProcess !! err)) r =>
+  ∀ err r .
+  Member (Scoped_ (SystemProcess !! err)) r =>
   InterpreterFor (SystemProcess !! err) r
 withSystemProcess_ =
-  scoped_ @resource
+  scoped_
 
 -- |Send signal INT(2) to the process.
 interrupt ::

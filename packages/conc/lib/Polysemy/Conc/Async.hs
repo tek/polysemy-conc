@@ -82,13 +82,13 @@ withAsync_ mb =
 --   start -- now makeRequest is executed
 -- @
 scheduleAsync ::
-  ∀ res b r a .
-  Members [ScopedSync res (), Async, Race] r =>
+  ∀ b r a .
+  Members [ScopedSync (), Async, Race] r =>
   Sem r b ->
   (Base.Async (Maybe b) -> Sem (Sync () : r) () -> Sem (Sync () : r) a) ->
   Sem r a
 scheduleAsync mb f =
-  withSync @() @res do
+  withSync @() do
     h <- async do
       Sync.block @()
       raise mb
@@ -116,13 +116,13 @@ scheduleAsyncIO mb f =
 --
 -- This can be used to ensure that the async action has acquired its resources before the main action starts.
 withAsyncGated ::
-  ∀ res b r a .
-  Members [Scoped_ res Gate, Resource, Race, Async] r =>
+  ∀ b r a .
+  Members [Scoped_ Gate, Resource, Race, Async] r =>
   Sem (Gate : r) b ->
   (Base.Async (Maybe b) -> Sem r a) ->
   Sem r a
 withAsyncGated mb use =
-  withGate @res $ withAsync mb \ h -> do
+  withGate $ withAsync mb \ h -> do
     gate
     raise (use h)
 
@@ -132,12 +132,12 @@ withAsyncGated mb use =
 --
 -- This can be used to ensure that the async action has acquired its resources before the main action starts.
 withAsyncGated_ ::
-  ∀ res b r a .
-  Members [Scoped_ res Gate, Resource, Race, Async] r =>
+  ∀ b r a .
+  Members [Scoped_ Gate, Resource, Race, Async] r =>
   Sem (Gate : r) b ->
   Sem r a ->
   Sem r a
 withAsyncGated_ mb use =
-  withGate @res $ withAsync_ mb do
+  withGate $ withAsync_ mb do
     gate
     raise use

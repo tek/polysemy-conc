@@ -47,7 +47,7 @@ withPty =
 -- |Interpret Pty as a 'System.Posix.Pty'.
 interpretPty ::
   Members [Resource, Embed IO] r =>
-  InterpreterFor (Scoped_ PtyResources Pty !! PtyError) r
+  InterpreterFor (Scoped_ Pty !! PtyError) r
 interpretPty =
   interpretScopedResumable (const withPty) \ PtyResources {..} -> \case
     Handle ->

@@ -5,21 +5,16 @@ module Polysemy.Conc.Effect.Events where
 
 import Polysemy.Conc.Effect.Scoped (Scoped_, scoped_)
 
--- |Marker for the 'Scoped' resource for 'Events'.
-newtype EventResource resource =
-  EventResource { unEventToken :: resource }
-  deriving stock (Eq, Show, Generic)
-
 -- |An event publisher that can be consumed from multiple threads.
-data Events (resource :: Type) (e :: Type) :: Effect where
-  Publish :: e -> Events resource e m ()
+data Events (e :: Type) :: Effect where
+  Publish :: e -> Events e m ()
 
 makeSem_ ''Events
 
 -- |Publish one event.
 publish ::
-  ∀ e resource r .
-  Member (Events resource e) r =>
+  ∀ e r .
+  Member (Events e) r =>
   e ->
   Sem r ()
 
@@ -38,8 +33,8 @@ consume ::
 -- |Create a new scope for 'Events', causing the nested program to get its own copy of the event stream.
 -- To be used with 'Polysemy.Conc.interpretEventsChan'.
 subscribe ::
-  ∀ e resource r .
-  Member (Scoped_ (EventResource resource) (Consume e)) r =>
+  ∀ e r .
+  Member (Scoped_ (Consume e)) r =>
   InterpreterFor (Consume e) r
 subscribe =
-  scoped_ @(EventResource resource)
+  scoped_

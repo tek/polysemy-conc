@@ -50,7 +50,6 @@ import qualified Polysemy.Process.Effect.SystemProcess as SystemProcess
 import Polysemy.Process.Effect.SystemProcess (SystemProcess, withSystemProcess, withSystemProcess_)
 import Polysemy.Process.Interpreter.ProcessIO (ProcessIO)
 import Polysemy.Process.Interpreter.SystemProcess (
-  PipesProcess,
   SysProcConf,
   interpretSystemProcessNative,
   interpretSystemProcessNative_,
@@ -217,20 +216,20 @@ queues (ProcessOptions discard qSize kill) =
   withKill @err kill
 
 scope ::
-  ∀ resource serr err i o r .
-  Members [Scoped_ resource (SystemProcess !! err) !! serr, Stop serr] r =>
+  ∀ serr err i o r .
+  Members [Scoped_ (SystemProcess !! err) !! serr, Stop serr] r =>
   Members [ProcessInput i, ProcessOutput 'Stdout o, ProcessOutput 'Stderr o, Resource, Race, Async, Embed IO] r =>
   ProcessOptions ->
   InterpretersFor (ScopeEffects i o err) r
 scope options =
-  restop @serr @(Scoped_ resource (SystemProcess !! err)) .
-  withSystemProcess_ @resource .
+  restop @serr @(Scoped_ (SystemProcess !! err)) .
+  withSystemProcess_ .
   raiseUnder .
   queues @err options
 
 pscope ::
-  ∀ resource serr i o param proc err r .
-  Members [Scoped proc resource (SystemProcess !! err) !! serr, Stop serr] r =>
+  ∀ serr i o param proc err r .
+  Members [Scoped proc (SystemProcess !! err) !! serr, Stop serr] r =>
   Members [ProcessInput i, ProcessOutput 'Stdout o, ProcessOutput 'Stderr o, Resource, Race, Async, Embed IO] r =>
   ProcessOptions ->
   (param -> Sem r proc) ->
@@ -238,8 +237,8 @@ pscope ::
   InterpretersFor (ScopeEffects i o err) r
 pscope options consResource param sem =
   consResource param >>= \ proc ->
-    restop @serr @(Scoped proc resource (SystemProcess !! err)) $
-    withSystemProcess @proc @resource proc $
+    restop @serr @(Scoped proc (SystemProcess !! err)) $
+    withSystemProcess @proc proc $
     raiseUnder $
     queues @err options sem
 
@@ -252,13 +251,13 @@ pscope options consResource param sem =
 --   'Polysemy.Process.withProcessOneshotParam' which is then passed to the supplied function to produce a 'SysProcConf'
 --   for the native process.
 interpretProcess ::
-  ∀ resource param proc i o r .
+  ∀ param proc i o r .
   Members (ProcessIO i o) r =>
-  Member (Scoped proc resource (SystemProcess !! SystemProcessError) !! SystemProcessScopeError) r =>
+  Member (Scoped proc (SystemProcess !! SystemProcessError) !! SystemProcessScopeError) r =>
   Members [Resource, Race, Async, Embed IO] r =>
   ProcessOptions ->
   (param -> Sem (Stop ProcessError : r) proc) ->
-  InterpreterFor (Scoped param () (Process i o) !! ProcessError) r
+  InterpreterFor (Scoped param (Process i o) !! ProcessError) r
 interpretProcess options proc =
   interpretScopedResumableWith_ @(ScopeEffects i o SystemProcessError) acq (handleProcessWithQueues terminated)
   where
@@ -268,7 +267,7 @@ interpretProcess options proc =
       Sem (Stop ProcessError : r) a
     acq p sem =
       mapStop ProcessError.StartFailed do
-        pscope @resource @SystemProcessScopeError options (raise . proc) p (insertAt @4 sem)
+        pscope @SystemProcessScopeError options (raise . proc) p (insertAt @4 sem)
 
 -- |Interpret 'Process' with a system process resource whose file descriptors are connected to three 'TBMQueue's,
 -- deferring decoding of stdout and stderr to the interpreters of two 'ProcessOutput' effects.
@@ -277,11 +276,11 @@ interpretProcess options proc =
 --   of individual 'Process' actions.
 -- - Defers process config to 'SystemProcess'.
 interpretProcess_ ::
-  ∀ resource i o r .
-  Member (Scoped_ resource (SystemProcess !! SystemProcessError) !! SystemProcessScopeError) r =>
+  ∀ i o r .
+  Member (Scoped_ (SystemProcess !! SystemProcessError) !! SystemProcessScopeError) r =>
   Members [ProcessOutput 'Stdout o, ProcessOutput 'Stderr o, ProcessInput i, Resource, Race, Async, Embed IO] r =>
   ProcessOptions ->
-  InterpreterFor (Scoped_ () (Process i o) !! ProcessError) r
+  InterpreterFor (Scoped_ (Process i o) !! ProcessError) r
 interpretProcess_ options =
   interpretScopedResumableWith_ @(ScopeEffects i o SystemProcessError) acq (handleProcessWithQueues terminated)
   where
@@ -291,7 +290,7 @@ interpretProcess_ options =
       Sem (Stop ProcessError : r) a
     acq () sem =
       mapStop ProcessError.StartFailed do
-        scope @resource @SystemProcessScopeError options (insertAt @4 sem)
+        scope @SystemProcessScopeError options (insertAt @4 sem)
 
 -- |Interpret 'Process' as a native 'Polysemy.Process.SystemProcess'.
 -- This variant:
@@ -306,10 +305,10 @@ interpretProcessNative ::
   Members [Resource, Race, Async, Embed IO] r =>
   ProcessOptions ->
   (param -> Sem r (Either Text SysProcConf)) ->
-  InterpreterFor (Scoped param () (Process i o) !! ProcessError) r
+  InterpreterFor (Scoped param (Process i o) !! ProcessError) r
 interpretProcessNative options proc =
   interpretSystemProcessNative pure .
-  interpretProcess @PipesProcess options (insertAt @0 . proc) .
+  interpretProcess options (insertAt @0 . proc) .
   raiseUnder
 
 -- |Interpret 'Process' as a native 'Polysemy.Process.SystemProcess'.
@@ -323,10 +322,10 @@ interpretProcessNative_ ::
   Members [Resource, Race, Async, Embed IO] r =>
   ProcessOptions ->
   SysProcConf ->
-  InterpreterFor (Scoped_ () (Process i o) !! ProcessError) r
+  InterpreterFor (Scoped_ (Process i o) !! ProcessError) r
 interpretProcessNative_ options conf =
   interpretSystemProcessNative_ conf .
-  interpretProcess_ @PipesProcess options .
+  interpretProcess_ options .
   raiseUnder
 
 -- |Reinterpret 'Input' and 'Output' as 'Process'.

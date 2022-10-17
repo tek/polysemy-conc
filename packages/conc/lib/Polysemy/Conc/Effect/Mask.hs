@@ -24,35 +24,25 @@ newtype Restoration =
   Restoration { unRestoration :: ∀ a . IO a -> IO a }
 
 -- |The scoped masking effect.
-type Mask resource =
-  Scoped_ resource RestoreMask
-
--- |Convenience alias for the default implementation of 'Mask'.
-type MaskIO =
-  Mask Restoration
+type Mask =
+  Scoped_ RestoreMask
 
 -- |The scoped uninterruptible masking effect.
-type UninterruptibleMask resource =
-  Scoped_ resource RestoreMask
-
--- |Convenience alias for the default implementation of 'UninterruptibleMask'.
-type UninterruptibleMaskIO =
-  Mask Restoration
+type UninterruptibleMask =
+  Scoped_ RestoreMask
 
 -- |Mark a region as masked.
--- Uses the 'Scoped' pattern.
+-- Uses the 'Scoped_' pattern.
 mask ::
-  ∀ resource r .
-  Member (Mask resource) r =>
+  Member Mask r =>
   InterpreterFor RestoreMask r
 mask =
-  scoped_ @resource
+  scoped_
 
 -- |Mark a region as uninterruptibly masked.
--- Uses the 'Scoped' pattern.
+-- Uses the 'Scoped_' pattern.
 uninterruptibleMask ::
-  ∀ resource r .
-  Member (UninterruptibleMask resource) r =>
+  Member UninterruptibleMask r =>
   InterpreterFor RestoreMask r
 uninterruptibleMask =
-  scoped_ @resource
+  scoped_

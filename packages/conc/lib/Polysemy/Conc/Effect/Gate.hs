@@ -15,19 +15,14 @@ data Gate :: Effect where
 makeSem ''Gate
 
 -- |Convenience alias for scoped 'Gate'.
-type Gates res =
-  Scoped_ res Gate
-
--- |Convenience alias for the usual resource for 'Gates'.
-type GatesIO =
-  Gates (MVar ())
+type Gates =
+  Scoped_ Gate
 
 -- |Run an action with a locally scoped 'Gate' effect.
 --
 -- This avoids a dependency on @'Embed' 'IO'@ in application logic while still allowing the effect to be scoped.
 withGate ::
-  ∀ res r .
-  Member (Scoped_ res Gate) r =>
+  Member (Scoped_ Gate) r =>
   InterpreterFor Gate r
 withGate =
-  scoped_ @res
+  scoped_

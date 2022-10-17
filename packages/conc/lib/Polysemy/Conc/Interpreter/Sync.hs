@@ -4,7 +4,7 @@ module Polysemy.Conc.Interpreter.Sync where
 import Polysemy.Conc.Effect.Race (Race)
 import Polysemy.Conc.Effect.Scoped (Scoped_)
 import qualified Polysemy.Conc.Effect.Sync as Sync
-import Polysemy.Conc.Effect.Sync (Sync, SyncResources (SyncResources), unSyncResources)
+import Polysemy.Conc.Effect.Sync (Sync)
 import Polysemy.Conc.Interpreter.Scoped (runScopedAs)
 import qualified Polysemy.Conc.Race as Race
 
@@ -60,15 +60,15 @@ interpretSyncAs d sem = do
 interpretScopedSync ::
   ∀ d r .
   Members [Resource, Race, Embed IO] r =>
-  InterpreterFor (Scoped_ (SyncResources (MVar d)) (Sync d)) r
+  InterpreterFor (Scoped_ (Sync d)) r
 interpretScopedSync =
-  runScopedAs (const (SyncResources <$> embed newEmptyMVar)) \ r -> interpretSyncWith (unSyncResources r)
+  runScopedAs (const (embed newEmptyMVar)) \ r -> interpretSyncWith r
 
 -- |Interpret 'Sync' for locally scoped use with an 'MVar' containing the specified value.
 interpretScopedSyncAs ::
   ∀ d r .
   Members [Resource, Race, Embed IO] r =>
   d ->
-  InterpreterFor (Scoped_ (SyncResources (MVar d)) (Sync d)) r
+  InterpreterFor (Scoped_ (Sync d)) r
 interpretScopedSyncAs d =
-  runScopedAs (const (SyncResources <$> embed (newMVar d))) \ r -> interpretSyncWith (unSyncResources r)
+  runScopedAs (const (embed (newMVar d))) \ r -> interpretSyncWith r

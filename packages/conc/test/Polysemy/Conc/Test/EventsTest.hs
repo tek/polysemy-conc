@@ -1,6 +1,5 @@
 module Polysemy.Conc.Test.EventsTest where
 
-import Control.Concurrent.Chan.Unagi.Bounded (OutChan)
 import Polysemy.Test (UnitTest, assertJust, runTestAuto)
 
 import qualified Polysemy.Conc.Effect.Events as Events
@@ -19,22 +18,22 @@ test_events =
   interpretEventsChan @Int $
   interpretEventsChan @Text do
     thread1 <- async do
-      Events.subscribe @Int @(OutChan Int) do
+      Events.subscribe @Int do
         Sync.putBlock (Proxy @1)
         Events.consume @Int
     thread2 <- async do
-      Events.subscribe @Int @(OutChan Int) do
+      Events.subscribe @Int do
         Sync.putBlock (Proxy @2)
         Events.consume @Int
     thread3 <- async do
-      Events.subscribe @Text @(OutChan Text) do
+      Events.subscribe @Text do
         Sync.putBlock (Proxy @3)
         Events.consume @Text
     Sync.takeBlock @(Proxy 1)
     Sync.takeBlock @(Proxy 2)
     Sync.takeBlock @(Proxy 3)
-    Events.publish @Text @(OutChan Text) "test"
-    Events.publish @Int @(OutChan Int) 1
+    Events.publish @Text "test"
+    Events.publish @Int 1
     num1 <- await thread1
     num2 <- await thread2
     text1 <- await thread3

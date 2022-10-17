@@ -8,7 +8,7 @@ import Test.Tasty (TestTree, testGroup)
 
 import qualified Polysemy.Conc.Effect.Lock as Lock
 import Polysemy.Conc.Effect.Lock (Lock)
-import Polysemy.Conc.Effect.Mask (Mask, Restoration)
+import Polysemy.Conc.Effect.Mask (Mask)
 import Polysemy.Conc.Effect.Race (Race)
 import qualified Polysemy.Conc.Effect.Sync as Sync
 import Polysemy.Conc.Interpreter.Lock (interpretLockReentrant)
@@ -19,7 +19,7 @@ import Polysemy.Conc.Race (timeout_)
 
 interpretLockTest ::
   Members [Resource, Embed IO, Final IO] r =>
-  InterpretersFor [Lock, Mask Restoration, Race, Async, GhcTime] r
+  InterpretersFor [Lock, Mask, Race, Async, GhcTime] r
 interpretLockTest =
   interpretTimeGhc .
   asyncToIOFinal .

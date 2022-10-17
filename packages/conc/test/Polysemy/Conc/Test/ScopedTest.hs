@@ -7,7 +7,7 @@ import Polysemy.Resume (Stop, stop, (!!))
 import Polysemy.Test (UnitTest, runTestAuto, unitTest, (===))
 import Test.Tasty (TestTree, testGroup)
 
-import Polysemy.Conc.Effect.Scoped (scoped, rescope)
+import Polysemy.Conc.Effect.Scoped (rescope, scoped)
 import Polysemy.Conc.Interpreter.Scoped (interpretScoped, interpretScopedH', interpretScopedResumableWithH, interpretScopedWithH)
 
 newtype Par =
@@ -60,9 +60,9 @@ scope (Par n) use = do
 test_scopedWith :: UnitTest
 test_scopedWith =
   runTestAuto $ interpretScopedWithH @'[F] @_ @_ @E scope handleE do
-    (i1, i2) <- scoped @_ @_ @E 20 do
+    (i1, i2) <- scoped @_ @E 20 do
       i1 <- e1
-      i2 <- scoped @_ @_ @E 23 e1
+      i2 <- scoped @_ @E 23 e1
       pure (i1, i2)
     35 === i1
     38 === i2
@@ -123,9 +123,9 @@ handleH tv = \case
 test_scopedH :: UnitTest
 test_scopedH =
   runTestAuto $ interpretScopedH' scopeH handleH do
-    r <- scoped @_ @_ @E 100 do
+    r <- scoped @_ @E 100 do
       i1 <- e1
-      i2 <- scoped @_ @_ @E 200 e1
+      i2 <- scoped @_ @E 200 e1
       i3 <- e1
       pure (i1, i2, i3)
     (101, 201, 102) === r
@@ -148,7 +148,7 @@ scopeR1 :: RPar -> (RRes -> Sem r a) -> Sem r a
 scopeR1 (RPar d b) use =
   use (RRes (d * 2) (if b then 1 else 2))
 
-handleR1 :: RRes -> E (Sem r0) x -> Sem r x
+handleR1 :: RRes -> E m x -> Sem r x
 handleR1 (RRes d i) = \case
   E1 -> pure (i + floor (d * 3))
   E2 -> pure (i + floor (d * 4))
@@ -161,7 +161,7 @@ test_rescope :: UnitTest
 test_rescope =
   runTestAuto $ interpretScoped scopeR1 handleR1 do
     r <- rescope rescopeP do
-      scoped @_ @_ @E 100 do
+      scoped @_ @E 100 do
         e1
     602 === r
 

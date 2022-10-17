@@ -48,7 +48,7 @@ message =
 test_process :: UnitTest
 test_process =
   runTestAuto $ interpretRace $ asyncToIOFinal $ interpretProcessByteString $ interpretProcessNative_ def config do
-    response <- resumeHoistError @ProcessError @(Scoped _ _ _) show do
+    response <- resumeHoistError @ProcessError @(Scoped _ _) show do
       withProcess_ do
         Process.send (encodeUtf8 message)
         Race.timeout_ (throw "timed out") (Seconds 5) Process.recv
@@ -57,7 +57,7 @@ test_process =
 test_processLines :: UnitTest
 test_processLines =
   runTestAuto $ interpretRace $ asyncToIOFinal $ interpretProcessTextLines $ interpretProcessNative_ def config do
-    response <- resumeHoistError @ProcessError @(Scoped _ _ _) show do
+    response <- resumeHoistError @ProcessError @(Scoped _ _) show do
       withProcess_ do
         Process.send message
         Race.timeout_ (throw "timed out") (Seconds 5) (replicateM 4 Process.recv)
@@ -66,7 +66,7 @@ test_processLines =
 test_processKillNever :: UnitTest
 test_processKillNever =
   runTestAuto $ interpretRace $ asyncToIOFinal $ interpretProcessTextLines $ interpretProcessNative_ def { kill = KillNever } config do
-    result <- resumeHoistError @ProcessError @(Scoped _ _ _) show do
+    result <- resumeHoistError @ProcessError @(Scoped _ _) show do
       Conc.timeout unit (MilliSeconds 100) do
         withProcess_ do
           Process.send message
@@ -100,7 +100,7 @@ test_processIncremental =
 interpretOneshot ::
   Members [Error TestError, Resource, Race, Async, Embed IO] r =>
   (Text -> SysProcConf) ->
-  InterpretersFor (Scoped Text () (Process Text Text !! ProcessError) : ProcessIO Text Text) r
+  InterpretersFor (Scoped Text (Process Text Text !! ProcessError) : ProcessIO Text Text) r
 interpretOneshot conf =
   interpretProcessTextLines .
   interpretProcessOneshotNative def (pure . Right . conf) .
@@ -123,7 +123,7 @@ test_processOneshot =
 test_exit :: UnitTest
 test_exit =
   runTestAuto $ interpretRace $ asyncToIOFinal $ interpretProcessByteString $ interpretProcessNative_ def conf do
-    response <- resuming @_ @(Scoped _ _ _) (pure . Just) $ withProcess_ do
+    response <- resuming @_ @(Scoped _ _) (pure . Just) $ withProcess_ do
       Race.timeout_ (throw (TestError "timed out")) (Seconds 5) do
         void Process.recv
         void Process.recv

@@ -46,11 +46,11 @@ whileEmptyInterval interval action =
 --
 -- This avoids a dependency on @'Embed' 'IO'@ in application logic while still allowing the variable to be scoped.
 withSync ::
-  ∀ d res r .
-  Member (ScopedSync res d) r =>
+  ∀ d r .
+  Member (ScopedSync d) r =>
   InterpreterFor (Sync d) r
 withSync =
-  scoped_ @(SyncResources res)
+  scoped_
 
 -- |Run the action @ma@ with an exclusive lock (mutex).
 -- When multiple threads call the action concurrently, only one is allowed to execute it at a time.
@@ -81,12 +81,12 @@ clear =
 -- Allows a value to be returned.
 -- Equivalent to 'Control.Concurrent.MVar.modifyMVar'.
 modify ::
-  ∀ a b res r .
-  Members [Sync a, Mask res, Resource] r =>
+  ∀ a b r .
+  Members [Sync a, Mask, Resource] r =>
   (a -> Sem r (a, b)) ->
   Sem r b
 modify m =
-  mask @res do
+  mask do
     a <- takeBlock
     (a', b) <- onException (restore (raise (m a))) (putBlock a)
     b <$ putBlock a'
@@ -96,12 +96,12 @@ modify m =
 -- Does not allow a value to be returned.
 -- Equivalent to 'Control.Concurrent.MVar.modifyMVar_'.
 modify_ ::
-  ∀ a res r .
-  Members [Sync a, Mask res, Resource] r =>
+  ∀ a r .
+  Members [Sync a, Mask, Resource] r =>
   (a -> Sem r a) ->
   Sem r ()
 modify_ m =
-  mask @res do
+  mask do
     a <- takeBlock
     a' <- onException (restore (raise (m a))) (putBlock a)
     putBlock a'
@@ -111,12 +111,12 @@ modify_ m =
 -- Allows a value to be returned.
 -- Equivalent to 'Control.Concurrent.MVar.modifyMVarMasked'.
 modifyMasked ::
-  ∀ a b res r .
-  Members [Sync a, Mask res, Resource] r =>
+  ∀ a b r .
+  Members [Sync a, Mask, Resource] r =>
   (a -> Sem r (a, b)) ->
   Sem r b
 modifyMasked m =
-  mask @res do
+  mask do
     a <- takeBlock
     (a', b) <- onException (raise (m a)) (putBlock a)
     b <$ putBlock a'
@@ -126,12 +126,12 @@ modifyMasked m =
 -- Does not allow a value to be returned.
 -- Equivalent to 'Control.Concurrent.MVar.modifyMVarMasked_'.
 modifyMasked_ ::
-  ∀ a res r .
-  Members [Sync a, Mask res, Resource] r =>
+  ∀ a r .
+  Members [Sync a, Mask, Resource] r =>
   (a -> Sem r a) ->
   Sem r ()
 modifyMasked_ m =
-  mask @res do
+  mask do
     a <- takeBlock
     a' <- onException (raise (m a)) (putBlock a)
     putBlock a'
@@ -141,12 +141,12 @@ modifyMasked_ m =
 -- but not the action.
 -- Equivalent to 'Control.Concurrent.MVar.withMVar'.
 use ::
-  ∀ a b res r .
-  Members [Sync a, Mask res, Resource] r =>
+  ∀ a b r .
+  Members [Sync a, Mask, Resource] r =>
   (a -> Sem r b) ->
   Sem r b
 use m =
-  mask @res do
+  mask do
     a <- takeBlock
     finally (restore (raise (m a))) (putBlock a)
 {-# inline use #-}
@@ -154,12 +154,12 @@ use m =
 -- |Run an action with the current value of the 'Sync' variable with async exceptions masked for the entire procedure.
 -- Equivalent to 'Control.Concurrent.MVar.withMVarMasked'.
 useMasked ::
-  ∀ a b res r .
-  Members [Sync a, Mask res, Resource] r =>
+  ∀ a b r .
+  Members [Sync a, Mask, Resource] r =>
   (a -> Sem r b) ->
   Sem r b
 useMasked m =
-  mask @res do
+  mask do
     a <- takeBlock
     finally (raise (m a)) (putBlock a)
 {-# inline useMasked #-}

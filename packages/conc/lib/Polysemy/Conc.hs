@@ -56,7 +56,6 @@ module Polysemy.Conc (
   -- * Gate
   Gate,
   Gates,
-  GatesIO,
 
   -- ** Interpreters
   interpretGates,
@@ -111,11 +110,7 @@ module Polysemy.Conc (
   consumeFind,
   consumeFirstJust,
   consumeElem,
-  EventResource,
-  EventChan,
-  ChanEvents,
   EventConsumer,
-  ChanConsumer,
 
   -- ** Interpreters
   interpretEventsChan,
@@ -134,8 +129,6 @@ module Polysemy.Conc (
   uninterruptibleMask,
   restore,
   Restoration,
-  MaskIO,
-  UninterruptibleMaskIO,
 
   -- * Interpreters
   interpretMaskFinal,
@@ -153,15 +146,16 @@ module Polysemy.Conc (
   -- ** Interpreters
   interpretScoped,
   interpretScopedH,
+  interpretScopedH',
   interpretScopedAs,
+  interpretScopedWith,
+  interpretScopedWithH,
+  interpretScopedWith_,
   runScoped,
   runScopedAs,
   interpretScopedResumable,
   interpretScopedResumableH,
   interpretScopedResumable_,
-  interpretScopedWith,
-  interpretScopedWithH,
-  interpretScopedWith_,
   interpretScopedResumableWith,
   interpretScopedResumableWithH,
   interpretScopedResumableWith_,
@@ -185,7 +179,6 @@ module Polysemy.Conc (
   restart,
   Restart,
   RestartingMonitor,
-  MonitorResource (MonitorResource),
   ScopedMonitor,
 
   -- ** Interpreters
@@ -220,23 +213,20 @@ import Polysemy.Conc.Async (
 import Polysemy.Conc.AtomicState (interpretAtomic)
 import Polysemy.Conc.Data.QueueResult (QueueResult)
 import Polysemy.Conc.Effect.Critical (Critical)
-import Polysemy.Conc.Effect.Events (Consume, EventResource, Events, consume, publish, subscribe)
-import Polysemy.Conc.Effect.Gate (Gate, Gates, GatesIO)
+import Polysemy.Conc.Effect.Events (Consume, Events, consume, publish, subscribe)
+import Polysemy.Conc.Effect.Gate (Gate, Gates)
 import Polysemy.Conc.Effect.Interrupt (Interrupt)
 import Polysemy.Conc.Effect.Lock (Lock, lock, lockOr, lockOrSkip, lockOrSkip_)
 import Polysemy.Conc.Effect.Mask (
   Mask,
-  MaskIO,
   Restoration,
   UninterruptibleMask,
-  UninterruptibleMaskIO,
   mask,
   restore,
   uninterruptibleMask,
   )
 import Polysemy.Conc.Effect.Monitor (
   Monitor,
-  MonitorResource (MonitorResource),
   Restart,
   RestartingMonitor,
   ScopedMonitor,
@@ -269,7 +259,7 @@ import Polysemy.Conc.Events (
   subscribeWhileGated,
   )
 import Polysemy.Conc.Interpreter.Critical (interpretCritical, interpretCriticalNull)
-import Polysemy.Conc.Interpreter.Events (ChanConsumer, ChanEvents, EventChan, EventConsumer, interpretEventsChan)
+import Polysemy.Conc.Interpreter.Events (EventConsumer, interpretEventsChan)
 import Polysemy.Conc.Interpreter.Gate (interpretGate, interpretGates)
 import Polysemy.Conc.Interpreter.Interrupt (interpretInterrupt, interpretInterruptNull, interpretInterruptOnce)
 import Polysemy.Conc.Interpreter.Lock (interpretLockPermissive, interpretLockReentrant)
@@ -310,7 +300,7 @@ import Polysemy.Conc.Interpreter.Scoped (
   interpretScopedWithH,
   interpretScopedWith_,
   runScoped,
-  runScopedAs,
+  runScopedAs, interpretScopedH',
   )
 import Polysemy.Conc.Interpreter.Semaphore (interpretSemaphoreQ, interpretSemaphoreT)
 import Polysemy.Conc.Interpreter.Stack (ConcStack, runConc)
@@ -365,7 +355,7 @@ import Polysemy.Conc.Sync (withSync)
 -- Usage is straightforward:
 --
 -- @
--- prog :: Member (Mask resource) r
+-- prog :: Member Mask r
 -- prog =
 --  mask do
 --    doMaskedThing

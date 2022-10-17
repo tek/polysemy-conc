@@ -172,7 +172,7 @@ interpretSystemProcessNative ::
   ∀ param r .
   Members [Resource, Embed IO] r =>
   (param -> Sem r (Either Text SysProcConf)) ->
-  InterpreterFor (Scoped param PipesProcess (SystemProcess !! SystemProcessError) !! SystemProcessScopeError) r
+  InterpreterFor (Scoped param (SystemProcess !! SystemProcessError) !! SystemProcessScopeError) r
 interpretSystemProcessNative config =
   interpretScopedR (\ p u -> raise (config p) >>= withProcConf u) handleSystemProcessWithProcess
 
@@ -183,7 +183,7 @@ interpretSystemProcessNative_ ::
   ∀ r .
   Members [Resource, Embed IO] r =>
   SysProcConf ->
-  InterpreterFor (Scoped_ PipesProcess (SystemProcess !! SystemProcessError) !! SystemProcessScopeError) r
+  InterpreterFor (Scoped_ (SystemProcess !! SystemProcessError) !! SystemProcessScopeError) r
 interpretSystemProcessNative_ config =
   interpretScopedR (const (withProcess config)) handleSystemProcessWithProcess
 
@@ -225,6 +225,6 @@ interpretSystemProcessNativeOpaque ::
   ∀ i o e r .
   Members [Resource, Embed IO] r =>
   ProcessConfig i o e ->
-  InterpreterFor (Scoped_ (Process i o e) (SystemProcess !! SystemProcessError)) r
+  InterpreterFor (Scoped_ (SystemProcess !! SystemProcessError)) r
 interpretSystemProcessNativeOpaque config =
   runScoped (const (withProcessOpaque config)) interpretSystemProcessWithProcessOpaque

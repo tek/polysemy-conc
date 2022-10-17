@@ -7,35 +7,23 @@ import Control.Concurrent.Chan.Unagi.Bounded (InChan, OutChan, dupChan, newChan,
 
 import Polysemy.Conc.Async (withAsync_)
 import qualified Polysemy.Conc.Effect.Events as Events
-import Polysemy.Conc.Effect.Events (Consume, EventResource (EventResource), Events)
+import Polysemy.Conc.Effect.Events (Consume, Events)
 import Polysemy.Conc.Effect.Race (Race)
 import Polysemy.Conc.Effect.Scoped (Scoped_)
 import Polysemy.Conc.Interpreter.Scoped (runScopedAs)
 
--- |Convenience alias for the default 'Events' that uses an 'OutChan'.
-type ChanEvents e =
-  Events (OutChan e) e
-
--- |Convenience alias for the default 'EventResource' that uses an 'OutChan'.
-type EventChan e =
-  EventResource (OutChan e)
-
 -- |Convenience alias for the consumer effect.
-type EventConsumer token e =
-  Scoped_ (EventResource token) (Consume e)
-
--- |Convenience alias for the consumer effect using the default implementation.
-type ChanConsumer e =
-  Scoped_ (EventChan e) (Consume e)
+type EventConsumer e =
+  Scoped_ (Consume e)
 
 -- |Interpret 'Consume' by reading from an 'OutChan'.
 -- Used internally by 'interpretEventsChan', not safe to use directly.
 interpretConsumeChan ::
   ∀ e r .
   Member (Embed IO) r =>
-  EventChan e ->
+  OutChan e ->
   InterpreterFor (Consume e) r
-interpretConsumeChan (EventResource chan) =
+interpretConsumeChan chan =
   interpret \case
     Events.Consume ->
       embed (readChan chan)
@@ -47,15 +35,15 @@ interpretEventsInChan ::
   ∀ e r .
   Member (Embed IO) r =>
   InChan e ->
-  InterpreterFor (Events (OutChan e) e) r
+  InterpreterFor (Events e) r
 interpretEventsInChan inChan =
   interpret \case
     Events.Publish e ->
       void (embed (tryWriteChan inChan e))
 
 -- |Interpret 'Events' and 'Consume' together by connecting them to the two ends of an unagi channel.
--- 'Consume' is only interpreted in a 'Scoped' manner, ensuring that a new duplicate of the channel is created so that
--- all consumers see all events (from the moment they are connected).
+-- 'Consume' is only interpreted in a 'Polysemy.Conc.Scoped' manner, ensuring that a new duplicate of the channel is
+-- created so that all consumers see all events (from the moment they are connected).
 --
 -- This should be used in conjunction with 'Polysemy.Conc.subscribe':
 --
@@ -71,8 +59,8 @@ interpretEventsInChan inChan =
 interpretEventsChan ::
   ∀ e r .
   Members [Resource, Race, Async, Embed IO] r =>
-  InterpretersFor [Events (OutChan e) e, ChanConsumer e] r
+  InterpretersFor [Events e, EventConsumer e] r
 interpretEventsChan sem = do
   (inChan, outChan) <- embed (newChan @e 64)
   withAsync_ (forever (embed (readChan outChan))) do
-    runScopedAs (const (EventResource <$> embed (dupChan inChan))) interpretConsumeChan (interpretEventsInChan inChan sem)
+    runScopedAs (const (embed (dupChan inChan))) interpretConsumeChan (interpretEventsInChan inChan sem)

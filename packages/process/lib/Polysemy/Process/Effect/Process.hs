@@ -19,7 +19,7 @@ import Prelude hiding (send)
 -- import Polysemy.Process
 -- import qualified System.Process.Typed as System
 --
--- prog :: Member (Scoped_ resource (Process Text Text !! err)) r => Sem r Text
+-- prog :: Member (Scoped_ (Process Text Text !! err)) r => Sem r Text
 -- prog =
 --  resumeAs "failed" do
 --    withProcess do
@@ -55,46 +55,46 @@ send ::
 -- This variant models daemon processes that are expected to run forever, with 'Polysemy.Resume.Stop' being sent to this
 -- function, if at all.
 withProcess ::
-  ∀ param resource i o r .
-  Member (Scoped param resource (Process i o)) r =>
+  ∀ param i o r .
+  Member (Scoped param (Process i o)) r =>
   param ->
   InterpreterFor (Process i o) r
 withProcess =
-  scoped @param @resource
+  scoped @param
 
 -- |Create a scoped_ resource for 'Process'.
 -- The process configuration may depend on the provided value of type @param@.
 -- This variant models processes that are expected to terminate, with 'Polysemy.Resume.Stop' being sent to individual
 -- actions within the scope.
 withProcessOneshot ::
-  ∀ param resource i o err r .
-  Member (Scoped param resource (Process i o !! err)) r =>
+  ∀ param i o err r .
+  Member (Scoped param (Process i o !! err)) r =>
   param ->
   InterpreterFor (Process i o !! err) r
 withProcessOneshot =
-  scoped @param @resource
+  scoped @param
 
 -- |Create a scoped_ resource for 'Process'.
 -- The process configuration is provided to the interpreter statically.
 -- This variant models daemon processes that are expected to run forever, with 'Polysemy.Resume.Stop' being sent to this
 -- function, if at all.
 withProcess_ ::
-  ∀ resource i o r .
-  Member (Scoped_ resource (Process i o)) r =>
+  ∀ i o r .
+  Member (Scoped_ (Process i o)) r =>
   InterpreterFor (Process i o) r
 withProcess_ =
-  scoped_ @resource
+  scoped_
 
 -- |Create a scoped_ resource for 'Process'.
 -- The process configuration is provided to the interpreter statically.
 -- This variant models processes that are expected to terminate, with 'Polysemy.Resume.Stop' being sent to individual
 -- actions within the scope.
 withProcessOneshot_ ::
-  ∀ resource i o err r .
-  Member (Scoped_ resource (Process i o !! err)) r =>
+  ∀ i o err r .
+  Member (Scoped_ (Process i o !! err)) r =>
   InterpreterFor (Process i o !! err) r
 withProcessOneshot_ =
-  scoped_ @resource
+  scoped_
 
 -- |Convert 'Output' and 'Input' to 'Process' for a daemon process.
 runProcessIO ::
