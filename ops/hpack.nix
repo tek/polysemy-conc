@@ -103,7 +103,6 @@ in {
         "tasty"
         "tasty-hedgehog"
         "time"
-        "unagi-chan"
         "unix"
       ];
     };
