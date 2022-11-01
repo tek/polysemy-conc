@@ -2,7 +2,7 @@
   description = "Polysemy Effects for Concurrency";
 
   inputs = {
-    hix.url = github:tek/hix;
+    hix.url = git+https://git.tryp.io/tek/hix;
     polysemy-time.url = github:tek/polysemy-time;
   };
 
@@ -25,13 +25,13 @@
       polysemy-test = hackage "0.6.0.0" "07pi549ral22sxhja67k5b9v787q0b32ysp0bq9szhwjqgxsab46";
     };
 
-  in hix.lib.flake ({ config, lib, ...}: {
-    base = ./.;
+  in hix.lib.pro ({ config, lib, ...}: {
     packages = {
       polysemy-conc = ./packages/conc;
       polysemy-process = ./packages/process;
     };
     main = "polysemy-process";
+    devGhc.compiler = "ghc902";
     overrides = { inherit all ghc922; };
     deps = [polysemy-time];
     hpack.packages = import ./ops/hpack.nix { inherit config lib; };
