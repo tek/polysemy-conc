@@ -9,7 +9,7 @@
   outputs = { hix, polysemy-time, ... }:
   let
 
-    ghc922 = { hackage, jailbreak, notest, ... }: {
+    ghc924 = { hackage, jailbreak, notest, ... }: {
       polysemy = hackage "1.7.1.0" "0qwli1kx3hk68hqsgw65mk81bx0djw1wlk17v8ggym7mf3lailyc";
       polysemy-plugin = hackage "0.4.3.0" "1r7j1ffsd6z2q2fgpg78brl2gb0dg8r5ywfiwdrsjd2fxkinjcg1";
       type-errors = notest;
@@ -32,7 +32,7 @@
     };
     main = "polysemy-process";
     devGhc.compiler = "ghc902";
-    overrides = { inherit all ghc922; };
+    overrides = { inherit all ghc924; };
     deps = [polysemy-time];
     hpack.packages = import ./ops/hpack.nix { inherit config lib; };
     hackage.versionFile = "ops/version.nix";
