@@ -4,6 +4,7 @@
 module Polysemy.Conc.Effect.SyncRead where
 
 import Polysemy.Time (TimeUnit)
+import Prelude hiding (empty)
 
 -- |An interface to a shared variable ('MVar') that can only be read.
 data SyncRead (d :: Type) :: Effect where
