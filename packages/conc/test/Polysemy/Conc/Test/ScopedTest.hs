@@ -165,7 +165,6 @@ test_rescope =
         e1
     602 === r
 
-
 test_scoped :: TestTree
 test_scoped =
   testGroup "scoped" [
