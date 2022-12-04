@@ -6,7 +6,7 @@ module Polysemy.Conc.Interpreter.Scoped where
 import GHC.Err (errorWithoutStackTrace)
 import Polysemy.Internal (Sem (Sem), hoistSem, liftSem, runSem)
 import Polysemy.Internal.Sing (KnownList (singList))
-import Polysemy.Internal.Tactics (liftT, runTactics)
+import Polysemy.Internal.Tactics (liftT)
 import Polysemy.Internal.Union (
   Union (Union),
   Weaving (Weaving),
@@ -15,9 +15,10 @@ import Polysemy.Internal.Union (
   hoist,
   injWeaving,
   injectMembership,
+  weave,
   )
 import Polysemy.Membership (ElemOf)
-import Polysemy.Resume (Stop, runStop, type (!!))
+import Polysemy.Resume (Stop, interpretResumableH, runStop, type (!!))
 import Polysemy.Resume.Effect.Resumable (Resumable (Resumable))
 
 import Polysemy.Conc.Effect.Scoped (Scoped (InScope, Run))
@@ -38,6 +39,19 @@ restack n =
   hoistSem $ \ (Union pr wav) -> hoist (restack n) (Union (n pr) wav)
 {-# inline restack #-}
 
+exResumable ::
+  Functor f =>
+  f () ->
+  (f (Either err a) -> x) ->
+  (f' a' -> a) ->
+  Sem r (Either err (f (f' a'))) ->
+  Sem r x
+exResumable s ex ex' =
+  fmap $ ex . \case
+    Right a -> Right . ex' <$> a
+    Left err -> Left err <$ s
+{-# inline exResumable #-}
+
 -- | Construct an interpreter for a higher-order effect wrapped in a 'Scoped',
 -- given a resource allocation function and a parameterized handler for the
 -- plain effect.
@@ -56,16 +70,19 @@ interpretScopedH ::
   (∀ r0 x . resource -> effect (Sem r0) x -> Tactical effect (Sem r0) r x) ->
   InterpreterFor (Scoped param effect) r
 interpretScopedH withResource scopedHandler =
-  go (errorWithoutStackTrace "top level run")
+  interpretWeaving $ \(Weaving effect s wv ex _) -> case effect of
+    Run _ -> errorWithoutStackTrace "top level run"
+    InScope param main -> withResource param \ resource ->
+          ex
+      <$> interpretH (scopedHandler resource) (go $ raiseUnder $ wv (main <$ s))
   where
-    go :: resource -> InterpreterFor (Scoped param effect) r
-    go resource =
+    -- TODO investigate whether loopbreaker optimization is effective here
+    go :: InterpreterFor (Scoped param effect) (effect : r)
+    go =
       interpretWeaving \ (Weaving effect s wv ex ins) -> case effect of
-        Run act ->
-          ex <$> runTactics s (raise . go resource . wv) ins (go resource . wv)
-            (scopedHandler resource act)
-        InScope param main ->
-          withResource param \ resource' -> ex <$> go resource' (wv (main <$ s))
+        Run act -> liftSem $ injWeaving $ Weaving act s (go . wv) ex ins
+        InScope param main -> raise $ withResource param \ resource ->
+          ex <$> interpretH (scopedHandler resource) (go $ wv (main <$ s))
 {-# inline interpretScopedH #-}
 
 -- | Variant of 'interpretScopedH' that allows the resource acquisition function
@@ -160,32 +177,33 @@ interpretScopedAs resource =
 -- >       liftT atomicGet
 interpretScopedWithH ::
   ∀ extra resource param effect r r1 .
-  r1 ~ (extra ++ r) =>
   KnownList extra =>
+  r1 ~ (extra ++ r) =>
   (∀ x . param -> (resource -> Sem r1 x) -> Sem r x) ->
   (∀ r0 x . resource -> effect (Sem r0) x -> Tactical effect (Sem r0) r1 x) ->
   InterpreterFor (Scoped param effect) r
 interpretScopedWithH withResource scopedHandler =
   interpretWeaving \case
     Weaving (InScope param main) s wv ex _ ->
-      ex <$> withResource param \ resource -> inScope resource $
-        restack
-          (injectMembership
-           (singList @'[Scoped param effect])
-           (singList @extra)) $ wv (main <$ s)
+      ex <$> withResource param \ resource ->
+        interpretH (scopedHandler resource) $ inScope $
+          restack
+            (injectMembership
+             (singList @'[Scoped param effect])
+             (singList @(effect : extra))) $ wv (main <$ s)
     _ ->
       errorWithoutStackTrace "top level Run"
   where
-    inScope :: resource -> InterpreterFor (Scoped param effect) r1
-    inScope resource =
+    inScope :: InterpreterFor (Scoped param effect) (effect : r1)
+    inScope =
       interpretWeaving \case
         Weaving (InScope param main) s wv ex _ ->
-          restack (extendMembershipLeft (singList @extra))
-            (ex <$> withResource param \resource' ->
-                inScope resource' (wv (main <$ s)))
+          restack
+            (extendMembershipLeft (singList @(effect : extra)))
+            (ex <$> withResource param \resource ->
+                interpretH (scopedHandler resource) $ inScope $ wv (main <$ s))
         Weaving (Run act) s wv ex ins ->
-          ex <$> runTactics s (raise . inScope resource . wv) ins (inScope resource . wv)
-            (scopedHandler resource act)
+          liftSem $ injWeaving $ Weaving act s (inScope . wv) ex ins
 {-# inline interpretScopedWithH #-}
 
 -- | First-order variant of 'interpretScopedWithH'.
@@ -238,46 +256,34 @@ interpretScopedWith_ withResource scopedHandler =
 -- easily rewrite (like from another library). If you have full control over the
 -- implementation, 'interpretScoped' should be preferred.
 --
--- /Note/: The wrapped interpreter will be executed fully, including the
--- initializing code surrounding its handler, for each action in the program, so
--- if the interpreter allocates any resources, they will be scoped to a single
--- action. Move them to @withResource@ instead.
+-- /Note/: In previous versions of Polysemy, the wrapped interpreter was
+-- executed fully, including the initializing code surrounding its handler,
+-- for each action in the program. However, new and continuing discoveries
+-- regarding 'Scoped' has allowed the improvement of having the interpreter be
+-- used only once per use of 'scoped', and have it cover the same scope of
+-- actions that @withResource@ does.
 --
--- For example, consider the following interpreter for
--- 'Polysemy.AtomicState.AtomicState':
---
--- > atomicTVar :: Member (Embed IO) r => a -> InterpreterFor (AtomicState a) r
--- > atomicTVar initial sem = do
--- >   tv <- embed (newTVarIO initial)
--- >   runAtomicStateTVar tv sem
---
--- If this interpreter were used for a scoped version of @AtomicState@ like
--- this:
---
--- > runScoped (\ initial use -> use initial) \ initial -> atomicTVar initial
---
--- Then the @TVar@ would be created every time an @AtomicState@ action is run,
--- not just when entering the scope.
---
--- The proper way to implement this would be to rewrite the resource allocation:
---
--- > runScoped (\ initial use -> use =<< embed (newTVarIO initial)) runAtomicStateTVar
+-- This renders @withResource@ practically redundant; for the moment, the API
+-- surrounding 'Scoped' remains the same, but work is in progress to revamp the
+-- entire API of 'Scoped'.
 runScoped ::
   ∀ resource param effect r .
   (∀ x . param -> (resource -> Sem r x) -> Sem r x) ->
   (resource -> InterpreterFor effect r) ->
   InterpreterFor (Scoped param effect) r
 runScoped withResource scopedInterpreter =
-  go (errorWithoutStackTrace "top level run")
+  interpretWeaving \(Weaving effect s wv ex _) -> case effect of
+    Run _ -> errorWithoutStackTrace "top level run"
+    InScope param main -> withResource param \ resource ->
+      ex <$> scopedInterpreter resource (go (raiseUnder $ wv (main <$ s)))
   where
-    go :: resource -> InterpreterFor (Scoped param effect) r
-    go resource =
+    go :: InterpreterFor (Scoped param effect) (effect : r)
+    go =
       interpretWeaving \ (Weaving effect s wv ex ins) -> case effect of
-        Run act ->
-          scopedInterpreter resource
-            $ liftSem $ injWeaving $ Weaving act s (raise . go resource . wv) ex ins
+        Run act -> liftSem $ injWeaving $ Weaving act s (go . wv) ex ins
         InScope param main ->
-          withResource param \ resource' -> ex <$> go resource' (wv (main <$ s))
+          raise $ withResource param \ resource ->
+            ex <$> scopedInterpreter resource (go (wv (main <$ s)))
 {-# inline runScoped #-}
 
 -- | Variant of 'runScoped' in which the resource allocator returns the resource
@@ -299,30 +305,21 @@ interpretScopedResumableH ::
   (∀ r0 x . resource -> effect (Sem r0) x -> Tactical effect (Sem r0) (Stop err : r) x) ->
   InterpreterFor (Scoped param effect !! err) r
 interpretScopedResumableH withResource scopedHandler =
-  run (errorWithoutStackTrace "top level run")
+  interpretWeaving \case
+    Weaving (Resumable (Weaving (InScope param main) s' wv' ex' _)) s wv ex _ -> do
+      exResumable s ex ex' $ runStop $ withResource param \ resource ->
+        interpretH (scopedHandler resource) (raiseUnder (go $ raiseUnder $ wv ((wv' (main <$ s')) <$ s)))
+    _ ->
+      errorWithoutStackTrace "top level run"
   where
-    run :: resource -> InterpreterFor (Scoped param effect !! err) r
-    run resource =
-      interpretWeaving \ (Weaving (Resumable inner) s' dist' ex' ins') ->
-        case inner of
-          Weaving effect s dist ex ins -> do
-            let
-              handleScoped = \case
-                Run act ->
-                  scopedHandler resource act
-                InScope param main ->
-                  raise (withResource param \ resource' -> Compose <$> raise (run resource' (dist' (dist (main <$ s) <$ s'))))
-              tac =
-                runTactics
-                (Compose (s <$ s'))
-                (raise . raise . run resource . fmap Compose . dist' . fmap dist . getCompose)
-                (ins <=< ins' . getCompose)
-                (raise . run resource . fmap Compose . dist' . fmap dist . getCompose)
-                (handleScoped effect)
-              exFinal = ex' . \case
-                Right (Compose a) -> Right . ex <$> a
-                Left err -> Left err <$ s'
-            exFinal <$> runStop tac
+    go :: InterpreterFor (Scoped param effect !! err) (effect : r)
+    go =
+      interpretWeaving \ (Weaving (Resumable (Weaving effect s' wv' ex' ins')) s wv ex ins) -> case effect of
+        Run act ->
+          ex . fmap Right <$> liftSem (weave s (go . wv) ins (injWeaving (Weaving act s' wv' ex' ins')))
+        InScope param main -> do
+          exResumable s ex ex' $ raise $ runStop $ withResource param \ resource ->
+            interpretH (scopedHandler resource) (raiseUnder (go $ wv (wv' (main <$ s') <$ s)))
 
 -- |Combined interpreter for 'Scoped' and 'Resumable'.
 -- This allows 'Stop' to be sent from within the resource allocator so that the consumer receives it, terminating the
@@ -352,63 +349,35 @@ interpretScopedResumable_ resource =
 -- This allows 'Stop' to be sent from within the resource allocator so that the consumer receives it, terminating the
 -- entire scope.
 interpretScopedResumableWithH ::
-  ∀ extra param resource effect err r r1 .
-  r1 ~ (extra ++ (Stop err : r)) =>
-  r1 ~ ((extra ++ '[Stop err]) ++ r) =>
-  KnownList extra =>
+  ∀ extra param resource effect err r r1 extraerr .
+  extraerr ~ (extra ++ '[Stop err]) =>
+  r1 ~ (extraerr ++ r) =>
   KnownList (extra ++ '[Stop err]) =>
   (∀ x . param -> (resource -> Sem r1 x) -> Sem (Stop err : r) x) ->
   (∀ r0 x . resource -> effect (Sem r0) x -> Tactical effect (Sem r0) r1 x) ->
   InterpreterFor (Scoped param effect !! err) r
 interpretScopedResumableWithH withResource scopedHandler =
-  run (errorWithoutStackTrace "top level run")
+  interpretWeaving \case
+    Weaving (Resumable (Weaving (InScope param main) s' wv' ex' _)) s wv ex _ -> do
+      exResumable s ex ex' $ runStop $ withResource param \ resource ->
+        interpretH (scopedHandler resource) $ inScope $
+          restack
+            (injectMembership
+             (singList @'[Scoped param effect !! err])
+             (singList @(effect : extraerr))) $ wv (wv' (main <$ s') <$ s)
+    _ ->
+      errorWithoutStackTrace "top level Run"
   where
-    run :: resource -> InterpreterFor (Scoped param effect !! err) r
-    run resource =
-      interpretWeaving \ (Weaving (Resumable inner) s' dist' ex' ins') ->
-        case inner of
-          Weaving effect s dist ex ins -> do
-            let
-              handleScoped = \case
-                Run _ ->
-                  error "top level Run"
-                InScope param main ->
-                  raise $ withResource param \ resource' ->
-                    Compose <$> inScope resource' (restack (injectMembership (singList @'[Scoped param effect !! err]) (singList @(extra ++ '[Stop err]))) (dist' (dist (main <$ s) <$ s')))
-              tac =
-                runTactics
-                (Compose (s <$ s'))
-                (raise . raise . run resource . fmap Compose . dist' . fmap dist . getCompose)
-                (ins <=< ins' . getCompose)
-                (raise . run resource . fmap Compose . dist' . fmap dist . getCompose)
-                (handleScoped effect)
-              exFinal = ex' . \case
-                Right (Compose a) -> Right . ex <$> a
-                Left err -> Left err <$ s'
-            exFinal <$> runStop tac
-    inScope :: resource -> InterpreterFor (Scoped param effect !! err) r1
-    inScope resource =
-      interpretWeaving \ (Weaving (Resumable inner) s' dist' ex' ins') ->
-        case inner of
-          Weaving effect s dist ex ins -> do
-            let
-              handleScoped = \case
-                Run act ->
-                  scopedHandler resource act
-                InScope param main ->
-                  raise $ restack (extendMembershipLeft (singList @extra)) $ withResource param \ resource' ->
-                    Compose <$> inScope resource' (dist' (dist (main <$ s) <$ s'))
-              tac =
-                runTactics
-                (Compose (s <$ s'))
-                (raise . inScope resource . fmap Compose . dist' . fmap dist . getCompose)
-                (ins <=< ins' . getCompose)
-                (inScope resource . fmap Compose . dist' . fmap dist . getCompose)
-                (handleScoped effect)
-              exFinal = ex' . \case
-                Right (Compose a) -> Right . ex <$> a
-                Left err -> Left err <$ s'
-            exFinal <$> runStop (raise tac)
+    inScope :: InterpreterFor (Scoped param effect !! err) (effect : r1)
+    inScope =
+      interpretWeaving \ (Weaving (Resumable (Weaving effect s' wv' ex' ins')) s wv ex ins) -> case effect of
+        InScope param main ->
+          restack
+            (extendMembershipLeft (singList @(effect : extraerr))) $
+            exResumable s ex ex' $ runStop $ withResource param \ resource ->
+              interpretH (scopedHandler resource) (inScope $ wv (wv' (main <$ s') <$ s))
+        Run act ->
+          ex . fmap Right <$> liftSem (weave s (inScope . wv) ins (injWeaving (Weaving act s' wv' ex' ins')))
 
 -- |Combined interpreter for 'Scoped' and 'Resumable' that allows the handler to use additional effects that are
 -- interpreted by the resource allocator.
@@ -416,9 +385,7 @@ interpretScopedResumableWithH withResource scopedHandler =
 -- entire scope.
 interpretScopedResumableWith ::
   ∀ extra param resource effect err r r1 .
-  r1 ~ (extra ++ (Stop err : r)) =>
   r1 ~ ((extra ++ '[Stop err]) ++ r) =>
-  KnownList extra =>
   KnownList (extra ++ '[Stop err]) =>
   (∀ x . param -> (resource -> Sem r1 x) -> Sem (Stop err : r) x) ->
   (∀ r0 x . resource -> effect (Sem r0) x -> Sem r1 x) ->
@@ -433,9 +400,7 @@ interpretScopedResumableWith withResource scopedHandler =
 -- In this variant, no resource is used and the allocator is a plain interpreter.
 interpretScopedResumableWith_ ::
   ∀ extra param effect err r r1 .
-  r1 ~ (extra ++ (Stop err : r)) =>
   r1 ~ ((extra ++ '[Stop err]) ++ r) =>
-  KnownList extra =>
   KnownList (extra ++ '[Stop err]) =>
   (∀ x . param -> Sem r1 x -> Sem (Stop err : r) x) ->
   (∀ r0 x . effect (Sem r0) x -> Sem r1 x) ->
@@ -449,28 +414,20 @@ interpretScopedResumableWith_ extra scopedHandler =
 interpretResumableScopedH ::
   ∀ param resource effect err r .
   (∀ x . param -> (resource -> Sem r x) -> Sem r x) ->
-  (∀ r0 x . resource -> effect (Sem r0) x -> Tactical effect (Sem r0) (Stop err : r) x) ->
+  (∀ r0 x . resource -> effect (Sem r0) x -> Tactical (effect !! err) (Sem r0) (Stop err : r) x) ->
   InterpreterFor (Scoped param (effect !! err)) r
 interpretResumableScopedH withResource scopedHandler =
-  run (errorWithoutStackTrace "top level run")
+  interpretWeaving $ \(Weaving effect s wv ex _) -> case effect of
+    Run _ -> errorWithoutStackTrace "top level run"
+    InScope param main -> withResource param \ resource ->
+      ex <$> interpretResumableH (scopedHandler resource) (inScope $ raiseUnder $ wv (main <$ s))
   where
-    run :: resource -> InterpreterFor (Scoped param (effect !! err)) r
-    run resource =
-      interpretWeaving \ (Weaving inner s' dist' ex' ins') -> case inner of
-        Run (Resumable (Weaving effect s dist ex ins)) ->
-          exFinal <$> runStop (tac (scopedHandler resource effect))
-          where
-            tac =
-              runTactics
-              (Compose (s <$ s'))
-              (raise . raise . run resource . fmap Compose . dist' . fmap dist . getCompose)
-              (ins <=< ins' . getCompose)
-              (raise . run resource . fmap Compose . dist' . fmap dist . getCompose)
-            exFinal = ex' . \case
-              Right (Compose a) -> Right . ex <$> a
-              Left err -> Left err <$ s'
-        InScope param main ->
-          ex' <$> withResource param \ resource' -> run resource' (dist' (main <$ s'))
+    inScope :: InterpreterFor (Scoped param (effect !! err)) (effect !! err : r)
+    inScope =
+      interpretWeaving \ (Weaving effect s wv ex ins) -> case effect of
+        Run act -> liftSem $ injWeaving $ Weaving act s (inScope . wv) ex ins
+        InScope param main -> raise $ withResource param \ resource ->
+          ex <$> interpretResumableH (scopedHandler resource) (inScope $ wv (main <$ s))
 
 -- |Combined interpreter for 'Resumable' and 'Scoped'.
 -- In this variant, only the handler may send 'Stop', but this allows resumption to happen on each action inside of the
@@ -504,32 +461,30 @@ interpretResumableScopedWithH ::
   r1 ~ (extra ++ r) =>
   KnownList extra =>
   (∀ x . param -> (resource -> Sem r1 x) -> Sem r x) ->
-  (∀ r0 x . resource -> effect (Sem r0) x -> Tactical effect (Sem r0) (Stop err : r1) x) ->
+  (∀ r0 x . resource -> effect (Sem r0) x -> Tactical (effect !! err) (Sem r0) (Stop err : r1) x) ->
   InterpreterFor (Scoped param (effect !! err)) r
 interpretResumableScopedWithH withResource scopedHandler =
   interpretWeaving \case
-    Weaving (InScope param main) s dist ex _ ->
-      ex <$> withResource param \ resource' -> inScope resource' (restack (injectMembership (singList @'[Scoped param (effect !! err)]) (singList @extra)) (dist (main <$ s)))
+    Weaving (InScope param main) s wv ex _ ->
+      ex <$> withResource param \ resource ->
+        interpretResumableH (scopedHandler resource) $ inScope $
+          restack
+            (injectMembership
+             (singList @'[Scoped param (effect !! err)])
+             (singList @(effect !! err : extra))) $ wv (main <$ s)
     _ ->
-      errorWithoutStackTrace "top level run"
+      errorWithoutStackTrace "top level Run"
   where
-    inScope :: resource -> InterpreterFor (Scoped param (effect !! err)) r1
-    inScope resource =
+    inScope :: InterpreterFor (Scoped param (effect !! err)) (effect !! err : r1)
+    inScope =
       interpretWeaving \case
-        Weaving (Run (Resumable (Weaving effect s dist ex ins))) s' dist' ex' ins' ->
-          exFinal <$> runStop (tac (scopedHandler resource effect))
-          where
-            tac =
-              runTactics
-              (Compose (s <$ s'))
-              (raise . raise . inScope resource . fmap Compose . dist' . fmap dist . getCompose)
-              (ins <=< ins' . getCompose)
-              (raise . inScope resource . fmap Compose . dist' . fmap dist . getCompose)
-            exFinal = ex' . \case
-              Right (Compose a) -> Right . ex <$> a
-              Left err -> Left err <$ s'
         Weaving (InScope param main) s wv ex _ ->
-          restack (extendMembershipLeft (singList @extra)) (ex <$> withResource param \ resource' -> inScope resource' (wv (main <$ s)))
+          restack
+            (extendMembershipLeft (singList @(effect !! err : extra)))
+            (ex <$> withResource param \resource ->
+                interpretResumableH (scopedHandler resource) $ inScope $ wv (main <$ s))
+        Weaving (Run act) s wv ex ins ->
+          liftSem $ injWeaving $ Weaving act s (inScope . wv) ex ins
 
 -- |Combined interpreter for 'Resumable' and 'Scoped' that allows the handler to use additional effects that are
 -- interpreted by the resource allocator.
@@ -567,44 +522,24 @@ interpretResumableScopedWith_ extra scopedHandler =
 interpretScopedRH ::
   ∀ param resource effect eo ei r .
   (∀ x . param -> (resource -> Sem (Stop eo : r) x) -> Sem (Stop eo : r) x) ->
-  (∀ r0 x . resource -> effect (Sem r0) x -> Tactical effect (Sem r0) (Stop ei : r) x) ->
+  (∀ r0 x . resource -> effect (Sem r0) x -> Tactical (effect !! ei) (Sem r0) (Stop ei : Stop eo : r) x) ->
   InterpreterFor (Scoped param (effect !! ei) !! eo) r
 interpretScopedRH withResource scopedHandler =
-  run (errorWithoutStackTrace "top level run")
+  interpretWeaving \case
+    Weaving (Resumable (Weaving (InScope param main) s' wv' ex' _)) s wv ex _ -> do
+      exResumable s ex ex' $ runStop $ withResource param \ resource ->
+        interpretResumableH (scopedHandler resource) (raiseUnder (inScope $ raiseUnder $ wv (wv' (main <$ s') <$ s)))
+    _ ->
+      errorWithoutStackTrace "top level run"
   where
-    run :: resource -> InterpreterFor (Scoped param (effect !! ei) !! eo) r
-    run resource =
-      interpretWeaving \ (Weaving (Resumable (Weaving inner s' dist' ex' ins')) s'' dist'' ex'' ins'') -> case inner of
-        Run (Resumable (Weaving effect s dist ex ins)) ->
-          exFinal <$> runStop @ei (tac (scopedHandler resource effect))
-          where
-            tac =
-              runTactics
-              (Compose (Compose (s <$ s') <$ s''))
-              (raise . raise . run resource . fmap Compose . fmap (fmap Compose) . dist'' . fmap dist' . fmap (fmap dist . getCompose) . getCompose)
-              (ins <=< ins' . getCompose <=< ins'' . getCompose)
-              (raise . run resource . fmap Compose . fmap (fmap Compose) . dist'' . fmap dist' . fmap (fmap dist . getCompose) . getCompose)
-            exFinal = \case
-              Right (Compose fffa) ->
-                ex'' $ fffa <&> Right . \ (Compose ffa) ->
-                  ex' (Right . ex <$> ffa)
-              Left err ->
-                ex'' (Right (ex' (Left err <$ s')) <$ s'')
+    inScope :: InterpreterFor (Scoped param (effect !! ei) !! eo) (effect !! ei : r)
+    inScope =
+      interpretWeaving \ (Weaving (Resumable (Weaving effect s' wv' ex' ins')) s wv ex ins) -> case effect of
+        Run act ->
+          ex . fmap Right <$> liftSem (weave s (inScope . wv) ins (injWeaving (Weaving act s' wv' ex' ins')))
         InScope param main -> do
-          let
-            inScope =
-                raise (withResource param \ resource' -> Compose <$> raise (run resource' (dist'' (dist' (main <$ s') <$ s''))))
-            tac =
-              runTactics
-              (Compose (s' <$ s''))
-              (raise . raise . run resource . fmap Compose . dist'' . fmap dist' . getCompose)
-              (ins' <=< ins'' . getCompose)
-              (raise . run resource . fmap Compose . dist'' . fmap dist' . getCompose)
-              inScope
-            exFinal = ex'' . \case
-              Right (Compose a) -> Right . ex' <$> a
-              Left err -> Left err <$ s''
-          exFinal <$> runStop tac
+          exResumable s ex ex' $ raise $ runStop $ withResource param \ resource ->
+            interpretResumableH (scopedHandler resource) (raiseUnder (inScope $ wv (wv' (main <$ s') <$ s)))
 
 -- |Combined interpreter for 'Scoped' and 'Resumable'.
 -- In this variant, both the handler and the scope may send different errors via 'Stop', encoding the concept that the
@@ -613,7 +548,7 @@ interpretScopedRH withResource scopedHandler =
 interpretScopedR ::
   ∀ param resource effect eo ei r .
   (∀ x . param -> (resource -> Sem (Stop eo : r) x) -> Sem (Stop eo : r) x) ->
-  (∀ r0 x . resource -> effect (Sem r0) x -> Sem (Stop ei : r) x) ->
+  (∀ r0 x . resource -> effect (Sem r0) x -> Sem (Stop ei : Stop eo : r) x) ->
   InterpreterFor (Scoped param (effect !! ei) !! eo) r
 interpretScopedR withResource scopedHandler =
   interpretScopedRH withResource \ r e -> liftT (scopedHandler r e)
@@ -627,7 +562,7 @@ interpretScopedR withResource scopedHandler =
 interpretScopedR_ ::
   ∀ param resource effect eo ei r .
   (param -> Sem (Stop eo : r) resource) ->
-  (∀ r0 x . resource -> effect (Sem r0) x -> Sem (Stop ei : r) x) ->
+  (∀ r0 x . resource -> effect (Sem r0) x -> Sem (Stop ei : Stop eo : r) x) ->
   InterpreterFor (Scoped param (effect !! ei) !! eo) r
 interpretScopedR_ resource =
   interpretScopedR \ p use -> use =<< resource p
@@ -638,72 +573,37 @@ interpretScopedR_ resource =
 -- resource allocation may fail to prevent the scope from being executed, and each individual scoped action may fail,
 -- continuing the scope execution on resumption.
 interpretScopedRWithH ::
-  ∀ extra param resource effect eo ei r r1 .
+  ∀ extra param resource effect eo ei r r1 extraerr .
+  extraerr ~ (extra ++ '[Stop eo]) =>
   r1 ~ (extra ++ Stop eo : r) =>
   r1 ~ ((extra ++ '[Stop eo]) ++ r) =>
-  KnownList extra =>
   KnownList (extra ++ '[Stop eo]) =>
-  (∀ x . param -> (resource -> Sem r1 x) -> Sem (Stop eo : r) x) ->
-  (∀ r0 x . resource -> effect (Sem r0) x -> Tactical effect (Sem r0) (Stop ei : r1) x) ->
+  (∀ x . param -> (resource -> Sem (extra ++ Stop eo : r) x) -> Sem (Stop eo : r) x) ->
+  (∀ r0 x . resource -> effect (Sem r0) x -> Tactical (effect !! ei) (Sem r0) (Stop ei : r1) x) ->
   InterpreterFor (Scoped param (effect !! ei) !! eo) r
 interpretScopedRWithH withResource scopedHandler =
-  run
+  interpretWeaving \case
+    Weaving (Resumable (Weaving (InScope param main) s' wv' ex' _)) s wv ex _ -> do
+      exResumable s ex ex' $ runStop $ withResource param \ resource ->
+        interpretResumableH (scopedHandler resource) $ inScope $
+          restack
+            (injectMembership
+             (singList @'[Scoped param (effect !! ei) !! eo])
+             (singList @(effect !! ei : extraerr))) $ wv (wv' (main <$ s') <$ s)
+    _ ->
+      errorWithoutStackTrace "top level Run"
   where
-    run :: InterpreterFor (Scoped param (effect !! ei) !! eo) r
-    run =
-      interpretWeaving \ (Weaving (Resumable (Weaving inner s' dist' ex' ins')) s'' dist'' ex'' ins'') -> case inner of
-        InScope param main -> do
-            let
-              ma =
-                  raise $ withResource param \ resource ->
-                    Compose <$> inScope resource (restack (injectMembership (singList @'[Scoped param (effect !! ei) !! eo]) (singList @(extra ++ '[Stop eo]))) (dist'' (dist' (main <$ s') <$ s'')))
-              tac =
-                runTactics
-                (Compose (s' <$ s''))
-                (raise . raise . run . fmap Compose . dist'' . fmap dist' . getCompose)
-                (ins' <=< ins'' . getCompose)
-                (raise . run . fmap Compose . dist'' . fmap dist' . getCompose)
-                ma
-              exFinal = ex'' . \case
-                Right (Compose a) -> Right . ex' <$> a
-                Left err -> Left err <$ s''
-            exFinal <$> runStop tac
-        _ ->
-          error "top level Run"
-    inScope :: resource -> InterpreterFor (Scoped param (effect !! ei) !! eo) r1
-    inScope resource =
-      interpretWeaving \ (Weaving (Resumable (Weaving inner s' dist' ex' ins')) s'' dist'' ex'' ins'') -> case inner of
-        Run (Resumable (Weaving effect s dist ex ins)) ->
-          exFinal <$> runStop @ei (tac (scopedHandler resource effect))
-          where
-            tac =
-              runTactics
-              (Compose (Compose (s <$ s') <$ s''))
-              (raise . raise . inScope resource . fmap Compose . fmap (fmap Compose) . dist'' . fmap dist' . fmap (fmap dist . getCompose) . getCompose)
-              (ins <=< ins' . getCompose <=< ins'' . getCompose)
-              (raise . inScope resource . fmap Compose . fmap (fmap Compose) . dist'' . fmap dist' . fmap (fmap dist . getCompose) . getCompose)
-            exFinal = \case
-              Right (Compose fffa) ->
-                ex'' $ fffa <&> Right . \ (Compose ffa) ->
-                  ex' (Right . ex <$> ffa)
-              Left err ->
-                ex'' (Right (ex' (Left err <$ s')) <$ s'')
-        InScope param main -> do
-            let
-              ma =
-                raise $ restack (extendMembershipLeft (singList @(Stop eo : extra))) $ withResource param \ resource' ->
-                  Compose <$> inScope resource' (dist'' (dist' (main <$ s') <$ s''))
-              tac =
-                runTactics
-                (Compose (s' <$ s''))
-                (raise . raise . inScope resource . fmap Compose . dist'' . fmap dist' . getCompose)
-                (ins' <=< ins'' . getCompose)
-                (raise . inScope resource . fmap Compose . dist'' . fmap dist' . getCompose)
-                ma
-              exFinal = ex'' . \case
-                Right (Compose a) -> Right . ex' <$> a
-                Left err -> Left err <$ s''
-            exFinal <$> runStop tac
+    inScope :: InterpreterFor (Scoped param (effect !! ei) !! eo) (effect !! ei : r1)
+    inScope =
+      interpretWeaving \ (Weaving (Resumable (Weaving effect s' wv' ex' ins')) s wv ex ins) -> case effect of
+        InScope param main ->
+          exResumable s ex ex' $
+          restack (extendMembershipLeft (singList @(effect !! ei : extraerr))) $
+          runStop $
+          withResource param \ resource ->
+            interpretResumableH (scopedHandler resource) (inScope $ wv (wv' (main <$ s') <$ s))
+        Run act ->
+          ex . fmap Right <$> liftSem (weave s (inScope . wv) ins (injWeaving (Weaving act s' wv' ex' ins')))
 
 -- |Combined interpreter for 'Scoped' and 'Resumable' that allows the handler to use additional effects that are
 -- interpreted by the resource allocator.
@@ -714,7 +614,6 @@ interpretScopedRWith ::
   ∀ extra param resource effect eo ei r r1 .
   r1 ~ (extra ++ Stop eo : r) =>
   r1 ~ ((extra ++ '[Stop eo]) ++ r) =>
-  KnownList extra =>
   KnownList (extra ++ '[Stop eo]) =>
   (∀ x . param -> (resource -> Sem r1 x) -> Sem (Stop eo : r) x) ->
   (∀ r0 x . resource -> effect (Sem r0) x -> Sem (Stop ei : r1) x) ->
@@ -732,7 +631,6 @@ interpretScopedRWith_ ::
   ∀ extra param effect eo ei r r1 .
   r1 ~ (extra ++ Stop eo : r) =>
   r1 ~ ((extra ++ '[Stop eo]) ++ r) =>
-  KnownList extra =>
   KnownList (extra ++ '[Stop eo]) =>
   (∀ x . param -> Sem r1 x -> Sem (Stop eo : r) x) ->
   (∀ r0 x . effect (Sem r0) x -> Sem (Stop ei : r1) x) ->
