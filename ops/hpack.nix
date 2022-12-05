@@ -82,11 +82,11 @@ in {
       "containers"
       "polysemy >= 1.6"
       "polysemy-resume >= 0.5"
-      "polysemy-time >= 0.3"
+      "polysemy-time >= 0.5"
       "stm"
-      "stm-chans >= 2"
-      "torsor >= 0.1"
-      "unagi-chan >= 0.4"
+      "stm-chans ^>= 3"
+      "torsor ^>= 0.1"
+      "unagi-chan ^>= 0.4"
       "unix"
     ];
     tests.polysemy-conc-unit = exe "polysemy-conc" "test" {
@@ -111,16 +111,16 @@ in {
   polysemy-process = merge (project "polysemy-process" "Polysemy-Process") {
     synopsis = "Polysemy effects for system processes";
     library.dependencies = [
-      "path >= 0.7"
-      "path-io >= 1.6.2"
+      "path ^>= 0.9"
+      "path-io ^>= 1.7"
       "polysemy >= 1.6"
-      "polysemy-conc >= 0.9"
+      "polysemy-conc >= 0.11"
       "polysemy-resume >= 0.5"
       "polysemy-time >= 0.5"
       "posix-pty >= 0.2"
       "process"
-      "stm-chans >= 2"
-      "typed-process >= 0.2.6"
+      "stm-chans ^>= 3"
+      "typed-process ^>= 0.2.6"
       "unix"
     ];
     tests.polysemy-process-unit = exe "polysemy-process" "test" {
