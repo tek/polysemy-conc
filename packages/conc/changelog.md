@@ -1,3 +1,10 @@
+# 0.11.0.0
+
+## Breaking
+
+* Tweak the implementation of `Scoped` interpreters to allow changing higher-order interpreters.
+  Slightly changes the signature of some of them.
+
 # 0.10.0.0
 
 ## Breaking
