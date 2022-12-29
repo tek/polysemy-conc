@@ -116,7 +116,7 @@ in {
       "path ^>= 0.9"
       "path-io ^>= 1.7"
       "polysemy ^>= 1.9"
-      "polysemy-conc ^>= 0.11"
+      "polysemy-conc ^>= 0.12"
       "polysemy-resume ^>= 0.7"
       "polysemy-time ^>= 0.6"
       "posix-pty >= 0.2"
