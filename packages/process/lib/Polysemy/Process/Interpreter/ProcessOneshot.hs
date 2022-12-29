@@ -3,7 +3,6 @@ module Polysemy.Process.Interpreter.ProcessOneshot where
 
 import Polysemy.Conc.Effect.Race (Race)
 import Polysemy.Resume (Stop, interpretScopedRWith_, type (!!))
-import Polysemy.Scoped (Scoped, Scoped_)
 
 import Polysemy.Process.Data.ProcessError (ProcessError)
 import Polysemy.Process.Data.ProcessOptions (ProcessOptions)

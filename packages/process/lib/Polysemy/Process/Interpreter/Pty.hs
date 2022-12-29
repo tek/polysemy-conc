@@ -4,7 +4,6 @@
 module Polysemy.Process.Interpreter.Pty where
 
 import Polysemy.Resume (Stop, interpretScopedResumable, stopEitherWith, stopNote, type (!!))
-import Polysemy.Scoped (Scoped_)
 import System.Posix (closeFd, fdToHandle, openPseudoTerminal)
 import System.Posix.Pty (closePty, createPty, ptyDimensions, resizePty)
 

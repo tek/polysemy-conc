@@ -120,7 +120,7 @@ library
   ghc-options: -Wall -Wredundant-constraints -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Widentities -Wunused-packages
   build-depends:
       base >=4.12 && <5
-    , incipit-core >=0.4
+    , incipit-core >=0.4.1
     , path ==0.9.*
     , path-io ==1.7.*
     , polysemy ==1.9.*
@@ -210,7 +210,7 @@ test-suite polysemy-process-unit
   ghc-options: -Wall -Wredundant-constraints -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Widentities -Wunused-packages -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.12 && <5
-    , incipit-core >=0.4
+    , incipit-core >=0.4.1
     , polysemy
     , polysemy-conc
     , polysemy-plugin

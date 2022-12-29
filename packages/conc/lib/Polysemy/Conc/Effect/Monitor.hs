@@ -3,7 +3,6 @@
 -- |Description: Monitor Effect, Internal
 module Polysemy.Conc.Effect.Monitor where
 
-import Polysemy.Scoped (Scoped_, scoped_)
 import Polysemy.Time (NanoSeconds)
 
 -- |Marker type for the restarting action for 'Monitor'.

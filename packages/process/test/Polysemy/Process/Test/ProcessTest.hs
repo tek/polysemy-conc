@@ -5,7 +5,6 @@ module Polysemy.Process.Test.ProcessTest where
 import qualified Data.ByteString as ByteString
 import qualified Polysemy.Conc.Effect.Race as Conc (timeout)
 import Polysemy.Conc.Effect.Race (Race)
-import Polysemy.Scoped (Scoped)
 import Polysemy.Conc.Interpreter.Race (interpretRace)
 import qualified Polysemy.Conc.Race as Race
 import Polysemy.Resume (resumeEither, resumeHoistAs, resumeHoistError, resuming, runStop, type (!!), (<!))

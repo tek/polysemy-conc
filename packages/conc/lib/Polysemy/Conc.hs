@@ -201,6 +201,23 @@ module Polysemy.Conc (
   withAsyncGated_,
 ) where
 
+import Prelude hiding (
+  Scoped,
+  Scoped_,
+  interpretScoped,
+  interpretScopedAs,
+  interpretScopedH,
+  interpretScopedH',
+  interpretScopedWith,
+  interpretScopedWithH,
+  interpretScopedWith_,
+  rescope,
+  runScoped,
+  runScopedAs,
+  scoped,
+  scoped_,
+  )
+
 import Polysemy.Conc.Async (
   scheduleAsync,
   scheduleAsyncIO,
@@ -217,26 +234,11 @@ import Polysemy.Conc.Effect.Events (Consume, Events, consume, publish, subscribe
 import Polysemy.Conc.Effect.Gate (Gate, Gates)
 import Polysemy.Conc.Effect.Interrupt (Interrupt)
 import Polysemy.Conc.Effect.Lock (Lock, lock, lockOr, lockOrSkip, lockOrSkip_)
-import Polysemy.Conc.Effect.Mask (
-  Mask,
-  Restoration,
-  UninterruptibleMask,
-  mask,
-  restore,
-  uninterruptibleMask,
-  )
-import Polysemy.Conc.Effect.Monitor (
-  Monitor,
-  Restart,
-  RestartingMonitor,
-  ScopedMonitor,
-  monitor,
-  restart,
-  withMonitor,
-  )
+import Polysemy.Conc.Effect.Mask (Mask, Restoration, UninterruptibleMask, mask, restore, uninterruptibleMask)
+import Polysemy.Conc.Effect.Monitor (Monitor, Restart, RestartingMonitor, ScopedMonitor, monitor, restart, withMonitor)
 import Polysemy.Conc.Effect.Queue (Queue)
 import Polysemy.Conc.Effect.Race (Race, race, timeout)
-import Polysemy.Conc.Effect.Scoped (Scoped, Scoped_, scoped, scoped_, rescope)
+import Polysemy.Conc.Effect.Scoped (Scoped, Scoped_, rescope, scoped, scoped_)
 import Polysemy.Conc.Effect.Semaphore (Semaphore)
 import Polysemy.Conc.Effect.Sync (ScopedSync, Sync)
 import Polysemy.Conc.Effect.SyncRead (SyncRead)
@@ -263,7 +265,12 @@ import Polysemy.Conc.Interpreter.Events (EventConsumer, interpretEventsChan)
 import Polysemy.Conc.Interpreter.Gate (interpretGate, interpretGates)
 import Polysemy.Conc.Interpreter.Interrupt (interpretInterrupt, interpretInterruptNull, interpretInterruptOnce)
 import Polysemy.Conc.Interpreter.Lock (interpretLockPermissive, interpretLockReentrant)
-import Polysemy.Conc.Interpreter.Mask (interpretMaskFinal, interpretMaskPure, interpretUninterruptibleMaskFinal, interpretUninterruptibleMaskPure)
+import Polysemy.Conc.Interpreter.Mask (
+  interpretMaskFinal,
+  interpretMaskPure,
+  interpretUninterruptibleMaskFinal,
+  interpretUninterruptibleMaskPure,
+  )
 import Polysemy.Conc.Interpreter.Monitor (interpretMonitorPure, interpretMonitorRestart)
 import Polysemy.Conc.Interpreter.Queue.Pure (
   interpretQueueListReadOnlyAtomic,
@@ -284,6 +291,7 @@ import Polysemy.Conc.Interpreter.Scoped (
   interpretScoped,
   interpretScopedAs,
   interpretScopedH,
+  interpretScopedH',
   interpretScopedR,
   interpretScopedRH,
   interpretScopedRWith,
@@ -300,7 +308,7 @@ import Polysemy.Conc.Interpreter.Scoped (
   interpretScopedWithH,
   interpretScopedWith_,
   runScoped,
-  runScopedAs, interpretScopedH',
+  runScopedAs,
   )
 import Polysemy.Conc.Interpreter.Semaphore (interpretSemaphoreQ, interpretSemaphoreT)
 import Polysemy.Conc.Interpreter.Stack (ConcStack, runConc)

@@ -31,7 +31,6 @@ import Polysemy.Resume (
   stopNote,
   type (!!),
   )
-import Polysemy.Scoped (Scoped, Scoped_)
 import Prelude hiding (fromException)
 import System.IO (BufferMode (NoBuffering), Handle, hSetBuffering, stdin, stdout)
 

@@ -3,8 +3,6 @@
 -- |Description: Gate effect, Internal
 module Polysemy.Conc.Effect.Gate where
 
-import Polysemy.Scoped (Scoped_, scoped_)
-
 -- |A single-use synchronization point that blocks all consumers who called 'gate' until 'signal' is called.
 --
 -- The constructors are exported from [Polysemy.Conc.Gate]("Polysemy.Conc.Gate").

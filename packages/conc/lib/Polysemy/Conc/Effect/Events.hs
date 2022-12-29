@@ -3,8 +3,6 @@
 -- |Description: Events/Consume Effects, Internal
 module Polysemy.Conc.Effect.Events where
 
-import Polysemy.Scoped (Scoped_, scoped_)
-
 -- |An event publisher that can be consumed from multiple threads.
 data Events (e :: Type) :: Effect where
   Publish :: e -> Events e m ()

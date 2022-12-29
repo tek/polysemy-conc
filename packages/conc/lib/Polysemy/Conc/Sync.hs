@@ -10,7 +10,6 @@ import qualified Polysemy.Time as Time
 import Polysemy.Time (Time, TimeUnit)
 
 import Polysemy.Conc.Effect.Mask (Mask, mask, restore)
-import Polysemy.Scoped (scoped_)
 import qualified Polysemy.Conc.Effect.Sync as Sync
 import Polysemy.Conc.Effect.Sync
 

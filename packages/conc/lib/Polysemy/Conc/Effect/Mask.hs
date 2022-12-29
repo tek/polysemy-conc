@@ -3,8 +3,6 @@
 -- |Description: Mask Effect, Internal
 module Polysemy.Conc.Effect.Mask where
 
-import Polysemy.Scoped (Scoped_, scoped_)
-
 -- |Part of an effect abstracting 'Control.Exception.mask'.
 data RestoreMask :: Effect where
   Restore :: m a -> RestoreMask m a

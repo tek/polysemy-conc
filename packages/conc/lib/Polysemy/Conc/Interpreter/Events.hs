@@ -9,8 +9,6 @@ import Polysemy.Conc.Async (withAsync_)
 import qualified Polysemy.Conc.Effect.Events as Events
 import Polysemy.Conc.Effect.Events (Consume, Events)
 import Polysemy.Conc.Effect.Race (Race)
-import Polysemy.Scoped (Scoped_)
-import Polysemy.Scoped (runScopedAs)
 
 -- |Convenience alias for the consumer effect.
 type EventConsumer e =

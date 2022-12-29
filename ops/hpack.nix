@@ -50,7 +50,7 @@ let
 
   dependencies = [
       { name = "base"; version = ">= 4.12 && < 5"; mixin = "hiding (Prelude)"; }
-      { name = "incipit-core"; version = ">= 0.4"; mixin = ["(IncipitCore as Prelude)" "hiding (IncipitCore)"]; }
+      { name = "incipit-core"; version = ">= 0.4.1"; mixin = ["(IncipitCore as Prelude)" "hiding (IncipitCore)"]; }
     ];
 
   project = name: doc: merge (meta // { library = paths name; } // options) {

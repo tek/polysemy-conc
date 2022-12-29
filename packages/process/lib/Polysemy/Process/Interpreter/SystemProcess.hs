@@ -5,7 +5,6 @@ module Polysemy.Process.Interpreter.SystemProcess where
 
 import Data.ByteString (hGetSome, hPut)
 import Polysemy.Resume (Stop, interpretResumable, interpretScopedR, stop, stopNote, stopTryIOError, type (!!))
-import Polysemy.Scoped (Scoped, Scoped_, runScopedNew)
 import Prelude hiding (fromException)
 import System.IO (BufferMode (NoBuffering), Handle, hSetBuffering)
 import qualified System.Posix as Signal

@@ -20,6 +20,7 @@ import Polysemy.Internal.Union (
 import Polysemy.Membership (ElemOf)
 import Polysemy.Resume (Stop, interpretResumableH, runStop, type (!!))
 import Polysemy.Resume.Effect.Resumable (Resumable (Resumable))
+import Prelude hiding (Scoped, interpretScoped, interpretScopedH, interpretScopedWithH, runScoped)
 
 import Polysemy.Conc.Effect.Scoped (Scoped (InScope, Run))
 

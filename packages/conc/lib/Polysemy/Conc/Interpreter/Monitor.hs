@@ -4,7 +4,6 @@
 module Polysemy.Conc.Interpreter.Monitor where
 
 import qualified Control.Exception as Base
-import Polysemy.Scoped (interpretScopedH, runScopedAs)
 import qualified Polysemy.Time as Time
 import Polysemy.Time (Time)
 

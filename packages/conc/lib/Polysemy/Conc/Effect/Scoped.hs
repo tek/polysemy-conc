@@ -3,6 +3,8 @@
 -- |Description: Scoped Effect, Internal
 module Polysemy.Conc.Effect.Scoped where
 
+import Prelude hiding (Scoped, Scoped_, scoped)
+
 -- | @Scoped@ transforms a program so that an interpreter for @effect@ may
 -- perform arbitrary actions, like resource management, before and after the
 -- computation wrapped by a call to 'scoped' is executed.
