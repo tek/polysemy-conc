@@ -1,3 +1,9 @@
+# 0.12.0.0
+
+## Breaking
+
+* Move `Scoped` to Polysemy and `polysemy-resume`, keeping them here with a deprecation pragma.
+
 # 0.11.0.0
 
 ## Breaking

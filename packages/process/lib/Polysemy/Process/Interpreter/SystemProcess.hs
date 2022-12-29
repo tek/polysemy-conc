@@ -4,9 +4,8 @@
 module Polysemy.Process.Interpreter.SystemProcess where
 
 import Data.ByteString (hGetSome, hPut)
-import Polysemy.Conc.Effect.Scoped (Scoped, Scoped_)
-import Polysemy.Conc.Interpreter.Scoped (interpretScopedR, runScoped)
-import Polysemy.Resume (Stop, interpretResumable, stop, stopNote, stopTryIOError, type (!!))
+import Polysemy.Resume (Stop, interpretResumable, interpretScopedR, stop, stopNote, stopTryIOError, type (!!))
+import Polysemy.Scoped (Scoped, Scoped_, runScopedNew)
 import Prelude hiding (fromException)
 import System.IO (BufferMode (NoBuffering), Handle, hSetBuffering)
 import qualified System.Posix as Signal
@@ -174,7 +173,7 @@ interpretSystemProcessNative ::
   (param -> Sem r (Either Text SysProcConf)) ->
   InterpreterFor (Scoped param (SystemProcess !! SystemProcessError) !! SystemProcessScopeError) r
 interpretSystemProcessNative config =
-  interpretScopedR (\ p u -> raise (config p) >>= withProcConf u) handleSystemProcessWithProcess
+  interpretScopedR (\ p u -> raise (raise (config p)) >>= withProcConf u) handleSystemProcessWithProcess
 
 -- |Interpret 'SystemProcess' as a scoped 'System.Process' that's started wherever 'Polysemy.Process.withSystemProcess'
 -- is called and terminated when the wrapped action finishes.
@@ -227,4 +226,4 @@ interpretSystemProcessNativeOpaque ::
   ProcessConfig i o e ->
   InterpreterFor (Scoped_ (SystemProcess !! SystemProcessError)) r
 interpretSystemProcessNativeOpaque config =
-  runScoped (const (withProcessOpaque config)) interpretSystemProcessWithProcessOpaque
+  runScopedNew \ () -> interpretSystemProcessNativeOpaqueSingle config

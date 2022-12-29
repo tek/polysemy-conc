@@ -2,9 +2,8 @@
 module Polysemy.Process.Interpreter.ProcessOneshot where
 
 import Polysemy.Conc.Effect.Race (Race)
-import Polysemy.Conc.Effect.Scoped (Scoped, Scoped_)
-import Polysemy.Conc.Interpreter.Scoped (interpretScopedRWith_)
-import Polysemy.Resume (Stop, type (!!))
+import Polysemy.Resume (Stop, interpretScopedRWith_, type (!!))
+import Polysemy.Scoped (Scoped, Scoped_)
 
 import Polysemy.Process.Data.ProcessError (ProcessError)
 import Polysemy.Process.Data.ProcessOptions (ProcessOptions)
@@ -33,7 +32,7 @@ interpretProcessOneshot ::
   InterpreterFor (Scoped param (Process i o !! ProcessError) !! SystemProcessScopeError) r
 interpretProcessOneshot options proc =
   interpretScopedRWith_ @(ScopeEffects i o SystemProcessError)
-  (\ p -> pscope @SystemProcessScopeError options proc p)
+  (\ p -> pscope @SystemProcessScopeError options (raiseUnder . proc) p)
   (handleProcessWithQueues terminated)
 
 -- |Variant of 'interpretProcessOneshot' that takes a static 'SysProcConf'.

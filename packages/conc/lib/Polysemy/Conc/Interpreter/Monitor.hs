@@ -4,14 +4,20 @@
 module Polysemy.Conc.Interpreter.Monitor where
 
 import qualified Control.Exception as Base
+import Polysemy.Scoped (interpretScopedH, runScopedAs)
 import qualified Polysemy.Time as Time
 import Polysemy.Time (Time)
 
 import Polysemy.Conc.Async (withAsync_)
-import Polysemy.Conc.Effect.Monitor (Monitor (Monitor), MonitorCheck (MonitorCheck), RestartingMonitor, ScopedMonitor)
+import Polysemy.Conc.Effect.Monitor (
+  Monitor (Monitor),
+  MonitorCheck (MonitorCheck),
+  RestartingMonitor,
+  ScopedMonitor,
+  hoistMonitorCheck,
+  )
 import qualified Polysemy.Conc.Effect.Race as Race
 import Polysemy.Conc.Effect.Race (Race)
-import Polysemy.Conc.Interpreter.Scoped (runScoped, runScopedAs)
 
 newtype CancelResource =
   CancelResource { signal :: MVar () }
@@ -20,15 +26,6 @@ data MonitorCancel =
   MonitorCancel
   deriving stock (Eq, Show)
   deriving anyclass (Exception)
-
-interpretMonitorCancel ::
-  Members [Race, Async, Final IO] r =>
-  CancelResource ->
-  InterpreterFor (Monitor action) r
-interpretMonitorCancel CancelResource {..} =
-  interpretH \case
-    Monitor ma ->
-      either (const (Base.throw MonitorCancel)) pure =<< Race.race (embedFinal @IO (readMVar signal)) (runTSimple ma)
 
 monitorRestart ::
   ∀ t d r a .
@@ -54,7 +51,9 @@ interpretMonitorRestart ::
   MonitorCheck r ->
   InterpreterFor RestartingMonitor r
 interpretMonitorRestart check =
-  runScoped (const (monitorRestart @t @d check)) interpretMonitorCancel
+  interpretScopedH (const (monitorRestart @t @d (hoistMonitorCheck raise check))) \ CancelResource {..} -> \case
+    Monitor ma ->
+      either (const (Base.throw MonitorCancel)) pure =<< Race.race (embedFinal @IO (readMVar signal)) (runTSimple ma)
 
 interpretMonitorPure' :: () -> InterpreterFor (Monitor action) r
 interpretMonitorPure' _ =

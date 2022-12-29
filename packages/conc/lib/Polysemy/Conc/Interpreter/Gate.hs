@@ -2,8 +2,8 @@
 module Polysemy.Conc.Interpreter.Gate where
 
 import Polysemy.Conc.Effect.Gate (Gate (Gate, Signal))
-import Polysemy.Conc.Effect.Scoped (Scoped_)
-import Polysemy.Conc.Interpreter.Scoped (interpretScopedAs)
+import Polysemy.Scoped (Scoped_)
+import Polysemy.Scoped (interpretScopedAs)
 
 -- |Interpret 'Gate' with an 'MVar'.
 interpretGate ::

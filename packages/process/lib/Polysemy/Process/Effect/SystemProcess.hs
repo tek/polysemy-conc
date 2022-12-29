@@ -3,7 +3,7 @@
 -- |Description: SystemProcess Effect, Internal
 module Polysemy.Process.Effect.SystemProcess where
 
-import Polysemy.Conc.Effect.Scoped (Scoped, Scoped_, scoped, scoped_)
+import Polysemy.Scoped (Scoped, Scoped_, scoped, scoped_)
 import Polysemy.Resume (type (!!))
 import System.Exit (ExitCode)
 import qualified System.Posix as Signal

@@ -3,9 +3,8 @@
 -- |Description: Monitor Effect, Internal
 module Polysemy.Conc.Effect.Monitor where
 
+import Polysemy.Scoped (Scoped_, scoped_)
 import Polysemy.Time (NanoSeconds)
-
-import Polysemy.Conc.Effect.Scoped (Scoped_, scoped_)
 
 -- |Marker type for the restarting action for 'Monitor'.
 data Restart =
@@ -42,6 +41,14 @@ data MonitorCheck r =
     interval :: NanoSeconds,
     check :: MVar () -> Sem r ()
   }
+
+-- | Transform the stack of the check in a 'MonitorCheck'.
+hoistMonitorCheck ::
+  (∀ x . Sem r x -> Sem r' x) ->
+  MonitorCheck r ->
+  MonitorCheck r'
+hoistMonitorCheck f MonitorCheck {..} =
+  MonitorCheck {check = f . check, ..}
 
 -- |Start a region that can contain monitor-intervention regions.
 withMonitor ::

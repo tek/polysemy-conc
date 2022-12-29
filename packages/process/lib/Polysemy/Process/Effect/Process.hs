@@ -3,7 +3,7 @@
 -- |Description: Process Effect, Internal
 module Polysemy.Process.Effect.Process where
 
-import Polysemy.Conc.Effect.Scoped (Scoped, Scoped_, scoped, scoped_)
+import Polysemy.Scoped (Scoped, Scoped_, scoped, scoped_)
 import Polysemy.Input (Input (Input))
 import Polysemy.Output (Output (Output))
 import Polysemy.Resume (interpretResumable, restop, type (!!))

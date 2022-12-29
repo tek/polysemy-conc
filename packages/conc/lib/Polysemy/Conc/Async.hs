@@ -6,7 +6,7 @@ import Polysemy.Time (MilliSeconds (MilliSeconds), TimeUnit)
 
 import Polysemy.Conc.Effect.Gate (Gate, gate, withGate)
 import Polysemy.Conc.Effect.Race (Race)
-import Polysemy.Conc.Effect.Scoped (Scoped_)
+import Polysemy.Scoped (Scoped_)
 import qualified Polysemy.Conc.Effect.Sync as Sync
 import Polysemy.Conc.Effect.Sync (ScopedSync, Sync)
 import Polysemy.Conc.Interpreter.Sync (interpretSync)

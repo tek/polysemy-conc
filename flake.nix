@@ -3,26 +3,24 @@
 
   inputs = {
     hix.url = git+https://git.tryp.io/tek/hix;
-    polysemy-time.url = github:tek/polysemy-time;
+    polysemy-time.url = git+https://git.tryp.io/tek/polysemy-time?tag=v0.6.0.0;
   };
 
   outputs = { hix, polysemy-time, ... }:
   let
 
-    ghc924 = { hackage, jailbreak, notest, ... }: {
-      polysemy = hackage "1.7.1.0" "0qwli1kx3hk68hqsgw65mk81bx0djw1wlk17v8ggym7mf3lailyc";
-      polysemy-plugin = hackage "0.4.3.0" "1r7j1ffsd6z2q2fgpg78brl2gb0dg8r5ywfiwdrsjd2fxkinjcg1";
-      type-errors = notest;
+    dev = { hackage, source, ... }: {
+      polysemy = hackage "1.9.0.0" "1af07cppnjpv5v56wanya1mhkvbfnyynf5447mnkcf4zc4k23pyk";
+      polysemy-plugin = hackage "0.4.4.0" "08ry72bw78fis9iallzw6wsrzxnlmayq2k2yy0j79hpw4sp8knmg";
     };
 
-    all = { hackage, source, ... }: {
-      incipit-base = hackage "0.3.0.0" "1078yyl5k94c9pr16rqd1i1g1fj8zx4iswhk7rcxb8f10fjqzapg";
-      incipit-core = hackage "0.3.0.0" "0q11zmxlpdb72p8c8zvr5hd7qca9c37crm70lm16jxlzw1qxk51b";
-      polysemy = hackage "1.6.0.0" "15k51ysrfcbkww1562g8zvrlzymlk2rxhcsz9ipsb0q6h571qgvf";
-      polysemy-plugin = hackage "0.4.1.0" "117g92l1ppsqd3w0rqjrxfk0lx6yndd54rpymgxljilnv43zg29s";
-      polysemy-resume = hackage "0.5.0.0" "1yavr2h31ffxj861vscm2hddrwi977ddx0sn0hh47zn78pqafz77";
-      polysemy-time = hackage "0.5.0.0" "1y7zqzvpah019hh9dqxhv9vh690b7nqchq613hlfsc4xgrvzq3d4";
-      polysemy-test = hackage "0.6.0.0" "07pi549ral22sxhja67k5b9v787q0b32ysp0bq9szhwjqgxsab46";
+    all = { hackage, ... }: {
+      incipit-base = hackage "0.4.0.0" "0g04mw1si70g5kkgz9gnk460d4pvm65i30hd9abrg6g0ryizixqf";
+      incipit-core = hackage "0.4.0.0" "168m94c1480y8lhin1sbrwzr14dq13ixkgkcl7ikq78vcq267521";
+      polysemy = hackage "1.9.0.0" "1af07cppnjpv5v56wanya1mhkvbfnyynf5447mnkcf4zc4k23pyk";
+      polysemy-plugin = hackage "0.4.4.0" "08ry72bw78fis9iallzw6wsrzxnlmayq2k2yy0j79hpw4sp8knmg";
+      polysemy-resume = hackage "0.7.0.0" "1b9agh2qd0nrbd7cc5iabkzjb7g9lnzzy3pprvn33hr54va9p928";
+      polysemy-time = hackage "0.6.0.0" "1ay0ym01wznk98km2ksw8slj52gc7rav6n16z4sndzsw7cdwdq2y";
     };
 
   in hix.lib.pro ({ config, lib, ...}: {
@@ -32,7 +30,7 @@
     };
     main = "polysemy-process";
     devGhc.compiler = "ghc902";
-    overrides = { inherit all ghc924; };
+    overrides = { inherit dev all; };
     deps = [polysemy-time];
     hpack.packages = import ./ops/hpack.nix { inherit config lib; };
     hackage.versionFile = "ops/version.nix";

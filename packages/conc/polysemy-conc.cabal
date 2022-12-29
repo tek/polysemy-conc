@@ -1,6 +1,6 @@
 cabal-version: 2.2
 
--- This file has been generated from package.yaml by hpack version 0.34.7.
+-- This file has been generated from package.yaml by hpack version 0.35.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -9,7 +9,7 @@ version:        0.11.1.0
 synopsis:       Polysemy effects for concurrency
 description:    See https://hackage.haskell.org/package/polysemy-conc/docs/Polysemy-Conc.html
 category:       Concurrency
-homepage:       https://github.com/tek/polysemy-conc#readme
+homepage:       https://git.tryp.io/tek/polysemy-conc
 bug-reports:    https://github.com/tek/polysemy-conc/issues
 author:         Torsten Schmits
 maintainer:     hackage@tryp.io
@@ -23,7 +23,7 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/tek/polysemy-conc
+  location: https://git.tryp.io/tek/polysemy-conc
 
 library
   exposed-modules:
@@ -140,10 +140,10 @@ library
       async
     , base >=4.12 && <5
     , containers
-    , incipit-core >=0.3
-    , polysemy >=1.6
-    , polysemy-resume >=0.5
-    , polysemy-time >=0.5
+    , incipit-core >=0.4
+    , polysemy ==1.9.*
+    , polysemy-resume ==0.7.*
+    , polysemy-time ==0.6.*
     , stm
     , stm-chans >=3 && <3.1
     , torsor ==0.1.*
@@ -165,7 +165,6 @@ test-suite polysemy-conc-unit
       Polysemy.Conc.Test.MaskTest
       Polysemy.Conc.Test.MonitorTest
       Polysemy.Conc.Test.QueueTest
-      Polysemy.Conc.Test.ScopedTest
       Polysemy.Conc.Test.SyncTest
   hs-source-dirs:
       test
@@ -236,7 +235,7 @@ test-suite polysemy-conc-unit
       async
     , base >=4.12 && <5
     , hedgehog
-    , incipit-core >=0.3
+    , incipit-core >=0.4
     , polysemy
     , polysemy-conc
     , polysemy-plugin

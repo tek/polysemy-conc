@@ -3,9 +3,8 @@
 -- |Description: Pty Interpreters, Internal
 module Polysemy.Process.Interpreter.Pty where
 
-import Polysemy.Conc.Effect.Scoped (Scoped_)
-import Polysemy.Conc.Interpreter.Scoped (interpretScopedResumable)
-import Polysemy.Resume (Stop, stopEitherWith, stopNote, type (!!))
+import Polysemy.Resume (Stop, interpretScopedResumable, stopEitherWith, stopNote, type (!!))
+import Polysemy.Scoped (Scoped_)
 import System.Posix (closeFd, fdToHandle, openPseudoTerminal)
 import System.Posix.Pty (closePty, createPty, ptyDimensions, resizePty)
 

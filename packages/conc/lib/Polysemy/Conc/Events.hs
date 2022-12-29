@@ -6,7 +6,7 @@ import qualified Polysemy.Conc.Effect.Events as Events
 import Polysemy.Conc.Effect.Events (Consume)
 import Polysemy.Conc.Effect.Gate (Gate, Gates, gate, signal, withGate)
 import Polysemy.Conc.Effect.Race (Race)
-import Polysemy.Conc.Effect.Scoped (Scoped_)
+import Polysemy.Scoped (Scoped_)
 import Polysemy.Conc.Interpreter.Events (EventConsumer)
 
 -- |Create a new scope for 'Polysemy.Conc.Events', causing the nested program to get its own copy of the event stream.

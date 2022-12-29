@@ -2,10 +2,10 @@
 module Polysemy.Conc.Interpreter.Sync where
 
 import Polysemy.Conc.Effect.Race (Race)
-import Polysemy.Conc.Effect.Scoped (Scoped_)
+import Polysemy.Scoped (Scoped_)
 import qualified Polysemy.Conc.Effect.Sync as Sync
 import Polysemy.Conc.Effect.Sync (Sync)
-import Polysemy.Conc.Interpreter.Scoped (runScopedAs)
+import Polysemy.Scoped (runScopedAs)
 import qualified Polysemy.Conc.Race as Race
 
 -- |Interpret 'Sync' with the provided 'MVar'.

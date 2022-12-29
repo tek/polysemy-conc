@@ -104,6 +104,8 @@ data Scoped (param :: Type) (effect :: Effect) :: Effect where
   Run :: ∀ param effect m a . effect m a -> Scoped param effect m a
   InScope :: ∀ param effect m a . param -> m a -> Scoped param effect m a
 
+{-# deprecated Scoped "Scoped has been moved to Polysemy.Scoped" #-}
+
 -- |A convenience alias for a scope without parameters.
 type Scoped_ effect =
   Scoped () effect

@@ -10,18 +10,18 @@ import qualified Polysemy.Conc.Data.QueueResult as QueueResult
 import qualified Polysemy.Conc.Effect.Queue as Queue
 import Polysemy.Conc.Effect.Queue (Queue)
 import Polysemy.Conc.Effect.Race (Race)
-import Polysemy.Conc.Effect.Scoped (Scoped, Scoped_)
 import qualified Polysemy.Conc.Effect.Sync as Sync
 import Polysemy.Conc.Effect.Sync (Sync)
 import Polysemy.Conc.Interpreter.Queue.TBM (interpretQueueTBMWith, withTBMQueue)
-import Polysemy.Conc.Interpreter.Scoped (interpretScopedResumableWith_)
 import Polysemy.Conc.Interpreter.Sync (interpretSync)
 import qualified Polysemy.Conc.Race as Conc (timeout_)
 import Polysemy.Input (Input (Input))
+import Polysemy.Opaque (Opaque)
 import Polysemy.Output (Output (Output))
 import Polysemy.Resume (
   Stop,
   interpretResumable,
+  interpretScopedResumableWith_,
   mapStop,
   restop,
   resumeHoist,
@@ -31,6 +31,7 @@ import Polysemy.Resume (
   stopNote,
   type (!!),
   )
+import Polysemy.Scoped (Scoped, Scoped_)
 import Prelude hiding (fromException)
 import System.IO (BufferMode (NoBuffering), Handle, hSetBuffering, stdin, stdout)
 
@@ -262,12 +263,13 @@ interpretProcess options proc =
   interpretScopedResumableWith_ @(ScopeEffects i o SystemProcessError) acq (handleProcessWithQueues terminated)
   where
     acq ::
+      ∀ e a .
       param ->
-      Sem (ScopeEffects i o SystemProcessError ++ Stop ProcessError : r) a ->
-      Sem (Stop ProcessError : r) a
+      Sem (ScopeEffects i o SystemProcessError ++ Stop ProcessError : Opaque e : r) a ->
+      Sem (Stop ProcessError : Opaque e : r) a
     acq p sem =
       mapStop ProcessError.StartFailed do
-        pscope @SystemProcessScopeError options (raise . proc) p (insertAt @4 sem)
+        pscope @SystemProcessScopeError options (raise . raiseUnder . proc) p (insertAt @4 sem)
 
 -- |Interpret 'Process' with a system process resource whose file descriptors are connected to three 'TBMQueue's,
 -- deferring decoding of stdout and stderr to the interpreters of two 'ProcessOutput' effects.
@@ -286,8 +288,8 @@ interpretProcess_ options =
   where
     acq ::
       () ->
-      Sem (ScopeEffects i o SystemProcessError ++ Stop ProcessError : r) a ->
-      Sem (Stop ProcessError : r) a
+      Sem (ScopeEffects i o SystemProcessError ++ Stop ProcessError : Opaque e : r) a ->
+      Sem (Stop ProcessError : Opaque e : r) a
     acq () sem =
       mapStop ProcessError.StartFailed do
         scope @SystemProcessScopeError options (insertAt @4 sem)

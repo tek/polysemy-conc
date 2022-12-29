@@ -1,6 +1,6 @@
 cabal-version: 2.2
 
--- This file has been generated from package.yaml by hpack version 0.34.7.
+-- This file has been generated from package.yaml by hpack version 0.35.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -9,7 +9,7 @@ version:        0.11.1.0
 synopsis:       Polysemy effects for system processes
 description:    See https://hackage.haskell.org/package/polysemy-process/docs/Polysemy-Process.html
 category:       Concurrency
-homepage:       https://github.com/tek/polysemy-conc#readme
+homepage:       https://git.tryp.io/tek/polysemy-conc
 bug-reports:    https://github.com/tek/polysemy-conc/issues
 author:         Torsten Schmits
 maintainer:     hackage@tryp.io
@@ -23,7 +23,7 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/tek/polysemy-conc
+  location: https://git.tryp.io/tek/polysemy-conc
 
 library
   exposed-modules:
@@ -120,13 +120,13 @@ library
   ghc-options: -Wall -Wredundant-constraints -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Widentities -Wunused-packages
   build-depends:
       base >=4.12 && <5
-    , incipit-core >=0.3
+    , incipit-core >=0.4
     , path ==0.9.*
     , path-io ==1.7.*
-    , polysemy >=1.6
-    , polysemy-conc >=0.11
-    , polysemy-resume >=0.5
-    , polysemy-time >=0.5
+    , polysemy ==1.9.*
+    , polysemy-conc ==0.11.*
+    , polysemy-resume ==0.7.*
+    , polysemy-time ==0.6.*
     , posix-pty >=0.2
     , process
     , stm-chans >=3 && <3.1
@@ -210,7 +210,7 @@ test-suite polysemy-process-unit
   ghc-options: -Wall -Wredundant-constraints -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Widentities -Wunused-packages -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.12 && <5
-    , incipit-core >=0.3
+    , incipit-core >=0.4
     , polysemy
     , polysemy-conc
     , polysemy-plugin

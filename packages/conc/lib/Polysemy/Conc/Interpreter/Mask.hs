@@ -12,7 +12,7 @@ import Polysemy.Conc.Effect.Mask (
   RestoreMask (Restore),
   UninterruptibleMask,
   )
-import Polysemy.Conc.Interpreter.Scoped (interpretScopedH, runScoped)
+import Polysemy.Scoped (interpretScopedH, runScoped)
 
 mask ::
   Member (Final IO) r =>

@@ -6,7 +6,7 @@ module Polysemy.Conc.Effect.Sync where
 import Polysemy.Time (TimeUnit)
 import Prelude hiding (empty, try)
 
-import Polysemy.Conc.Effect.Scoped (Scoped_)
+import Polysemy.Scoped (Scoped_)
 
 -- |Abstracts an 'Control.Concurrent.MVar'.
 --

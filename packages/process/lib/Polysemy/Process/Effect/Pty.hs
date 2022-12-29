@@ -3,7 +3,7 @@
 -- |Description: Pty Effect, Internal
 module Polysemy.Process.Effect.Pty where
 
-import Polysemy.Conc.Effect.Scoped (Scoped_, scoped_)
+import Polysemy.Scoped (Scoped_, scoped_)
 import System.IO (Handle)
 
 -- |Horizontal size of a pseudo terminal in characters.

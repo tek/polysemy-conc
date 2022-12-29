@@ -34,7 +34,9 @@ let
     copyright = "2022 Torsten Schmits";
     category = "Concurrency";
     build-type = "Simple";
-    github = "tek/polysemy-conc";
+    git = "https://git.tryp.io/tek/polysemy-conc";
+    homepage = "https://git.tryp.io/tek/polysemy-conc";
+    bug-reports = "https://github.com/tek/polysemy-conc/issues";
   };
 
   options.ghc-options = [
@@ -48,7 +50,7 @@ let
 
   dependencies = [
       { name = "base"; version = ">= 4.12 && < 5"; mixin = "hiding (Prelude)"; }
-      { name = "incipit-core"; version = ">= 0.3"; mixin = ["(IncipitCore as Prelude)" "hiding (IncipitCore)"]; }
+      { name = "incipit-core"; version = ">= 0.4"; mixin = ["(IncipitCore as Prelude)" "hiding (IncipitCore)"]; }
     ];
 
   project = name: doc: merge (meta // { library = paths name; } // options) {
@@ -80,9 +82,9 @@ in {
     library.dependencies = [
       "async"
       "containers"
-      "polysemy >= 1.6"
-      "polysemy-resume >= 0.5"
-      "polysemy-time >= 0.5"
+      "polysemy ^>= 1.9"
+      "polysemy-resume ^>= 0.7"
+      "polysemy-time ^>= 0.6"
       "stm"
       "stm-chans ^>= 3"
       "torsor ^>= 0.1"
@@ -113,10 +115,10 @@ in {
     library.dependencies = [
       "path ^>= 0.9"
       "path-io ^>= 1.7"
-      "polysemy >= 1.6"
-      "polysemy-conc >= 0.11"
-      "polysemy-resume >= 0.5"
-      "polysemy-time >= 0.5"
+      "polysemy ^>= 1.9"
+      "polysemy-conc ^>= 0.11"
+      "polysemy-resume ^>= 0.7"
+      "polysemy-time ^>= 0.6"
       "posix-pty >= 0.2"
       "process"
       "stm-chans ^>= 3"

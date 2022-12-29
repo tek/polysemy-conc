@@ -14,7 +14,6 @@ import Polysemy.Conc.Test.QueueTest (
   test_queueTBM,
   test_queueTimeoutTBM,
   )
-import Polysemy.Conc.Test.ScopedTest (test_scoped)
 import Polysemy.Conc.Test.SyncTest (test_sync, test_syncLock)
 import Polysemy.Test (unitTest)
 import Test.Tasty (TestTree, defaultMain, testGroup)
@@ -48,8 +47,7 @@ tests =
     testGroup "monitor" [
       unitTest "basic" test_monitorBasic,
       unitTest "clock skew" test_monitorClockSkew
-    ],
-    test_scoped
+    ]
   ]
 
 main :: IO ()

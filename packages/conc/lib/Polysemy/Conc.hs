@@ -347,7 +347,7 @@ import Polysemy.Conc.Sync (withSync)
 
 -- $mask
 -- #mask#
--- The two effects 'Mask' and 'UninterruptibleMask' use the 'Polysemy.Conc.Effect.Scoped' pattern, which allow an effect
+-- The two effects 'Mask' and 'UninterruptibleMask' use the 'Polysemy.Scoped' pattern, which allow an effect
 -- with resources to be constrained to a region of code.
 -- The actual effect is 'Polysemy.Conc.Effect.Mask.RestoreMask', with `mask` and 'uninterruptibleMask' only specializing
 -- 'Polysemy.Conc.Effect.scoped' to the appropriate resource type.
