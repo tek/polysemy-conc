@@ -11,6 +11,7 @@
     hackage.versionFile = "ops/version.nix";
     main = "polysemy-process";
     deps = [polysemy-time];
+    gen-overrides.enable = true;
 
     overrides = { hackage, ... }: {
       incipit-base = hackage "0.5.1.0" "0hkqnqpdw8rvg4xzslw9sp3684ggyk9n4hr0lczwm8b0pzakzs0l";
