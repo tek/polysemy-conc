@@ -6,14 +6,15 @@
     polysemy-time.url = "git+https://git.tryp.io/tek/polysemy-time";
   };
 
-  outputs = { hix, polysemy-time, ... }: hix.lib.pro {
-    ghcVersions = ["ghc810" "ghc90" "ghc92" "ghc94"];
+  outputs = { hix, polysemy-time, ... }: hix.lib.pro ({config, ...}: {
+    ghcVersions = ["ghc90" "ghc92" "ghc94"];
     hackage.versionFile = "ops/version.nix";
     main = "polysemy-process";
     deps = [polysemy-time];
     gen-overrides.enable = true;
+    compiler = "ghc94";
 
-    overrides = { hackage, ... }: {
+    envs.dev.overrides = { hackage, ... }: {
       incipit-base = hackage "0.5.1.0" "0hkqnqpdw8rvg4xzslw9sp3684ggyk9n4hr0lczwm8b0pzakzs0l";
       incipit-core = hackage "0.5.1.0" "04lyzycvqxyjqcd703cd33lnlk5va9wj3czpsybah0ybydnrwabd";
       polysemy = hackage "1.9.1.0" "05mhzjz6hz0dnxsn3cc0l6yyj5ch35gn8xfnx0a1gn3q8yljfg2a";
@@ -68,11 +69,11 @@
         dependencies = [
           "async"
           "hedgehog >= 1.1 && < 1.3"
-          "polysemy"
+          "polysemy ^>= 1.9"
           "polysemy-conc"
           "polysemy-plugin ^>= 0.4.4"
           "polysemy-test >= 0.6 && < 0.8"
-          "polysemy-time"
+          "polysemy-time ^>= 0.6"
           "stm"
           "tasty ^>= 1.4"
           "tasty-hedgehog >= 1.3 && < 1.5"
@@ -93,12 +94,12 @@
         enable = true;
         dependencies = [
           "path ^>= 0.9"
-          "path-io ^>= 1.7"
+          "path-io >= 1.7 && < 1.9"
           "polysemy ^>= 1.9"
           "polysemy-conc ^>= 0.12"
           "polysemy-resume ^>= 0.7"
           "polysemy-time ^>= 0.6"
-          "posix-pty >= 0.2"
+          "posix-pty ^>= 0.2"
           "process"
           "stm-chans ^>= 3"
           "typed-process ^>= 0.2.6"
@@ -115,7 +116,7 @@
           "polysemy-process"
           "polysemy-resume"
           "polysemy-test >= 0.6 && < 0.8"
-          "polysemy-time"
+          "polysemy-time ^>= 0.6"
           "tasty ^>= 1.4"
           "tasty-expected-failure ^>= 0.12"
           "typed-process"
@@ -124,5 +125,5 @@
 
     };
 
-  };
+  });
 }

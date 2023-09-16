@@ -1,6 +1,6 @@
 cabal-version: 2.2
 
--- This file has been generated from package.yaml by hpack version 0.35.0.
+-- This file has been generated from package.yaml by hpack version 0.35.2.
 --
 -- see: https://github.com/sol/hpack
 
@@ -122,12 +122,12 @@ library
       base ==4.*
     , incipit-core ==0.5.*
     , path ==0.9.*
-    , path-io ==1.7.*
+    , path-io >=1.7 && <1.9
     , polysemy ==1.9.*
     , polysemy-conc ==0.12.*
     , polysemy-resume ==0.7.*
     , polysemy-time ==0.6.*
-    , posix-pty >=0.2
+    , posix-pty ==0.2.*
     , process
     , stm-chans >=3 && <3.1
     , typed-process >=0.2.6 && <0.3
@@ -217,7 +217,7 @@ test-suite polysemy-process-test
     , polysemy-process
     , polysemy-resume
     , polysemy-test >=0.6 && <0.8
-    , polysemy-time
+    , polysemy-time ==0.6.*
     , tasty ==1.4.*
     , tasty-expected-failure ==0.12.*
     , typed-process
