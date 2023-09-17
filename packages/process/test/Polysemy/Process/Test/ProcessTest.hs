@@ -47,25 +47,25 @@ message =
 test_process :: UnitTest
 test_process =
   runTestAuto $ interpretRace $ asyncToIOFinal $ interpretProcessByteString $ interpretProcessNative_ def config do
-    response <- resumeHoistError @ProcessError @(Scoped _ _) show do
+    response <- resumeHoistError @ProcessError @(Scoped _ _) (TestError . show) do
       withProcess_ do
         Process.send (encodeUtf8 message)
-        Race.timeout_ (throw "timed out") (Seconds 5) Process.recv
+        Race.timeout_ (throw (TestError "timed out")) (Seconds 5) Process.recv
     message === decodeUtf8 response
 
 test_processLines :: UnitTest
 test_processLines =
   runTestAuto $ interpretRace $ asyncToIOFinal $ interpretProcessTextLines $ interpretProcessNative_ def config do
-    response <- resumeHoistError @ProcessError @(Scoped _ _) show do
+    response <- resumeHoistError @ProcessError @(Scoped _ _) (TestError . show) do
       withProcess_ do
         Process.send message
-        Race.timeout_ (throw "timed out") (Seconds 5) (replicateM 4 Process.recv)
+        Race.timeout_ (throw (TestError "timed out")) (Seconds 5) (replicateM 4 Process.recv)
     messageLines === response
 
 test_processKillNever :: UnitTest
 test_processKillNever =
   runTestAuto $ interpretRace $ asyncToIOFinal $ interpretProcessTextLines $ interpretProcessNative_ def { kill = KillNever } config do
-    result <- resumeHoistError @ProcessError @(Scoped _ _) show do
+    result <- resumeHoistError @ProcessError @(Scoped _ _) (TestError . show) do
       Conc.timeout unit (MilliSeconds 100) do
         withProcess_ do
           Process.send message
@@ -110,7 +110,7 @@ test_processOneshot :: UnitTest
 test_processOneshot =
   runTestAuto $ interpretRace $ asyncToIOFinal $ interpretOneshot conf do
     num <- runStop @Int $ withProcessOneshot message do
-      Race.timeout_ (throw "timed out") (Seconds 5) do
+      Race.timeout_ (throw (TestError "timed out")) (Seconds 5) do
         for_ @[] [1..5] \ i ->
           resumeHoistAs i Process.recv
         unit

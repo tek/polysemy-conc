@@ -7,20 +7,30 @@
   };
 
   outputs = { hix, polysemy-time, ... }: hix.lib.pro ({config, ...}: {
-    ghcVersions = ["ghc90" "ghc92" "ghc94"];
+    ghcVersions = ["ghc92" "ghc94" "ghc96"];
     hackage.versionFile = "ops/version.nix";
     main = "polysemy-process";
     deps = [polysemy-time];
     gen-overrides.enable = true;
     compiler = "ghc94";
 
-    envs.dev.overrides = { hackage, ... }: {
-      incipit-base = hackage "0.5.1.0" "0hkqnqpdw8rvg4xzslw9sp3684ggyk9n4hr0lczwm8b0pzakzs0l";
-      incipit-core = hackage "0.5.1.0" "04lyzycvqxyjqcd703cd33lnlk5va9wj3czpsybah0ybydnrwabd";
-      polysemy = hackage "1.9.1.0" "05mhzjz6hz0dnxsn3cc0l6yyj5ch35gn8xfnx0a1gn3q8yljfg2a";
-      polysemy-plugin = hackage "0.4.5.0" "0v2k0l42zaangwv050xfv5jdqfrbvdxfr533291ndsxalv8n3xi8";
+    envs.ghc96.overrides = { hackage, ... }: {
       polysemy-resume = hackage "0.7.0.0" "1b9agh2qd0nrbd7cc5iabkzjb7g9lnzzy3pprvn33hr54va9p928";
-      polysemy-time = hackage "0.6.0.0" "1ay0ym01wznk98km2ksw8slj52gc7rav6n16z4sndzsw7cdwdq2y";
+    };
+
+    envs.ghc94.overrides = { hackage, ... }: {
+      polysemy-resume = hackage "0.7.0.0" "1b9agh2qd0nrbd7cc5iabkzjb7g9lnzzy3pprvn33hr54va9p928";
+    };
+
+    envs.ghc92.overrides = { hackage, ... }: {
+      polysemy-resume = hackage "0.7.0.0" "1b9agh2qd0nrbd7cc5iabkzjb7g9lnzzy3pprvn33hr54va9p928";
+    };
+
+    envs.dev.overrides = { hackage, ... }: {
+      polysemy = hackage "1.9.1.2" "01vkiqxcjvvihgg8dvws76sfg0d98z8xyvpnj3g3nz02i078xf8j";
+      polysemy-plugin = hackage "0.4.5.1" "0afmx1vdgmvggk4sb4av91qnm8b3hr2kb4adcj9fhzq2w50393bc";
+      polysemy-resume = hackage "0.8.0.0" "1mh050fxlkvhdd8knf9dlakf3zqij3rxh8ac1zb6mwhp4j6y1dqn";
+      polysemy-time = hackage "0.6.0.1" "1rkpjgx1jrdc50ma6y32mv77516qz9py80h97z3qijl0qi10hw10";
     };
 
     cabal = {
@@ -54,7 +64,7 @@
           "async"
           "containers"
           "polysemy ^>= 1.9"
-          "polysemy-resume ^>= 0.7"
+          "polysemy-resume >= 0.7 && < 0.9"
           "polysemy-time ^>= 0.6"
           "stm"
           "stm-chans ^>= 3"
@@ -70,9 +80,8 @@
           "async"
           "hedgehog >= 1.1 && < 1.3"
           "polysemy ^>= 1.9"
-          "polysemy-conc"
           "polysemy-plugin ^>= 0.4.4"
-          "polysemy-test >= 0.6 && < 0.8"
+          "polysemy-test >= 0.6 && < 0.9"
           "polysemy-time ^>= 0.6"
           "stm"
           "tasty ^>= 1.4"
@@ -96,8 +105,8 @@
           "path ^>= 0.9"
           "path-io >= 1.7 && < 1.9"
           "polysemy ^>= 1.9"
-          "polysemy-conc ^>= 0.12"
-          "polysemy-resume ^>= 0.7"
+          config.packages.polysemy-conc.dep.minor
+          "polysemy-resume >= 0.7 && < 0.9"
           "polysemy-time ^>= 0.6"
           "posix-pty ^>= 0.2"
           "process"
@@ -111,11 +120,11 @@
         enable = true;
         dependencies = [
           "polysemy"
-          "polysemy-conc"
+          config.packages.polysemy-conc.dep.minor
           "polysemy-plugin ^>= 0.4.4"
           "polysemy-process"
-          "polysemy-resume"
-          "polysemy-test >= 0.6 && < 0.8"
+          "polysemy-resume >= 0.7 && < 0.9"
+          "polysemy-test >= 0.6 && < 0.9"
           "polysemy-time ^>= 0.6"
           "tasty ^>= 1.4"
           "tasty-expected-failure ^>= 0.12"

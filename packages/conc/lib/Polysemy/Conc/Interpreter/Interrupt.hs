@@ -1,4 +1,5 @@
 {-# options_haddock prune #-}
+{-# language FieldSelectors #-}
 
 -- |Description: Interrupt interpreters
 module Polysemy.Conc.Interpreter.Interrupt where

@@ -88,35 +88,8 @@ library
       UndecidableInstances
       UnicodeSyntax
       ViewPatterns
-      BangPatterns
-      BinaryLiterals
-      ConstraintKinds
-      DeriveDataTypeable
-      DeriveFoldable
-      DeriveFunctor
-      DeriveGeneric
-      DeriveLift
-      DeriveTraversable
-      DoAndIfThenElse
-      EmptyCase
-      EmptyDataDecls
-      ExistentialQuantification
-      FlexibleContexts
-      FlexibleInstances
-      GeneralizedNewtypeDeriving
-      InstanceSigs
-      KindSignatures
-      MultiParamTypeClasses
-      NamedFieldPuns
-      PatternGuards
-      PolyKinds
-      RankNTypes
-      ScopedTypeVariables
-      StandaloneDeriving
-      TupleSections
-      TypeApplications
-      TypeOperators
-      TypeSynonymInstances
+      OverloadedRecordDot
+      NoFieldSelectors
   ghc-options: -Wall -Widentities -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Wredundant-constraints -Wunused-type-patterns -Wunused-packages
   build-depends:
       base ==4.*
@@ -125,7 +98,7 @@ library
     , path-io >=1.7 && <1.9
     , polysemy ==1.9.*
     , polysemy-conc ==0.12.*
-    , polysemy-resume ==0.7.*
+    , polysemy-resume >=0.7 && <0.9
     , polysemy-time ==0.6.*
     , posix-pty ==0.2.*
     , process
@@ -136,7 +109,7 @@ library
       base hiding (Prelude)
     , incipit-core (IncipitCore as Prelude)
     , incipit-core hiding (IncipitCore)
-  default-language: Haskell2010
+  default-language: GHC2021
 
 test-suite polysemy-process-test
   type: exitcode-stdio-1.0
@@ -178,35 +151,8 @@ test-suite polysemy-process-test
       UndecidableInstances
       UnicodeSyntax
       ViewPatterns
-      BangPatterns
-      BinaryLiterals
-      ConstraintKinds
-      DeriveDataTypeable
-      DeriveFoldable
-      DeriveFunctor
-      DeriveGeneric
-      DeriveLift
-      DeriveTraversable
-      DoAndIfThenElse
-      EmptyCase
-      EmptyDataDecls
-      ExistentialQuantification
-      FlexibleContexts
-      FlexibleInstances
-      GeneralizedNewtypeDeriving
-      InstanceSigs
-      KindSignatures
-      MultiParamTypeClasses
-      NamedFieldPuns
-      PatternGuards
-      PolyKinds
-      RankNTypes
-      ScopedTypeVariables
-      StandaloneDeriving
-      TupleSections
-      TypeApplications
-      TypeOperators
-      TypeSynonymInstances
+      OverloadedRecordDot
+      NoFieldSelectors
   ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall -Widentities -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Wredundant-constraints -Wunused-type-patterns -Wunused-packages
   build-depends:
       base ==4.*
@@ -215,8 +161,8 @@ test-suite polysemy-process-test
     , polysemy-conc
     , polysemy-plugin >=0.4.4 && <0.5
     , polysemy-process
-    , polysemy-resume
-    , polysemy-test >=0.6 && <0.8
+    , polysemy-resume >=0.7 && <0.9
+    , polysemy-test >=0.6 && <0.9
     , polysemy-time ==0.6.*
     , tasty ==1.4.*
     , tasty-expected-failure ==0.12.*
@@ -225,4 +171,4 @@ test-suite polysemy-process-test
       base hiding (Prelude)
     , incipit-core (IncipitCore as Prelude)
     , incipit-core hiding (IncipitCore)
-  default-language: Haskell2010
+  default-language: GHC2021
