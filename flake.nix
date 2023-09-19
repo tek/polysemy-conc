@@ -14,19 +14,21 @@
     gen-overrides.enable = true;
     compiler = "ghc94";
 
-    envs.ghc96.overrides = { hackage, ... }: {
+    envs.ghc96.overrides = {unbreak, ...}: {
+      polysemy-resume = unbreak;
+    };
+
+    envs.ghc94.overrides = {hackage, ...}: {
+      polysemy = hackage "1.9.1.2" "01vkiqxcjvvihgg8dvws76sfg0d98z8xyvpnj3g3nz02i078xf8j";
       polysemy-resume = hackage "0.7.0.0" "1b9agh2qd0nrbd7cc5iabkzjb7g9lnzzy3pprvn33hr54va9p928";
     };
 
-    envs.ghc94.overrides = { hackage, ... }: {
-      polysemy-resume = hackage "0.7.0.0" "1b9agh2qd0nrbd7cc5iabkzjb7g9lnzzy3pprvn33hr54va9p928";
+    envs.ghc92.overrides = {hackage, unbreak, ...}: {
+      polysemy = hackage "1.9.1.2" "01vkiqxcjvvihgg8dvws76sfg0d98z8xyvpnj3g3nz02i078xf8j";
+      polysemy-resume = unbreak;
     };
 
-    envs.ghc92.overrides = { hackage, ... }: {
-      polysemy-resume = hackage "0.7.0.0" "1b9agh2qd0nrbd7cc5iabkzjb7g9lnzzy3pprvn33hr54va9p928";
-    };
-
-    envs.dev.overrides = { hackage, ... }: {
+    envs.dev.overrides = {hackage, ...}: {
       polysemy = hackage "1.9.1.2" "01vkiqxcjvvihgg8dvws76sfg0d98z8xyvpnj3g3nz02i078xf8j";
       polysemy-plugin = hackage "0.4.5.1" "0afmx1vdgmvggk4sb4av91qnm8b3hr2kb4adcj9fhzq2w50393bc";
       polysemy-resume = hackage "0.8.0.0" "1mh050fxlkvhdd8knf9dlakf3zqij3rxh8ac1zb6mwhp4j6y1dqn";
