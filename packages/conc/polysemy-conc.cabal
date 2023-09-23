@@ -185,7 +185,7 @@ test-suite polysemy-conc-test
     , polysemy ==1.9.*
     , polysemy-conc
     , polysemy-plugin >=0.4.4 && <0.5
-    , polysemy-test >=0.6 && <0.9
+    , polysemy-test >=0.6 && <0.10
     , polysemy-time ==0.6.*
     , stm
     , tasty ==1.4.*

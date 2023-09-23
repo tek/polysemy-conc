@@ -162,7 +162,7 @@ test-suite polysemy-process-test
     , polysemy-plugin >=0.4.4 && <0.5
     , polysemy-process
     , polysemy-resume >=0.7 && <0.9
-    , polysemy-test >=0.6 && <0.9
+    , polysemy-test >=0.6 && <0.10
     , polysemy-time ==0.6.*
     , tasty ==1.4.*
     , tasty-expected-failure ==0.12.*

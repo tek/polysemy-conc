@@ -19,19 +19,15 @@
     };
 
     envs.ghc94.overrides = {hackage, ...}: {
-      polysemy = hackage "1.9.1.2" "01vkiqxcjvvihgg8dvws76sfg0d98z8xyvpnj3g3nz02i078xf8j";
       polysemy-resume = hackage "0.7.0.0" "1b9agh2qd0nrbd7cc5iabkzjb7g9lnzzy3pprvn33hr54va9p928";
     };
 
     envs.ghc92.overrides = {hackage, unbreak, ...}: {
-      polysemy = hackage "1.9.1.2" "01vkiqxcjvvihgg8dvws76sfg0d98z8xyvpnj3g3nz02i078xf8j";
       polysemy-resume = unbreak;
     };
 
     envs.dev.overrides = {hackage, ...}: {
-      polysemy = hackage "1.9.1.2" "01vkiqxcjvvihgg8dvws76sfg0d98z8xyvpnj3g3nz02i078xf8j";
-      polysemy-plugin = hackage "0.4.5.1" "0afmx1vdgmvggk4sb4av91qnm8b3hr2kb4adcj9fhzq2w50393bc";
-      polysemy-resume = hackage "0.8.0.0" "1mh050fxlkvhdd8knf9dlakf3zqij3rxh8ac1zb6mwhp4j6y1dqn";
+      polysemy-resume = hackage "0.8.0.1" "1fci0v1xc6xx8qkj8s57m7yy2w1rxyxvb9bw9vkksdxr3z38dbkg";
       polysemy-time = hackage "0.6.0.1" "1rkpjgx1jrdc50ma6y32mv77516qz9py80h97z3qijl0qi10hw10";
     };
 
@@ -57,8 +53,10 @@
     packages.polysemy-conc = {
       src = ./packages/conc;
 
-      cabal.meta.synopsis = "Polysemy effects for concurrency";
-      cabal.meta.category = "Concurrency";
+      cabal.meta ={
+        synopsis = "Polysemy effects for concurrency";
+        category = "Concurrency";
+      };
 
       library = {
         enable = true;
@@ -83,7 +81,7 @@
           "hedgehog >= 1.1 && < 1.3"
           "polysemy ^>= 1.9"
           "polysemy-plugin ^>= 0.4.4"
-          "polysemy-test >= 0.6 && < 0.9"
+          "polysemy-test >= 0.6 && < 0.10"
           "polysemy-time ^>= 0.6"
           "stm"
           "tasty ^>= 1.4"
@@ -98,8 +96,10 @@
     packages.polysemy-process = {
       src = ./packages/process;
 
-      cabal.meta.synopsis = "Polysemy effects for system processes";
-      cabal.meta.category = "Process";
+      cabal.meta = {
+        synopsis = "Polysemy effects for system processes";
+        category = "Process";
+      };
 
       library = {
         enable = true;
@@ -126,7 +126,7 @@
           "polysemy-plugin ^>= 0.4.4"
           "polysemy-process"
           "polysemy-resume >= 0.7 && < 0.9"
-          "polysemy-test >= 0.6 && < 0.9"
+          "polysemy-test >= 0.6 && < 0.10"
           "polysemy-time ^>= 0.6"
           "tasty ^>= 1.4"
           "tasty-expected-failure ^>= 0.12"
