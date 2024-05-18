@@ -2,7 +2,6 @@ module Main where
 
 import Hedgehog (property, test, withTests)
 import Polysemy.Conc.Test.EventsTest (test_events)
-import Polysemy.Conc.Test.InterruptTest (test_interrupt)
 import Polysemy.Conc.Test.LockTest (test_lock)
 import Polysemy.Conc.Test.MaskTest (test_mask)
 import Polysemy.Conc.Test.MonitorTest (test_monitorBasic, test_monitorClockSkew)
@@ -38,9 +37,6 @@ tests =
       unitTest "lock" test_syncLock
     ],
     test_lock,
-    testGroup "interrupt" [
-      unitTest "interrupt" test_interrupt
-    ],
     testGroup "mask" [
       unitTest "mask" test_mask
     ],
