@@ -79,15 +79,6 @@ module Polysemy.Conc (
   -- ** Interpreters
   interpretRace,
 
-  -- * Signal Handling
-  -- $signal
-  Interrupt,
-
-  -- ** Interpreters
-  interpretInterrupt,
-  interpretInterruptOnce,
-  interpretInterruptNull,
-
   -- * Event Channels
   Events,
   Consume,
@@ -232,7 +223,6 @@ import Polysemy.Conc.Data.QueueResult (QueueResult)
 import Polysemy.Conc.Effect.Critical (Critical)
 import Polysemy.Conc.Effect.Events (Consume, Events, consume, publish, subscribe)
 import Polysemy.Conc.Effect.Gate (Gate, Gates)
-import Polysemy.Conc.Effect.Interrupt (Interrupt)
 import Polysemy.Conc.Effect.Lock (Lock, lock, lockOr, lockOrSkip, lockOrSkip_)
 import Polysemy.Conc.Effect.Mask (Mask, Restoration, UninterruptibleMask, mask, restore, uninterruptibleMask)
 import Polysemy.Conc.Effect.Monitor (Monitor, Restart, RestartingMonitor, ScopedMonitor, monitor, restart, withMonitor)
@@ -263,7 +253,6 @@ import Polysemy.Conc.Events (
 import Polysemy.Conc.Interpreter.Critical (interpretCritical, interpretCriticalNull)
 import Polysemy.Conc.Interpreter.Events (EventConsumer, interpretEventsChan)
 import Polysemy.Conc.Interpreter.Gate (interpretGate, interpretGates)
-import Polysemy.Conc.Interpreter.Interrupt (interpretInterrupt, interpretInterruptNull, interpretInterruptOnce)
 import Polysemy.Conc.Interpreter.Lock (interpretLockPermissive, interpretLockReentrant)
 import Polysemy.Conc.Interpreter.Mask (
   interpretMaskFinal,
