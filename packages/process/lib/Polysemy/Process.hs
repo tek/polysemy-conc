@@ -35,6 +35,10 @@ module Polysemy.Process (
   Pty,
   withPty,
 
+  -- ** Signal Handling
+  -- $signal
+  Interrupt,
+
   -- * Interpreters
   -- ** Process
   interpretProcess,
@@ -92,6 +96,11 @@ module Polysemy.Process (
   -- ** Pty
   interpretPty,
 
+  -- ** Signal Handling
+  interpretInterrupt,
+  interpretInterruptOnce,
+  interpretInterruptNull,
+
   -- * Tools
   resolveExecutable,
 ) where
@@ -104,6 +113,7 @@ import Polysemy.Process.Data.ProcessKill (ProcessKill (..))
 import Polysemy.Process.Data.ProcessOptions (ProcessOptions (ProcessOptions))
 import Polysemy.Process.Data.ProcessOutputParseResult (ProcessOutputParseResult (..))
 import Polysemy.Process.Data.SystemProcessError (SystemProcessError, SystemProcessScopeError)
+import Polysemy.Process.Effect.Interrupt (Interrupt)
 import Polysemy.Process.Effect.Process (
   Process (..),
   recv,
@@ -118,6 +128,7 @@ import Polysemy.Process.Effect.ProcessOutput (OutputPipe (Stderr, Stdout), Proce
 import Polysemy.Process.Effect.Pty (Pty, withPty)
 import Polysemy.Process.Effect.SystemProcess (SystemProcess, withSystemProcess, withSystemProcess_)
 import Polysemy.Process.Executable (resolveExecutable)
+import Polysemy.Process.Interpreter.Interrupt (interpretInterrupt, interpretInterruptNull, interpretInterruptOnce)
 import Polysemy.Process.Interpreter.Process (
   interpretInputHandle,
   interpretInputHandleBuffered,
@@ -185,3 +196,6 @@ import Polysemy.Process.SystemProcess (currentPid)
 --
 -- The effect 'Pty' abstracts pseudo terminals.
 -- See "Polysemy.Process.Pty" for its constructors.
+
+-- $signal
+-- #signal#

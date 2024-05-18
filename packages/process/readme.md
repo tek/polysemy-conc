@@ -1,6 +1,6 @@
 # About
 
-This library provides [Polysemy] effects for system processes and pseudo terminals.
+This library provides [Polysemy] effects for system processes, signal handling and pseudo terminals.
 
 Please visit [Hackage] for documentation.
 

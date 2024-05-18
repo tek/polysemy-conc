@@ -1,6 +1,6 @@
 {-# options_haddock prune #-}
 -- |Description: Interrupt effect
-module Polysemy.Conc.Effect.Interrupt where
+module Polysemy.Process.Effect.Interrupt where
 
 -- |The interrupt handler effect allows three kinds of interaction for interrupt signals:
 --
@@ -8,10 +8,10 @@ module Polysemy.Conc.Effect.Interrupt where
 -- - Block a thread until a signal is received
 -- - Kill a thread when a signal is received
 --
--- For documentation on the constructors, see the module "Polysemy.Conc.Effect.Interrupt".
+-- For documentation on the constructors, see the module "Polysemy.Process.Effect.Interrupt".
 --
 -- @
--- import qualified Polysemy.Conc.Effect.Interrupt as Interrupt
+-- import qualified Polysemy.Process.Effect.Interrupt as Interrupt
 --
 -- prog = do
 --   Interrupt.register "task 1" (putStrLn "interrupted")

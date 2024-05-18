@@ -62,7 +62,6 @@
         enable = true;
         dependencies = [
           "async"
-          "containers"
           "polysemy ^>= 1.9"
           "polysemy-resume >= 0.7 && < 0.9"
           "polysemy-time ^>= 0.6"
@@ -70,7 +69,6 @@
           "stm-chans ^>= 3"
           "torsor ^>= 0.1"
           "unagi-chan ^>= 0.4"
-          "unix"
         ];
       };
 
@@ -83,11 +81,9 @@
           "polysemy-plugin ^>= 0.4.4"
           "polysemy-test >= 0.6 && < 0.10"
           "polysemy-time ^>= 0.6"
-          "stm"
           "tasty ^>= 1.4"
           "tasty-hedgehog >= 1.3 && < 1.5"
           "time"
-          "unix"
         ];
       };
 
@@ -104,6 +100,7 @@
       library = {
         enable = true;
         dependencies = [
+          "async"
           "path ^>= 0.9"
           "path-io >= 1.7 && < 1.9"
           "polysemy ^>= 1.9"
@@ -121,6 +118,7 @@
       test = {
         enable = true;
         dependencies = [
+          "async"
           "polysemy"
           config.packages.polysemy-conc.dep.minor
           "polysemy-plugin ^>= 0.4.4"
@@ -131,6 +129,7 @@
           "tasty ^>= 1.4"
           "tasty-expected-failure ^>= 0.12"
           "typed-process"
+          "unix"
         ];
       };
 

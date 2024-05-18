@@ -36,12 +36,14 @@ library
       Polysemy.Process.Data.PtyError
       Polysemy.Process.Data.PtyResources
       Polysemy.Process.Data.SystemProcessError
+      Polysemy.Process.Effect.Interrupt
       Polysemy.Process.Effect.Process
       Polysemy.Process.Effect.ProcessInput
       Polysemy.Process.Effect.ProcessOutput
       Polysemy.Process.Effect.Pty
       Polysemy.Process.Effect.SystemProcess
       Polysemy.Process.Executable
+      Polysemy.Process.Interpreter.Interrupt
       Polysemy.Process.Interpreter.Process
       Polysemy.Process.Interpreter.ProcessInput
       Polysemy.Process.Interpreter.ProcessIO
@@ -92,7 +94,8 @@ library
       NoFieldSelectors
   ghc-options: -Wall -Widentities -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Wredundant-constraints -Wunused-type-patterns -Wunused-packages
   build-depends:
-      base ==4.*
+      async
+    , base ==4.*
     , incipit-core ==0.5.*
     , path ==0.9.*
     , path-io >=1.7 && <1.9
@@ -115,6 +118,7 @@ test-suite polysemy-process-test
   type: exitcode-stdio-1.0
   main-is: Main.hs
   other-modules:
+      Polysemy.Process.Test.InterruptTest
       Polysemy.Process.Test.ProcessTest
   hs-source-dirs:
       test
@@ -155,7 +159,8 @@ test-suite polysemy-process-test
       NoFieldSelectors
   ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall -Widentities -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Wredundant-constraints -Wunused-type-patterns -Wunused-packages
   build-depends:
-      base ==4.*
+      async
+    , base ==4.*
     , incipit-core ==0.5.*
     , polysemy
     , polysemy-conc >=0.13.0.1 && <0.14
@@ -167,6 +172,7 @@ test-suite polysemy-process-test
     , tasty ==1.4.*
     , tasty-expected-failure ==0.12.*
     , typed-process
+    , unix
   mixins:
       base hiding (Prelude)
     , incipit-core (IncipitCore as Prelude)

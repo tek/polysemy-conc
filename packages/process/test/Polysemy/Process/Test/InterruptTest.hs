@@ -1,13 +1,13 @@
-module Polysemy.Conc.Test.InterruptTest where
+module Polysemy.Process.Test.InterruptTest where
 
 import Control.Concurrent.STM (TVar, atomically, modifyTVar, newTVarIO, readTVarIO)
+import Polysemy.Conc.Interpreter.Critical (interpretCritical)
+import Polysemy.Conc.Interpreter.Race (interpretRace)
 import Polysemy.Test (UnitTest, assertEq, runTestAuto)
 import System.Posix (Handler (CatchInfoOnce), SignalInfo, installHandler, keyboardSignal, raiseSignal)
 
-import qualified Polysemy.Conc.Effect.Interrupt as Interrupt
-import Polysemy.Conc.Interpreter.Critical (interpretCritical)
-import Polysemy.Conc.Interpreter.Interrupt (interpretInterrupt)
-import Polysemy.Conc.Interpreter.Race (interpretRace)
+import qualified Polysemy.Process.Effect.Interrupt as Interrupt
+import Polysemy.Process.Interpreter.Interrupt (interpretInterrupt)
 
 handler :: MVar () -> TVar Int -> SignalInfo -> IO ()
 handler mv tv _ = do

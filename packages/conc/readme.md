@@ -1,6 +1,6 @@
 # About
 
-This library provides [Polysemy] effects for using STM queues, MVars, signal handling and racing.
+This library provides [Polysemy] effects for using STM queues, MVars and racing.
 
 Please visit [Hackage] for documentation.
 

@@ -2,7 +2,7 @@
 {-# language FieldSelectors #-}
 
 -- |Description: Interrupt interpreters
-module Polysemy.Conc.Interpreter.Interrupt where
+module Polysemy.Process.Interpreter.Interrupt where
 
 import qualified Control.Concurrent.Async as A
 import Control.Concurrent.Async (AsyncCancelled)
@@ -10,6 +10,12 @@ import Control.Concurrent.STM (TVar, newTVarIO)
 import qualified Data.Map.Strict as Map
 import qualified Data.Set as Set
 import qualified Data.Text.IO as Text
+import qualified Polysemy.Conc.Effect.Critical as Critical
+import Polysemy.Conc.Effect.Critical (Critical)
+import Polysemy.Conc.Effect.Race (Race)
+import qualified Polysemy.Conc.Effect.Sync as Sync
+import Polysemy.Conc.Interpreter.Sync (interpretSync)
+import Polysemy.Conc.Race (race_)
 import Polysemy.Internal.Tactics (liftT)
 import Polysemy.Time (Seconds (Seconds))
 import System.IO (stderr)
@@ -20,13 +26,7 @@ import System.Posix.Signals (
   keyboardSignal,
   )
 
-import qualified Polysemy.Conc.Effect.Critical as Critical
-import Polysemy.Conc.Effect.Critical (Critical)
-import Polysemy.Conc.Effect.Interrupt (Interrupt (..))
-import Polysemy.Conc.Effect.Race (Race)
-import qualified Polysemy.Conc.Effect.Sync as Sync
-import Polysemy.Conc.Interpreter.Sync (interpretSync)
-import Polysemy.Conc.Race (race_)
+import Polysemy.Process.Effect.Interrupt (Interrupt (..))
 
 putErr ::
   Member (Embed IO) r =>

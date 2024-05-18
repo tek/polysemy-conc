@@ -1,3 +1,9 @@
+# Unreleased
+
+## Breaking
+
+* Move `Interrupt` to `polysemy-process` to avoid the dependency on `unix`.
+
 # 0.12.0.0
 
 ## Breaking

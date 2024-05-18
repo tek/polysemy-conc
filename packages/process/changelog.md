@@ -1,3 +1,9 @@
+# Unreleased
+
+## Breaking
+
+* Move `Interrupt` here from `polysemy-conc`.
+
 # 0.10.0.0
 
 * Add `oneshot` variants of `Process` interpreters that send `Stop` to the individual actions inside the scope, modeling

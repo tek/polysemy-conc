@@ -34,7 +34,6 @@ library
       Polysemy.Conc.Effect.Critical
       Polysemy.Conc.Effect.Events
       Polysemy.Conc.Effect.Gate
-      Polysemy.Conc.Effect.Interrupt
       Polysemy.Conc.Effect.Lock
       Polysemy.Conc.Effect.Mask
       Polysemy.Conc.Effect.Monitor
@@ -49,7 +48,6 @@ library
       Polysemy.Conc.Interpreter.Critical
       Polysemy.Conc.Interpreter.Events
       Polysemy.Conc.Interpreter.Gate
-      Polysemy.Conc.Interpreter.Interrupt
       Polysemy.Conc.Interpreter.Lock
       Polysemy.Conc.Interpreter.Mask
       Polysemy.Conc.Interpreter.Monitor
@@ -112,7 +110,6 @@ library
   build-depends:
       async
     , base ==4.*
-    , containers
     , incipit-core ==0.5.*
     , polysemy ==1.9.*
     , polysemy-resume >=0.7 && <0.9
@@ -121,7 +118,6 @@ library
     , stm-chans >=3 && <3.1
     , torsor ==0.1.*
     , unagi-chan ==0.4.*
-    , unix
   mixins:
       base hiding (Prelude)
     , incipit-core (IncipitCore as Prelude)
@@ -133,7 +129,6 @@ test-suite polysemy-conc-test
   main-is: Main.hs
   other-modules:
       Polysemy.Conc.Test.EventsTest
-      Polysemy.Conc.Test.InterruptTest
       Polysemy.Conc.Test.LockTest
       Polysemy.Conc.Test.MaskTest
       Polysemy.Conc.Test.MonitorTest
@@ -187,11 +182,9 @@ test-suite polysemy-conc-test
     , polysemy-plugin >=0.4.4 && <0.5
     , polysemy-test >=0.6 && <0.10
     , polysemy-time ==0.6.*
-    , stm
     , tasty ==1.4.*
     , tasty-hedgehog >=1.3 && <1.5
     , time
-    , unix
   mixins:
       base hiding (Prelude)
     , incipit-core (IncipitCore as Prelude)
