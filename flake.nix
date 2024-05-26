@@ -1,35 +1,27 @@
 {
   description = "Polysemy effects for concurrency";
 
-  inputs = {
-    hix.url = "git+https://git.tryp.io/tek/hix";
-    polysemy-time.url = "git+https://git.tryp.io/tek/polysemy-time";
-  };
+  inputs.hix.url = "git+https://git.tryp.io/tek/hix";
 
-  outputs = { hix, polysemy-time, ... }: hix.lib.pro ({config, ...}: {
-    ghcVersions = ["ghc92" "ghc94" "ghc96"];
+  outputs = { hix, ... }: hix.lib.pro ({config, ...}: let
+    overrides = {jailbreak, unbreak, ...}: {
+      polysemy-test = jailbreak unbreak;
+    };
+  in {
+    ghcVersions = ["ghc94" "ghc96" "ghc98"];
+    compat.versions = ["ghc96"];
     hackage.versionFile = "ops/version.nix";
     main = "polysemy-process";
-    deps = [polysemy-time];
     gen-overrides.enable = true;
-    compiler = "ghc94";
-
-    envs.ghc96.overrides = {unbreak, ...}: {
-      polysemy-resume = unbreak;
+    managed = {
+      enable = true;
+      lower.enable = true;
+      sets = "each";
+      envs.solverOverrides = overrides;
+      latest.compiler = "ghc98";
     };
 
-    envs.ghc94.overrides = {hackage, ...}: {
-      polysemy-resume = hackage "0.7.0.0" "1b9agh2qd0nrbd7cc5iabkzjb7g9lnzzy3pprvn33hr54va9p928";
-    };
-
-    envs.ghc92.overrides = {hackage, unbreak, ...}: {
-      polysemy-resume = unbreak;
-    };
-
-    envs.dev.overrides = {hackage, ...}: {
-      polysemy-resume = hackage "0.8.0.1" "1fci0v1xc6xx8qkj8s57m7yy2w1rxyxvb9bw9vkksdxr3z38dbkg";
-      polysemy-time = hackage "0.6.0.1" "1rkpjgx1jrdc50ma6y32mv77516qz9py80h97z3qijl0qi10hw10";
-    };
+    inherit overrides;
 
     cabal = {
       license = "BSD-2-Clause-Patent";
@@ -37,10 +29,7 @@
       author = "Torsten Schmits";
       prelude = {
         enable = true;
-        package = {
-          name = "incipit-core";
-          version = "^>= 0.5";
-        };
+        package.name = "incipit-core";
         module = "IncipitCore";
       };
       meta = {
@@ -53,7 +42,7 @@
     packages.polysemy-conc = {
       src = ./packages/conc;
 
-      cabal.meta ={
+      cabal.meta = {
         synopsis = "Polysemy effects for concurrency";
         category = "Concurrency";
       };
@@ -62,13 +51,13 @@
         enable = true;
         dependencies = [
           "async"
-          "polysemy ^>= 1.9"
-          "polysemy-resume >= 0.7 && < 0.9"
-          "polysemy-time ^>= 0.6"
+          "polysemy"
+          "polysemy-resume"
+          "polysemy-time"
           "stm"
-          "stm-chans ^>= 3"
-          "torsor ^>= 0.1"
-          "unagi-chan ^>= 0.4"
+          "stm-chans"
+          "torsor"
+          "unagi-chan"
         ];
       };
 
@@ -76,13 +65,13 @@
         enable = true;
         dependencies = [
           "async"
-          "hedgehog >= 1.1 && < 1.3"
-          "polysemy ^>= 1.9"
-          "polysemy-plugin ^>= 0.4.4"
-          "polysemy-test >= 0.6 && < 0.10"
-          "polysemy-time ^>= 0.6"
-          "tasty ^>= 1.4"
-          "tasty-hedgehog >= 1.3 && < 1.5"
+          "hedgehog"
+          "polysemy"
+          "polysemy-plugin"
+          "polysemy-test"
+          "polysemy-time"
+          "tasty"
+          "tasty-hedgehog"
           "time"
         ];
       };
@@ -101,16 +90,16 @@
         enable = true;
         dependencies = [
           "async"
-          "path ^>= 0.9"
-          "path-io >= 1.7 && < 1.9"
-          "polysemy ^>= 1.9"
+          "path"
+          "path-io"
+          "polysemy"
           config.packages.polysemy-conc.dep.minor
-          "polysemy-resume >= 0.7 && < 0.9"
-          "polysemy-time ^>= 0.6"
-          "posix-pty ^>= 0.2"
+          "polysemy-resume"
+          "polysemy-time"
+          "posix-pty"
           "process"
-          "stm-chans ^>= 3"
-          "typed-process ^>= 0.2.6"
+          "stm-chans"
+          "typed-process"
           "unix"
         ];
       };
@@ -121,13 +110,13 @@
           "async"
           "polysemy"
           config.packages.polysemy-conc.dep.minor
-          "polysemy-plugin ^>= 0.4.4"
+          "polysemy-plugin"
           "polysemy-process"
-          "polysemy-resume >= 0.7 && < 0.9"
-          "polysemy-test >= 0.6 && < 0.10"
-          "polysemy-time ^>= 0.6"
-          "tasty ^>= 1.4"
-          "tasty-expected-failure ^>= 0.12"
+          "polysemy-resume"
+          "polysemy-test"
+          "polysemy-time"
+          "tasty"
+          "tasty-expected-failure"
           "typed-process"
           "unix"
         ];
