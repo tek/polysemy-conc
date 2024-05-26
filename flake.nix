@@ -1,35 +1,44 @@
 {
   description = "Polysemy effects for concurrency";
 
-  inputs = {
-    hix.url = "git+https://git.tryp.io/tek/hix";
-    polysemy-time.url = "git+https://git.tryp.io/tek/polysemy-time";
-  };
+  inputs.hix.url = "git+https://git.tryp.io/tek/hix";
 
-  outputs = { hix, polysemy-time, ... }: hix.lib.pro ({config, ...}: {
-    ghcVersions = ["ghc92" "ghc94" "ghc96"];
+  outputs = { hix, ... }: hix.lib.pro ({config, ...}: let
+    overrides = {jailbreak, unbreak, ...}: {
+      polysemy-test = jailbreak unbreak;
+    };
+  in {
+    ghcVersions = ["ghc94" "ghc96" "ghc98"];
+    compat.versions = ["ghc96"];
     hackage.versionFile = "ops/version.nix";
     main = "polysemy-process";
-    deps = [polysemy-time];
     gen-overrides.enable = true;
-    compiler = "ghc94";
-
-    envs.ghc96.overrides = {unbreak, ...}: {
-      polysemy-resume = unbreak;
+    managed = {
+      enable = true;
+      lower.enable = true;
+      sets = "each";
+      envs.solverOverrides = overrides;
+      latest.compiler = "ghc98";
     };
 
-    envs.ghc94.overrides = {hackage, ...}: {
-      polysemy-resume = hackage "0.7.0.0" "1b9agh2qd0nrbd7cc5iabkzjb7g9lnzzy3pprvn33hr54va9p928";
-    };
+    inherit overrides;
 
-    envs.ghc92.overrides = {hackage, unbreak, ...}: {
-      polysemy-resume = unbreak;
-    };
+#     envs.ghc96.overrides = {unbreak, ...}: {
+#       polysemy-resume = unbreak;
+#     };
 
-    envs.dev.overrides = {hackage, ...}: {
-      polysemy-resume = hackage "0.8.0.1" "1fci0v1xc6xx8qkj8s57m7yy2w1rxyxvb9bw9vkksdxr3z38dbkg";
-      polysemy-time = hackage "0.6.0.1" "1rkpjgx1jrdc50ma6y32mv77516qz9py80h97z3qijl0qi10hw10";
-    };
+#     envs.ghc94.overrides = {hackage, ...}: {
+#       polysemy-resume = hackage "0.7.0.0" "1b9agh2qd0nrbd7cc5iabkzjb7g9lnzzy3pprvn33hr54va9p928";
+#     };
+
+#     envs.ghc92.overrides = {hackage, unbreak, ...}: {
+#       polysemy-resume = unbreak;
+#     };
+
+#     envs.dev.overrides = {hackage, ...}: {
+#       polysemy-resume = hackage "0.8.0.1" "1fci0v1xc6xx8qkj8s57m7yy2w1rxyxvb9bw9vkksdxr3z38dbkg";
+#       polysemy-time = hackage "0.6.0.1" "1rkpjgx1jrdc50ma6y32mv77516qz9py80h97z3qijl0qi10hw10";
+#     };
 
     cabal = {
       license = "BSD-2-Clause-Patent";
@@ -53,7 +62,7 @@
     packages.polysemy-conc = {
       src = ./packages/conc;
 
-      cabal.meta ={
+      cabal.meta = {
         synopsis = "Polysemy effects for concurrency";
         category = "Concurrency";
       };

@@ -1,6 +1,6 @@
 cabal-version: 2.2
 
--- This file has been generated from package.yaml by hpack version 0.35.2.
+-- This file has been generated from package.yaml by hpack version 0.36.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -72,6 +72,7 @@ library
       GADTs
       LambdaCase
       LiberalTypeSynonyms
+      MonadComprehensions
       MultiWayIf
       OverloadedLabels
       OverloadedLists
@@ -95,18 +96,18 @@ library
   ghc-options: -Wall -Widentities -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Wredundant-constraints -Wunused-type-patterns -Wunused-packages
   build-depends:
       async
-    , base ==4.*
-    , incipit-core ==0.5.*
-    , path ==0.9.*
-    , path-io >=1.7 && <1.9
-    , polysemy ==1.9.*
+    , base
+    , incipit-core
+    , path
+    , path-io
+    , polysemy
     , polysemy-conc >=0.13.0.1 && <0.14
-    , polysemy-resume >=0.7 && <0.9
-    , polysemy-time ==0.6.*
-    , posix-pty ==0.2.*
+    , polysemy-resume
+    , polysemy-time
+    , posix-pty
     , process
-    , stm-chans >=3 && <3.1
-    , typed-process >=0.2.6 && <0.3
+    , stm-chans
+    , typed-process
     , unix
   mixins:
       base hiding (Prelude)
@@ -137,6 +138,7 @@ test-suite polysemy-process-test
       GADTs
       LambdaCase
       LiberalTypeSynonyms
+      MonadComprehensions
       MultiWayIf
       OverloadedLabels
       OverloadedLists
@@ -160,17 +162,17 @@ test-suite polysemy-process-test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall -Widentities -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Wredundant-constraints -Wunused-type-patterns -Wunused-packages
   build-depends:
       async
-    , base ==4.*
-    , incipit-core ==0.5.*
+    , base
+    , incipit-core
     , polysemy
     , polysemy-conc >=0.13.0.1 && <0.14
-    , polysemy-plugin >=0.4.4 && <0.5
+    , polysemy-plugin
     , polysemy-process
-    , polysemy-resume >=0.7 && <0.9
-    , polysemy-test >=0.6 && <0.10
-    , polysemy-time ==0.6.*
-    , tasty ==1.4.*
-    , tasty-expected-failure ==0.12.*
+    , polysemy-resume
+    , polysemy-test
+    , polysemy-time
+    , tasty
+    , tasty-expected-failure
     , typed-process
     , unix
   mixins:
