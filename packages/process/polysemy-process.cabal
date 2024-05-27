@@ -95,20 +95,20 @@ library
       NoFieldSelectors
   ghc-options: -Wall -Widentities -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Wredundant-constraints -Wunused-type-patterns -Wunused-packages
   build-depends:
-      async >=2.2.5
-    , base >=4.17.2.1
-    , incipit-core >=0.4.1.0
-    , path >=0.9.1
-    , path-io >=1.6.3
-    , polysemy >=1.9.0.0
+      async >=2.2.5 && <2.3
+    , base >=4.17.2.1 && <4.20
+    , incipit-core >=0.4.1.0 && <0.7
+    , path >=0.9.1 && <0.10
+    , path-io >=1.6.3 && <1.9
+    , polysemy >=1.9.0.0 && <1.10
     , polysemy-conc >=0.13.0.1 && <0.14
-    , polysemy-resume >=0.7.0.0
-    , polysemy-time >=0.5.1.0
-    , posix-pty >=0.2.2
-    , process >=1.6.18.0
-    , stm-chans >=2.0.0
-    , typed-process >=0.2.4.1
-    , unix >=2.7.3
+    , polysemy-resume >=0.7.0.0 && <0.10
+    , polysemy-time >=0.5.1.0 && <0.8
+    , posix-pty >=0.2.2 && <0.3
+    , process >=1.6.18.0 && <1.7
+    , stm-chans >=2.0.0 && <3.1
+    , typed-process >=0.2.4.1 && <0.3
+    , unix >=2.7.3 && <2.9
   mixins:
       base hiding (Prelude)
     , incipit-core (IncipitCore as Prelude)
@@ -161,20 +161,20 @@ test-suite polysemy-process-test
       NoFieldSelectors
   ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall -Widentities -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Wredundant-constraints -Wunused-type-patterns -Wunused-packages
   build-depends:
-      async >=2.2.5
-    , base >=4.17.2.1
-    , incipit-core >=0.4.1.0
-    , polysemy >=1.9.0.0
+      async >=2.2.5 && <2.3
+    , base >=4.17.2.1 && <4.20
+    , incipit-core >=0.4.1.0 && <0.7
+    , polysemy >=1.9.0.0 && <1.10
     , polysemy-conc >=0.13.0.1 && <0.14
-    , polysemy-plugin >=0.4.4.0
+    , polysemy-plugin >=0.4.4.0 && <0.5
     , polysemy-process
-    , polysemy-resume >=0.7.0.0
-    , polysemy-test >=0.6.0.0
-    , polysemy-time >=0.5.1.0
-    , tasty >=1.4.2
-    , tasty-expected-failure >=0.11.1.2
-    , typed-process >=0.2.4.1
-    , unix >=2.7.3
+    , polysemy-resume >=0.7.0.0 && <0.10
+    , polysemy-test >=0.6.0.0 && <0.11
+    , polysemy-time >=0.5.1.0 && <0.8
+    , tasty >=1.4.2 && <1.5
+    , tasty-expected-failure >=0.11.1.2 && <0.13
+    , typed-process >=0.2.4.1 && <0.3
+    , unix >=2.7.3 && <2.9
   mixins:
       base hiding (Prelude)
     , incipit-core (IncipitCore as Prelude)
