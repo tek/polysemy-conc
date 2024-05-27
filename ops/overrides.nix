@@ -9,9 +9,13 @@ ghc98 = {
 };
 hls = {
 };
-latest = {
+latest-polysemy-conc = {
 };
-lower = {
+latest-polysemy-process = {
+};
+lower-polysemy-conc = {
+};
+lower-polysemy-process = {
 };
 min = {
 };
