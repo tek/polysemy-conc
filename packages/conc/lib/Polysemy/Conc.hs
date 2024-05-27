@@ -127,42 +127,6 @@ module Polysemy.Conc (
   interpretMaskPure,
   interpretUninterruptibleMaskPure,
 
-  -- * Scoped Effects
-  Scoped,
-  Scoped_,
-  scoped,
-  scoped_,
-  rescope,
-
-  -- ** Interpreters
-  interpretScoped,
-  interpretScopedH,
-  interpretScopedH',
-  interpretScopedAs,
-  interpretScopedWith,
-  interpretScopedWithH,
-  interpretScopedWith_,
-  runScoped,
-  runScopedAs,
-  interpretScopedResumable,
-  interpretScopedResumableH,
-  interpretScopedResumable_,
-  interpretScopedResumableWith,
-  interpretScopedResumableWithH,
-  interpretScopedResumableWith_,
-  interpretResumableScoped,
-  interpretResumableScopedH,
-  interpretResumableScoped_,
-  interpretResumableScopedWith,
-  interpretResumableScopedWithH,
-  interpretResumableScopedWith_,
-  interpretScopedR,
-  interpretScopedRH,
-  interpretScopedR_,
-  interpretScopedRWith,
-  interpretScopedRWithH,
-  interpretScopedRWith_,
-
   -- * Monitoring
   Monitor,
   monitor,
@@ -228,7 +192,6 @@ import Polysemy.Conc.Effect.Mask (Mask, Restoration, UninterruptibleMask, mask, 
 import Polysemy.Conc.Effect.Monitor (Monitor, Restart, RestartingMonitor, ScopedMonitor, monitor, restart, withMonitor)
 import Polysemy.Conc.Effect.Queue (Queue)
 import Polysemy.Conc.Effect.Race (Race, race, timeout)
-import Polysemy.Conc.Effect.Scoped (Scoped, Scoped_, rescope, scoped, scoped_)
 import Polysemy.Conc.Effect.Semaphore (Semaphore)
 import Polysemy.Conc.Effect.Sync (ScopedSync, Sync)
 import Polysemy.Conc.Effect.SyncRead (SyncRead)
@@ -270,35 +233,6 @@ import Polysemy.Conc.Interpreter.Queue.Pure (
 import Polysemy.Conc.Interpreter.Queue.TB (interpretQueueTB)
 import Polysemy.Conc.Interpreter.Queue.TBM (interpretQueueTBM)
 import Polysemy.Conc.Interpreter.Race (interpretRace)
-import Polysemy.Conc.Interpreter.Scoped (
-  interpretResumableScoped,
-  interpretResumableScopedH,
-  interpretResumableScopedWith,
-  interpretResumableScopedWithH,
-  interpretResumableScopedWith_,
-  interpretResumableScoped_,
-  interpretScoped,
-  interpretScopedAs,
-  interpretScopedH,
-  interpretScopedH',
-  interpretScopedR,
-  interpretScopedRH,
-  interpretScopedRWith,
-  interpretScopedRWithH,
-  interpretScopedRWith_,
-  interpretScopedR_,
-  interpretScopedResumable,
-  interpretScopedResumableH,
-  interpretScopedResumableWith,
-  interpretScopedResumableWithH,
-  interpretScopedResumableWith_,
-  interpretScopedResumable_,
-  interpretScopedWith,
-  interpretScopedWithH,
-  interpretScopedWith_,
-  runScoped,
-  runScopedAs,
-  )
 import Polysemy.Conc.Interpreter.Semaphore (interpretSemaphoreQ, interpretSemaphoreT)
 import Polysemy.Conc.Interpreter.Stack (ConcStack, runConc)
 import Polysemy.Conc.Interpreter.Sync (interpretScopedSync, interpretScopedSyncAs, interpretSync, interpretSyncAs)

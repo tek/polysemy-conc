@@ -3,6 +3,7 @@
 ## Breaking
 
 * Move `Interrupt` to `polysemy-process` to avoid the dependency on `unix`.
+* Remove deprecated `Scoped`.
 
 # 0.12.0.0
 
