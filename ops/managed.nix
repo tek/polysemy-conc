@@ -26,11 +26,11 @@
         upper = "0.5";
       };
       polysemy-resume = {
-        lower = "0.7.0.0";
+        lower = "0.5.0.0";
         upper = "0.10";
       };
       polysemy-test = {
-        lower = "0.6.0.0";
+        lower = "0.3.1.6";
         upper = "0.11";
       };
       polysemy-time = {
@@ -84,7 +84,7 @@
         upper = "0.10";
       };
       path-io = {
-        lower = "1.6.3";
+        lower = "0.2.0";
         upper = "1.9";
       };
       polysemy = {
@@ -100,7 +100,7 @@
         upper = "0.10";
       };
       polysemy-test = {
-        lower = "0.6.0.0";
+        lower = "0.3.1.6";
         upper = "0.11";
       };
       polysemy-time = {
@@ -182,8 +182,8 @@
       incipit-core = "0.4.1.0";
       polysemy = "1.9.0.0";
       polysemy-plugin = "0.4.4.0";
-      polysemy-resume = "0.7.0.0";
-      polysemy-test = "0.6.0.0";
+      polysemy-resume = "0.5.0.0";
+      polysemy-test = "0.3.1.6";
       polysemy-time = "0.5.1.0";
       stm = "2.5.1.0";
       stm-chans = "2.0.0";
@@ -198,11 +198,11 @@
       base = "4.17.2.1";
       incipit-core = "0.4.1.0";
       path = "0.9.1";
-      path-io = "1.6.3";
+      path-io = "0.2.0";
       polysemy = "1.9.0.0";
       polysemy-plugin = "0.4.4.0";
       polysemy-resume = "0.7.0.0";
-      polysemy-test = "0.6.0.0";
+      polysemy-test = "0.3.1.6";
       polysemy-time = "0.5.1.0";
       posix-pty = "0.2.2";
       process = "1.6.18.0";
@@ -342,6 +342,22 @@
         version = "1.10.21";
         hash = "1w87rrf337s8wc4z3dkh2mk990003jsk18ry5yawv4465k4yvamw";
       };
+      either = {
+        version = "5.0.2";
+        hash = "1dcl2pg45cbjygbxasn0c7qfs4svrmi7fdp9xl0ivxpgg0y648d0";
+      };
+      happy = {
+        version = "1.20.1.1";
+        hash = "07ghjvfgdka27a2diz5rykb425wd14pchfr33qgl13cxrsb9j8i5";
+      };
+      haskell-src-exts = {
+        version = "1.23.1";
+        hash = "144q88agqqfpc8z1h2jr6mgx5xs72wxkrx4kbpsfg9cza3jm9fbx";
+      };
+      haskell-src-meta = {
+        version = "0.8.14";
+        hash = "0i0x98rmkb3bsv4pd8kwjdlqvahrplm2i5xcnsljqin9xzih8c7a";
+      };
       hedgehog = {
         version = "1.1.2";
         hash = "0zp9al4d4h3vf2h7cqf6zmvzpmjr7w69kcp7fmw97m9c7h7ggniv";
@@ -387,12 +403,12 @@
         hash = "08ry72bw78fis9iallzw6wsrzxnlmayq2k2yy0j79hpw4sp8knmg";
       };
       polysemy-resume = {
-        version = "0.7.0.0";
-        hash = "1b9agh2qd0nrbd7cc5iabkzjb7g9lnzzy3pprvn33hr54va9p928";
+        version = "0.5.0.0";
+        hash = "1yavr2h31ffxj861vscm2hddrwi977ddx0sn0hh47zn78pqafz77";
       };
       polysemy-test = {
-        version = "0.6.0.0";
-        hash = "07pi549ral22sxhja67k5b9v787q0b32ysp0bq9szhwjqgxsab46";
+        version = "0.3.1.6";
+        hash = "0bfh37l68a5chhjfr7gqcffsmvdgg5hqclxi0fc5xnqni2mg81ak";
       };
       polysemy-time = {
         version = "0.5.1.0";
@@ -406,9 +422,21 @@
         version = "0.7.4.0";
         hash = "0n7r8al9wgz4r7jzizapn1dbnkqxwx2c4lqkgfm5q5bxj8fl7g1c";
       };
+      profunctors = {
+        version = "5.6.2";
+        hash = "19gnn2br16x52lmvfjj06xblsks0wz3081z0jf0jydncbgm6kfan";
+      };
+      relude = {
+        version = "1.2.1.0";
+        hash = "0scfivrq6p3hlqkj49kh9m9l8nkwbq339bcpc4rrsd0fq9b8ripc";
+      };
       resourcet = {
         version = "1.2.6";
         hash = "0k96r6mx6zf0nr5y7xjzyhizx80svjfa3a47hcyys10y08rgqvln";
+      };
+      safe = {
+        version = "0.3.21";
+        hash = "1gxpinsixvzb17hzi17yj28fy6n3n97sg3kf4smvf4m9j2alrzbd";
       };
       scientific = {
         version = "0.3.7.0";
@@ -422,9 +450,17 @@
         version = "6.0.1";
         hash = "10qd2y5f5m7jzrha1wfbwwybhhghdwkdmk9ajybdz8h88cz9ig2g";
       };
+      split = {
+        version = "0.2.5";
+        hash = "0l9rhscr8rj968qhqhwzf18mddp5d5c22cwwhzb72q646wxmwnh8";
+      };
       stm-chans = {
         version = "2.0.0";
         hash = "0afxg1wx0jkkajwcz338hm1ql4rzrj9dkdpkcvdaw04jrzaqwmby";
+      };
+      string-interpolate = {
+        version = "0.3.3.0";
+        hash = "01hwj10v0xdhxacrlnbaan9dplrp60axfg4z5ny2czx2psigfc0n";
       };
       tasty = {
         version = "1.4.2";
@@ -434,9 +470,29 @@
         version = "1.3.0.0";
         hash = "17q94i4rwdp1bc2wg5r8pblp8i74ivhc4nqih4w5ncmvhws0syix";
       };
+      text-conversions = {
+        version = "0.3.1.1";
+        hash = "0lfcp2f8ld46cry5wm2afcn362mb7fp28ii3afji7bns1fvhh6lf";
+      };
       th-abstraction = {
         version = "0.4.5.0";
         hash = "19nh7a9b4yif6sijp6xns6xlxcr1mcyrqx3cfbp5bdm7mkbda7a9";
+      };
+      th-expand-syns = {
+        version = "0.4.11.0";
+        hash = "03nhf7w2ppfcdkkpsylf0hj959bwkzidzskfnma5ph763862j3dy";
+      };
+      th-lift = {
+        version = "0.8.4";
+        hash = "0rp32lkvx22alxc7c1mxgf224jyanfy93ry70zwdn6zzj50mnbhc";
+      };
+      th-orphans = {
+        version = "0.13.14";
+        hash = "05z3rfvgpp7i9i9g4rfh7dmchj4izhxwlbchbyibd12mfzbzxmfd";
+      };
+      th-reify-many = {
+        version = "0.1.10";
+        hash = "0g9axz1iszl02cxvy2zgmzinjvz8pbsfq3lzhspshlw5bgcsld39";
       };
       torsor = {
         version = "0.1";
@@ -453,6 +509,10 @@
       unbounded-delays = {
         version = "0.1.1.1";
         hash = "1kbh2yr7lwzrhjniyfllsix2zn8bmz9yrkhnq5lxv9ic9bbxnls7";
+      };
+      utf8-string = {
+        version = "1.0.2";
+        hash = "09i87djx45cinql3mg222m3li08wn8hgmdcp2vqrqc8pn437azrh";
       };
       vector = {
         version = "0.13.1.0";
@@ -484,6 +544,22 @@
         version = "0.8.4";
         hash = "14gy1a16l5s70pyqlsmylxsiiagas2yflqmjjmrdbzj4g1zxy39r";
       };
+      either = {
+        version = "5.0.2";
+        hash = "1dcl2pg45cbjygbxasn0c7qfs4svrmi7fdp9xl0ivxpgg0y648d0";
+      };
+      happy = {
+        version = "1.20.1.1";
+        hash = "07ghjvfgdka27a2diz5rykb425wd14pchfr33qgl13cxrsb9j8i5";
+      };
+      haskell-src-exts = {
+        version = "1.23.1";
+        hash = "144q88agqqfpc8z1h2jr6mgx5xs72wxkrx4kbpsfg9cza3jm9fbx";
+      };
+      haskell-src-meta = {
+        version = "0.8.14";
+        hash = "0i0x98rmkb3bsv4pd8kwjdlqvahrplm2i5xcnsljqin9xzih8c7a";
+      };
       incipit-base = {
         version = "0.4.1.0";
         hash = "17579j3hzsh3ic0272h8ly8k7gz4zm1hv5jqimdam9gcq8alahkl";
@@ -497,8 +573,8 @@
         hash = "0nk3rp5fk97m4y163dyd1y488062djzj071xdd90yyghi5pgvrb5";
       };
       path-io = {
-        version = "1.6.3";
-        hash = "05hcxgyf6kkz36mazd0fqwb6mjy2049gx3vh8qq9h93gfjkpp2vc";
+        version = "0.2.0";
+        hash = "0nzjkdng60k6r6ph1d6kjkrnlw1029i0y5qaipxr2kvd3sn229ql";
       };
       polysemy = {
         version = "1.9.0.0";
@@ -513,12 +589,24 @@
         hash = "1b9agh2qd0nrbd7cc5iabkzjb7g9lnzzy3pprvn33hr54va9p928";
       };
       polysemy-test = {
-        version = "0.6.0.0";
-        hash = "07pi549ral22sxhja67k5b9v787q0b32ysp0bq9szhwjqgxsab46";
+        version = "0.3.1.6";
+        hash = "0bfh37l68a5chhjfr7gqcffsmvdgg5hqclxi0fc5xnqni2mg81ak";
       };
       polysemy-time = {
         version = "0.5.1.0";
         hash = "0wm4yifj93j2csls66xxg189g3aimrixx8q4487pz1q84pk1cizd";
+      };
+      profunctors = {
+        version = "5.6.2";
+        hash = "19gnn2br16x52lmvfjj06xblsks0wz3081z0jf0jydncbgm6kfan";
+      };
+      relude = {
+        version = "1.2.1.0";
+        hash = "0scfivrq6p3hlqkj49kh9m9l8nkwbq339bcpc4rrsd0fq9b8ripc";
+      };
+      safe = {
+        version = "0.3.21";
+        hash = "1gxpinsixvzb17hzi17yj28fy6n3n97sg3kf4smvf4m9j2alrzbd";
       };
       semialign = {
         version = "1.3";
@@ -528,9 +616,17 @@
         version = "6.0.1";
         hash = "10qd2y5f5m7jzrha1wfbwwybhhghdwkdmk9ajybdz8h88cz9ig2g";
       };
+      split = {
+        version = "0.2.5";
+        hash = "0l9rhscr8rj968qhqhwzf18mddp5d5c22cwwhzb72q646wxmwnh8";
+      };
       stm-chans = {
         version = "2.0.0";
         hash = "0afxg1wx0jkkajwcz338hm1ql4rzrj9dkdpkcvdaw04jrzaqwmby";
+      };
+      string-interpolate = {
+        version = "0.3.3.0";
+        hash = "01hwj10v0xdhxacrlnbaan9dplrp60axfg4z5ny2czx2psigfc0n";
       };
       tasty = {
         version = "1.4.2";
@@ -544,9 +640,29 @@
         version = "1.4.0.2";
         hash = "04kg2qdnsqzzmj3xggy2jcgidlp21lsjkz4sfnbq7b1yhrv2vbbc";
       };
+      text-conversions = {
+        version = "0.3.1.1";
+        hash = "0lfcp2f8ld46cry5wm2afcn362mb7fp28ii3afji7bns1fvhh6lf";
+      };
       th-abstraction = {
         version = "0.4.5.0";
         hash = "19nh7a9b4yif6sijp6xns6xlxcr1mcyrqx3cfbp5bdm7mkbda7a9";
+      };
+      th-expand-syns = {
+        version = "0.4.11.0";
+        hash = "03nhf7w2ppfcdkkpsylf0hj959bwkzidzskfnma5ph763862j3dy";
+      };
+      th-lift = {
+        version = "0.8.4";
+        hash = "0rp32lkvx22alxc7c1mxgf224jyanfy93ry70zwdn6zzj50mnbhc";
+      };
+      th-orphans = {
+        version = "0.13.14";
+        hash = "05z3rfvgpp7i9i9g4rfh7dmchj4izhxwlbchbyibd12mfzbzxmfd";
+      };
+      th-reify-many = {
+        version = "0.1.10";
+        hash = "0g9axz1iszl02cxvy2zgmzinjvz8pbsfq3lzhspshlw5bgcsld39";
       };
       type-errors = {
         version = "0.2.0.2";
@@ -555,6 +671,10 @@
       typed-process = {
         version = "0.2.4.1";
         hash = "1mh5y2rng2igmn97wkhk2hd43am6q3gcpvb14c11bfsi685l05x5";
+      };
+      utf8-string = {
+        version = "1.0.2";
+        hash = "09i87djx45cinql3mg222m3li08wn8hgmdcp2vqrqc8pn437azrh";
       };
       wcwidth = {
         version = "0.0.2";
