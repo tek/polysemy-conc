@@ -1,4 +1,4 @@
--- |Description: Events Combinators
+-- | Description: Events Combinators
 module Polysemy.Conc.Events where
 
 import Polysemy.Conc.Async (withAsync_)
@@ -8,7 +8,7 @@ import Polysemy.Conc.Effect.Gate (Gate, Gates, gate, signal, withGate)
 import Polysemy.Conc.Effect.Race (Race)
 import Polysemy.Conc.Interpreter.Events (EventConsumer)
 
--- |Create a new scope for 'Polysemy.Conc.Events', causing the nested program to get its own copy of the event stream.
+-- | Create a new scope for 'Polysemy.Conc.Events', causing the nested program to get its own copy of the event stream.
 --
 -- Calls 'signal' before running the argument to ensure that 'Events.subscribe' has finished creating a channel, for use
 -- with asynchronous execution.
@@ -21,7 +21,7 @@ subscribeGated action =
     signal
     action
 
--- |Create a new scope for 'Polysemy.Conc.Events', causing the nested program to get its own copy of the event stream.
+-- | Create a new scope for 'Polysemy.Conc.Events', causing the nested program to get its own copy of the event stream.
 --
 -- Executes in a new thread, ensuring that the main thread blocks until 'Events.subscribe' has finished creating a
 -- channel.
@@ -36,7 +36,7 @@ subscribeAsync consumer ma =
     gate
     raise @Gate ma
 
--- |Pull repeatedly from 'Polysemy.Conc.Consume', passing the event to the supplied callback.
+-- | Pull repeatedly from 'Polysemy.Conc.Consume', passing the event to the supplied callback.
 -- Stop when the action returns @False@.
 consumeWhile ::
   Member (Consume e) r =>
@@ -48,7 +48,7 @@ consumeWhile action =
     spin =
       whenM (action =<< Events.consume) spin
 
--- |Pull repeatedly from the 'Polysemy.Conc.Events' channel, passing the event to the supplied callback.
+-- | Pull repeatedly from the 'Polysemy.Conc.Events' channel, passing the event to the supplied callback.
 -- Stop when the action returns @False@.
 subscribeWhile ::
   ∀ e r .
@@ -58,7 +58,7 @@ subscribeWhile ::
 subscribeWhile action =
   Events.subscribe @e (consumeWhile (raise . action))
 
--- |Pull repeatedly from the 'Polysemy.Conc.Events' channel, passing the event to the supplied callback.
+-- | Pull repeatedly from the 'Polysemy.Conc.Events' channel, passing the event to the supplied callback.
 -- Stop when the action returns @False@.
 --
 -- Signals the caller that the channel was successfully subscribed to using the 'Gate' effect.
@@ -71,7 +71,7 @@ subscribeWhileGated action =
   subscribeGated @e do
     consumeWhile (raise . action)
 
--- |Start a new thread that pulls repeatedly from the 'Polysemy.Conc.Events' channel, passing the event to the supplied
+-- | Start a new thread that pulls repeatedly from the 'Polysemy.Conc.Events' channel, passing the event to the supplied
 -- callback and stops when the action returns @False@.
 subscribeWhileAsync ::
   ∀ e r a .
@@ -82,7 +82,7 @@ subscribeWhileAsync ::
 subscribeWhileAsync action =
   subscribeAsync @e (consumeWhile action)
 
--- |Pull repeatedly from 'Polysemy.Conc.Consume', passing the event to the supplied callback.
+-- | Pull repeatedly from 'Polysemy.Conc.Consume', passing the event to the supplied callback.
 consumeLoop ::
   Member (Consume e) r =>
   (e -> Sem r ()) ->
@@ -90,7 +90,7 @@ consumeLoop ::
 consumeLoop action =
   forever (action =<< Events.consume)
 
--- |Pull repeatedly from the 'Polysemy.Conc.Events' channel, passing the event to the supplied callback.
+-- | Pull repeatedly from the 'Polysemy.Conc.Events' channel, passing the event to the supplied callback.
 subscribeLoop ::
   ∀ e r .
   Member (EventConsumer e) r =>
@@ -99,7 +99,7 @@ subscribeLoop ::
 subscribeLoop action =
   Events.subscribe @e (consumeLoop (raise . action))
 
--- |Pull repeatedly from the 'Polysemy.Conc.Events' channel, passing the event to the supplied callback.
+-- | Pull repeatedly from the 'Polysemy.Conc.Events' channel, passing the event to the supplied callback.
 --
 -- Signals the caller that the channel was successfully subscribed to using the 'Gate' effect.
 subscribeLoopGated ::
@@ -111,7 +111,7 @@ subscribeLoopGated action =
   subscribeGated @e do
     consumeLoop (raise . action)
 
--- |Start a new thread that pulls repeatedly from the 'Polysemy.Conc.Events' channel, passing the event to the supplied
+-- | Start a new thread that pulls repeatedly from the 'Polysemy.Conc.Events' channel, passing the event to the supplied
 -- callback.
 subscribeLoopAsync ::
   ∀ e r a .
@@ -122,7 +122,7 @@ subscribeLoopAsync ::
 subscribeLoopAsync action =
   subscribeAsync @e (consumeLoop action)
 
--- |Block until a value matching the predicate has been returned by 'Polysemy.Conc.Consume'.
+-- | Block until a value matching the predicate has been returned by 'Polysemy.Conc.Consume'.
 consumeFind ::
   ∀ e r .
   Member (Consume e) r =>
@@ -135,7 +135,7 @@ consumeFind f =
       e <- Events.consume
       ifM (f e) (pure e) spin
 
--- |Block until a value matching the predicate has been published to the 'Polysemy.Conc.Events' channel.
+-- | Block until a value matching the predicate has been published to the 'Polysemy.Conc.Events' channel.
 subscribeFind ::
   ∀ e r .
   Member (EventConsumer e) r =>
@@ -144,7 +144,7 @@ subscribeFind ::
 subscribeFind f =
   Events.subscribe @e (consumeFind f)
 
--- |Return the first value returned by 'Polysemy.Conc.Consume' for which the function produces 'Just'.
+-- | Return the first value returned by 'Polysemy.Conc.Consume' for which the function produces 'Just'.
 consumeFirstJust ::
   ∀ e a r .
   Member (Consume e) r =>
@@ -157,7 +157,7 @@ consumeFirstJust f =
       e <- Events.consume
       maybe spin pure =<< f e
 
--- |Return the first value published to the 'Polysemy.Conc.Events' channel for which the function produces 'Just'.
+-- | Return the first value published to the 'Polysemy.Conc.Events' channel for which the function produces 'Just'.
 subscribeFirstJust ::
   ∀ e a r .
   Member (EventConsumer e) r =>
@@ -166,7 +166,7 @@ subscribeFirstJust ::
 subscribeFirstJust f =
   Events.subscribe @e (consumeFirstJust f)
 
--- |Block until the specified value has been returned by 'Polysemy.Conc.Consume'.
+-- | Block until the specified value has been returned by 'Polysemy.Conc.Consume'.
 consumeElem ::
   ∀ e r .
   Eq e =>
@@ -176,7 +176,7 @@ consumeElem ::
 consumeElem target =
   void (consumeFind (pure . (target ==)))
 
--- |Block until the specified value has been published to the 'Polysemy.Conc.Events' channel.
+-- | Block until the specified value has been published to the 'Polysemy.Conc.Events' channel.
 subscribeElem ::
   ∀ e r .
   Eq e =>

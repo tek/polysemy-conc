@@ -1,6 +1,6 @@
 {-# options_haddock prune #-}
 
--- |Description: Scoped Interpreters, Internal
+-- | Description: Scoped Interpreters, Internal
 module Polysemy.Conc.Interpreter.Scoped where
 
 import GHC.Err (errorWithoutStackTrace)
@@ -297,7 +297,7 @@ runScopedAs ::
 runScopedAs resource = runScoped \ p use -> use =<< resource p
 {-# inline runScopedAs #-}
 
--- |Combined higher-order interpreter for 'Scoped' and 'Resumable'.
+-- | Combined higher-order interpreter for 'Scoped' and 'Resumable'.
 -- This allows 'Stop' to be sent from within the resource allocator so that the consumer receives it, terminating the
 -- entire scope.
 interpretScopedResumableH ::
@@ -322,7 +322,7 @@ interpretScopedResumableH withResource scopedHandler =
           exResumable s ex ex' $ raise $ runStop $ withResource param \ resource ->
             interpretH (scopedHandler resource) (raiseUnder (go $ wv (wv' (main <$ s') <$ s)))
 
--- |Combined interpreter for 'Scoped' and 'Resumable'.
+-- | Combined interpreter for 'Scoped' and 'Resumable'.
 -- This allows 'Stop' to be sent from within the resource allocator so that the consumer receives it, terminating the
 -- entire scope.
 interpretScopedResumable ::
@@ -333,7 +333,7 @@ interpretScopedResumable ::
 interpretScopedResumable withResource scopedHandler =
   interpretScopedResumableH withResource \ r e -> liftT (scopedHandler r e)
 
--- |Combined interpreter for 'Scoped' and 'Resumable'.
+-- | Combined interpreter for 'Scoped' and 'Resumable'.
 -- This allows 'Stop' to be sent from within the resource allocator so that the consumer receives it, terminating the
 -- entire scope.
 -- In this variant, the resource allocator is a plain action.
@@ -345,7 +345,7 @@ interpretScopedResumable_ ::
 interpretScopedResumable_ resource =
   interpretScopedResumable \ p use -> use =<< resource p
 
--- |Combined higher-order interpreter for 'Scoped' and 'Resumable' that allows the handler to use additional effects
+-- | Combined higher-order interpreter for 'Scoped' and 'Resumable' that allows the handler to use additional effects
 -- that are interpreted by the resource allocator.
 -- This allows 'Stop' to be sent from within the resource allocator so that the consumer receives it, terminating the
 -- entire scope.
@@ -380,7 +380,7 @@ interpretScopedResumableWithH withResource scopedHandler =
         Run act ->
           ex . fmap Right <$> liftSem (weave s (inScope . wv) ins (injWeaving (Weaving act s' wv' ex' ins')))
 
--- |Combined interpreter for 'Scoped' and 'Resumable' that allows the handler to use additional effects that are
+-- | Combined interpreter for 'Scoped' and 'Resumable' that allows the handler to use additional effects that are
 -- interpreted by the resource allocator.
 -- This allows 'Stop' to be sent from within the resource allocator so that the consumer receives it, terminating the
 -- entire scope.
@@ -394,7 +394,7 @@ interpretScopedResumableWith ::
 interpretScopedResumableWith withResource scopedHandler =
   interpretScopedResumableWithH @extra withResource \ r e -> liftT (scopedHandler r e)
 
--- |Combined interpreter for 'Scoped' and 'Resumable' that allows the handler to use additional effects that are
+-- | Combined interpreter for 'Scoped' and 'Resumable' that allows the handler to use additional effects that are
 -- interpreted by the resource allocator.
 -- This allows 'Stop' to be sent from within the resource allocator so that the consumer receives it, terminating the
 -- entire scope.
@@ -409,7 +409,7 @@ interpretScopedResumableWith_ ::
 interpretScopedResumableWith_ extra scopedHandler =
   interpretScopedResumableWith @extra (\ p f -> extra p (f ())) (const scopedHandler)
 
--- |Combined higher-order interpreter for 'Resumable' and 'Scoped'.
+-- | Combined higher-order interpreter for 'Resumable' and 'Scoped'.
 -- In this variant, only the handler may send 'Stop', but this allows resumption to happen on each action inside of the
 -- scope.
 interpretResumableScopedH ::
@@ -430,7 +430,7 @@ interpretResumableScopedH withResource scopedHandler =
         InScope param main -> raise $ withResource param \ resource ->
           ex <$> interpretResumableH (scopedHandler resource) (inScope $ wv (main <$ s))
 
--- |Combined interpreter for 'Resumable' and 'Scoped'.
+-- | Combined interpreter for 'Resumable' and 'Scoped'.
 -- In this variant, only the handler may send 'Stop', but this allows resumption to happen on each action inside of the
 -- scope.
 interpretResumableScoped ::
@@ -441,7 +441,7 @@ interpretResumableScoped ::
 interpretResumableScoped withResource scopedHandler =
   interpretResumableScopedH withResource \ r e -> liftT (scopedHandler r e)
 
--- |Combined interpreter for 'Resumable' and 'Scoped'.
+-- | Combined interpreter for 'Resumable' and 'Scoped'.
 -- In this variant:
 -- - Only the handler may send 'Stop', but this allows resumption to happen on each action inside of the scope.
 -- - The resource allocator is a plain action.
@@ -453,7 +453,7 @@ interpretResumableScoped_ ::
 interpretResumableScoped_ resource =
   interpretResumableScoped \ p use -> use =<< resource p
 
--- |Combined higher-order interpreter for 'Resumable' and 'Scoped' that allows the handler to use additional effects
+-- | Combined higher-order interpreter for 'Resumable' and 'Scoped' that allows the handler to use additional effects
 -- that are interpreted by the resource allocator.
 -- In this variant, only the handler may send 'Stop', but this allows resumption to happen on each action inside of the
 -- scope.
@@ -487,7 +487,7 @@ interpretResumableScopedWithH withResource scopedHandler =
         Weaving (Run act) s wv ex ins ->
           liftSem $ injWeaving $ Weaving act s (inScope . wv) ex ins
 
--- |Combined interpreter for 'Resumable' and 'Scoped' that allows the handler to use additional effects that are
+-- | Combined interpreter for 'Resumable' and 'Scoped' that allows the handler to use additional effects that are
 -- interpreted by the resource allocator.
 -- In this variant, only the handler may send 'Stop', but this allows resumption to happen on each action inside of the
 -- scope.
@@ -501,7 +501,7 @@ interpretResumableScopedWith ::
 interpretResumableScopedWith withResource scopedHandler =
   interpretResumableScopedWithH @extra withResource \ r e -> liftT (scopedHandler r e)
 
--- |Combined interpreter for 'Resumable' and 'Scoped' that allows the handler to use additional effects that are
+-- | Combined interpreter for 'Resumable' and 'Scoped' that allows the handler to use additional effects that are
 -- interpreted by the resource allocator.
 -- In this variant:
 -- - Only the handler may send 'Stop', but this allows resumption to happen on each action inside of the scope.
@@ -516,7 +516,7 @@ interpretResumableScopedWith_ ::
 interpretResumableScopedWith_ extra scopedHandler =
   interpretResumableScopedWith @extra @param @() @effect @err @r @r1 (\ p f -> extra p (f ())) (const scopedHandler)
 
--- |Combined higher-order interpreter for 'Resumable' and 'Scoped'.
+-- | Combined higher-order interpreter for 'Resumable' and 'Scoped'.
 -- In this variant, both the handler and the scope may send different errors via 'Stop', encoding the concept that the
 -- resource allocation may fail to prevent the scope from being executed, and each individual scoped action may fail,
 -- continuing the scope execution on resumption.
@@ -542,7 +542,7 @@ interpretScopedRH withResource scopedHandler =
           exResumable s ex ex' $ raise $ runStop $ withResource param \ resource ->
             interpretResumableH (scopedHandler resource) (raiseUnder (inScope $ wv (wv' (main <$ s') <$ s)))
 
--- |Combined interpreter for 'Scoped' and 'Resumable'.
+-- | Combined interpreter for 'Scoped' and 'Resumable'.
 -- In this variant, both the handler and the scope may send different errors via 'Stop', encoding the concept that the
 -- resource allocation may fail to prevent the scope from being executed, and each individual scoped action may fail,
 -- continuing the scope execution on resumption.
@@ -554,7 +554,7 @@ interpretScopedR ::
 interpretScopedR withResource scopedHandler =
   interpretScopedRH withResource \ r e -> liftT (scopedHandler r e)
 
--- |Combined interpreter for 'Scoped' and 'Resumable'.
+-- | Combined interpreter for 'Scoped' and 'Resumable'.
 -- In this variant:
 -- - Both the handler and the scope may send different errors via 'Stop', encoding the concept that the
 --   resource allocation may fail to prevent the scope from being executed, and each individual scoped action may fail,
@@ -568,7 +568,7 @@ interpretScopedR_ ::
 interpretScopedR_ resource =
   interpretScopedR \ p use -> use =<< resource p
 
--- |Combined higher-order interpreter for 'Scoped' and 'Resumable' that allows the handler to use additional effects
+-- | Combined higher-order interpreter for 'Scoped' and 'Resumable' that allows the handler to use additional effects
 -- that are interpreted by the resource allocator.
 -- In this variant, both the handler and the scope may send different errors via 'Stop', encoding the concept that the
 -- resource allocation may fail to prevent the scope from being executed, and each individual scoped action may fail,
@@ -606,7 +606,7 @@ interpretScopedRWithH withResource scopedHandler =
         Run act ->
           ex . fmap Right <$> liftSem (weave s (inScope . wv) ins (injWeaving (Weaving act s' wv' ex' ins')))
 
--- |Combined interpreter for 'Scoped' and 'Resumable' that allows the handler to use additional effects that are
+-- | Combined interpreter for 'Scoped' and 'Resumable' that allows the handler to use additional effects that are
 -- interpreted by the resource allocator.
 -- In this variant, both the handler and the scope may send different errors via 'Stop', encoding the concept that the
 -- resource allocation may fail to prevent the scope from being executed, and each individual scoped action may fail,
@@ -622,7 +622,7 @@ interpretScopedRWith ::
 interpretScopedRWith withResource scopedHandler =
   interpretScopedRWithH @extra withResource \ r e -> liftT (scopedHandler r e)
 
--- |Combined interpreter for 'Scoped' and 'Resumable' that allows the handler to use additional effects that are
+-- | Combined interpreter for 'Scoped' and 'Resumable' that allows the handler to use additional effects that are
 -- interpreted by the resource allocator.
 -- - Both the handler and the scope may send different errors via 'Stop', encoding the concept that the
 --   resource allocation may fail to prevent the scope from being executed, and each individual scoped action may fail,

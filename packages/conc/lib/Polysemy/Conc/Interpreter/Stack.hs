@@ -1,6 +1,6 @@
 {-# options_haddock prune #-}
 
--- |Description: Convenience Interpreters for all Conc Effects, Internal
+-- | Description: Convenience Interpreters for all Conc Effects, Internal
 module Polysemy.Conc.Interpreter.Stack where
 
 import Polysemy.Conc.Effect.Gate (Gates)
@@ -10,7 +10,7 @@ import Polysemy.Conc.Interpreter.Gate (interpretGates)
 import Polysemy.Conc.Interpreter.Mask (interpretMaskFinal, interpretUninterruptibleMaskFinal)
 import Polysemy.Conc.Interpreter.Race (interpretRace)
 
--- |A default basic stack with 'Final' for _polysemy-conc_.
+-- | A default basic stack with 'Final' for _polysemy-conc_.
 type ConcStack =
   [
     UninterruptibleMask,
@@ -23,7 +23,7 @@ type ConcStack =
     Final IO
   ]
 
--- |Interprets 'UninterruptibleMask', 'Mask' and 'Race' in terms of @'Final' 'IO'@ and runs the entire rest of the
+-- | Interprets 'UninterruptibleMask', 'Mask' and 'Race' in terms of @'Final' 'IO'@ and runs the entire rest of the
 -- stack.
 runConc ::
   Sem ConcStack a ->

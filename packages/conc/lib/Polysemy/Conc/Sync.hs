@@ -1,6 +1,6 @@
 {-# options_haddock prune #-}
 
--- |Description: Sync Combinators
+-- | Description: Sync Combinators
 module Polysemy.Conc.Sync (
   module Polysemy.Conc.Sync,
   module Polysemy.Conc.Effect.Sync,
@@ -13,7 +13,7 @@ import Polysemy.Conc.Effect.Mask (Mask, mask, restore)
 import qualified Polysemy.Conc.Effect.Sync as Sync
 import Polysemy.Conc.Effect.Sync
 
--- |Run an action repeatedly until the 'Sync' variable is available.
+-- | Run an action repeatedly until the 'Sync' variable is available.
 whileEmpty ::
   ∀ a r .
   Member (Sync a) r =>
@@ -26,7 +26,7 @@ whileEmpty action =
       action
       whenM (not <$> Sync.empty @a) spin
 
--- |Run an action repeatedly until the 'Sync' variable is available, waiting for the specified time between executions.
+-- | Run an action repeatedly until the 'Sync' variable is available, waiting for the specified time between executions.
 whileEmptyInterval ::
   ∀ a u t d r .
   TimeUnit u =>
@@ -41,7 +41,7 @@ whileEmptyInterval interval action =
       action
       whenM (not <$> Sync.empty @a) (Time.sleep @t @d interval *> spin)
 
--- |Run an action with a locally scoped 'Sync' variable.
+-- | Run an action with a locally scoped 'Sync' variable.
 --
 -- This avoids a dependency on @'Embed' 'IO'@ in application logic while still allowing the variable to be scoped.
 withSync ::
@@ -51,7 +51,7 @@ withSync ::
 withSync =
   scoped_
 
--- |Run the action @ma@ with an exclusive lock (mutex).
+-- | Run the action @ma@ with an exclusive lock (mutex).
 -- When multiple threads call the action concurrently, only one is allowed to execute it at a time.
 -- The value @l@ is used to disambiguate the 'Sync' from other uses of the combinator.
 -- You can pass in something like @Proxy @"db-write"@.
@@ -67,7 +67,7 @@ lock l ma =
   finally (takeBlock @l *> ma) (putTry l)
 {-# inline lock #-}
 
--- |Remove the content of the 'Sync' variable if it is present.
+-- | Remove the content of the 'Sync' variable if it is present.
 clear ::
   ∀ a r .
   Member (Sync a) r =>
@@ -76,7 +76,7 @@ clear =
   void (takeTry @a)
 {-# inline clear #-}
 
--- |Modify a 'Sync' variable with async exceptions masked for the 'Sync' operations, but not the action.
+-- | Modify a 'Sync' variable with async exceptions masked for the 'Sync' operations, but not the action.
 -- Allows a value to be returned.
 -- Equivalent to 'Control.Concurrent.MVar.modifyMVar'.
 modify ::
@@ -91,7 +91,7 @@ modify m =
     b <$ putBlock a'
 {-# inline modify #-}
 
--- |Modify a 'Sync' variable with async exceptions masked for the 'Sync' operations, but not the action.
+-- | Modify a 'Sync' variable with async exceptions masked for the 'Sync' operations, but not the action.
 -- Does not allow a value to be returned.
 -- Equivalent to 'Control.Concurrent.MVar.modifyMVar_'.
 modify_ ::
@@ -106,7 +106,7 @@ modify_ m =
     putBlock a'
 {-# inline modify_ #-}
 
--- |Modify a 'Sync' variable with async exceptions masked for the entire procedure.
+-- | Modify a 'Sync' variable with async exceptions masked for the entire procedure.
 -- Allows a value to be returned.
 -- Equivalent to 'Control.Concurrent.MVar.modifyMVarMasked'.
 modifyMasked ::
@@ -121,7 +121,7 @@ modifyMasked m =
     b <$ putBlock a'
 {-# inline modifyMasked #-}
 
--- |Modify a 'Sync' variable with async exceptions masked for the entire procedure.
+-- | Modify a 'Sync' variable with async exceptions masked for the entire procedure.
 -- Does not allow a value to be returned.
 -- Equivalent to 'Control.Concurrent.MVar.modifyMVarMasked_'.
 modifyMasked_ ::
@@ -136,7 +136,7 @@ modifyMasked_ m =
     putBlock a'
 {-# inline modifyMasked_ #-}
 
--- |Run an action with the current value of the 'Sync' variable with async exceptions masked for the 'Sync' operations,
+-- | Run an action with the current value of the 'Sync' variable with async exceptions masked for the 'Sync' operations,
 -- but not the action.
 -- Equivalent to 'Control.Concurrent.MVar.withMVar'.
 use ::
@@ -150,7 +150,7 @@ use m =
     finally (restore (raise (m a))) (putBlock a)
 {-# inline use #-}
 
--- |Run an action with the current value of the 'Sync' variable with async exceptions masked for the entire procedure.
+-- | Run an action with the current value of the 'Sync' variable with async exceptions masked for the entire procedure.
 -- Equivalent to 'Control.Concurrent.MVar.withMVarMasked'.
 useMasked ::
   ∀ a b r .

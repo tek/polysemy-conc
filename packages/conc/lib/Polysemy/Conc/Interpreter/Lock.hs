@@ -1,6 +1,6 @@
 {-# options_haddock prune #-}
 
--- |Lock interpreters, Internal
+-- | Lock interpreters, Internal
 module Polysemy.Conc.Interpreter.Lock where
 
 import Control.Concurrent (ThreadId, myThreadId)
@@ -18,7 +18,7 @@ currentThread ::
 currentThread =
   embed myThreadId
 
--- |Interpret 'Lock' by executing all actions unconditionally.
+-- | Interpret 'Lock' by executing all actions unconditionally.
 interpretLockPermissive ::
   InterpreterFor Lock r
 interpretLockPermissive =
@@ -84,7 +84,7 @@ lockAlt alt ma =
         restore (raise alt)
 {-# inline lockAlt #-}
 
--- |Subinterpreter for 'interpretLockReentrant' that checks whether the current thread is equal to the lock-acquiring
+-- | Subinterpreter for 'interpretLockReentrant' that checks whether the current thread is equal to the lock-acquiring
 -- thread to allow reentry into the lock.
 interpretLockReentrantEntered ::
   Members [Sync (), Resource, Race, Mask, Embed IO] r =>
@@ -99,7 +99,7 @@ interpretLockReentrantEntered lockThread =
       lockOnDifferentThread lockThread maI (lockAlt alt)
 {-# inline interpretLockReentrantEntered #-}
 
--- |Interpret 'Lock' as a reentrant lock, allowing nested calls to 'Polysemy.Conc.lock' unless called from a different
+-- | Interpret 'Lock' as a reentrant lock, allowing nested calls to 'Polysemy.Conc.lock' unless called from a different
 -- thread (as in, @async@ was called in a higher-order action passed to 'Polysemy.Conc.lock'.)
 interpretLockReentrant ::
   Members [Resource, Race, Mask, Embed IO] r =>

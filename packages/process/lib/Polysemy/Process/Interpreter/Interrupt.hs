@@ -1,7 +1,7 @@
 {-# options_haddock prune #-}
 {-# language FieldSelectors #-}
 
--- |Description: Interrupt interpreters
+-- | Description: Interrupt interpreters
 module Polysemy.Process.Interpreter.Interrupt where
 
 import qualified Control.Concurrent.Async as A
@@ -191,7 +191,7 @@ installSignalHandler state consHandler =
     handler sig =
       runFinal $ embedToFinal @IO $ runAtomicStateTVar state (broadcastInterrupt sig)
 
--- |Interpret 'Interrupt' by installing a signal handler.
+-- | Interpret 'Interrupt' by installing a signal handler.
 --
 -- Takes a constructor for 'Handler'.
 interpretInterruptWith ::
@@ -207,7 +207,7 @@ interpretInterruptWith consHandler sem = do
     atomicModify' \ s -> s {original = originalHandler orig}
     interpretInterruptState $ raiseUnder sem
 
--- |Interpret 'Interrupt' by installing a signal handler.
+-- | Interpret 'Interrupt' by installing a signal handler.
 --
 -- Catches repeat invocations of SIGINT.
 interpretInterrupt ::
@@ -216,7 +216,7 @@ interpretInterrupt ::
 interpretInterrupt =
   interpretInterruptWith CatchInfo
 
--- |Interpret 'Interrupt' by installing a signal handler.
+-- | Interpret 'Interrupt' by installing a signal handler.
 --
 -- Catches only the first invocation of SIGINT.
 interpretInterruptOnce ::
@@ -225,7 +225,7 @@ interpretInterruptOnce ::
 interpretInterruptOnce =
   interpretInterruptWith CatchInfoOnce
 
--- |Eliminate 'Interrupt' without interpreting.
+-- | Eliminate 'Interrupt' without interpreting.
 interpretInterruptNull ::
   InterpreterFor Interrupt r
 interpretInterruptNull =

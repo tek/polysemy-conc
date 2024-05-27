@@ -1,6 +1,6 @@
 {-# options_haddock prune #-}
 
--- |Description: Monitor Implementations, Internal
+-- | Description: Monitor Implementations, Internal
 module Polysemy.Conc.Monitor where
 
 import qualified Polysemy.Time as Time
@@ -9,7 +9,7 @@ import Torsor (Torsor, difference, minus)
 
 import Polysemy.Conc.Effect.Monitor (MonitorCheck (MonitorCheck))
 
--- |Config for 'monitorClockSkew'.
+-- | Config for 'monitorClockSkew'.
 data ClockSkewConfig =
   ClockSkewConfig {
     interval :: NanoSeconds,
@@ -17,7 +17,7 @@ data ClockSkewConfig =
   }
   deriving stock (Eq, Show)
 
--- |Smart constructor for 'ClockSkewConfig' that takes arbitrary 'TimeUnit's.
+-- | Smart constructor for 'ClockSkewConfig' that takes arbitrary 'TimeUnit's.
 clockSkewConfig ::
   TimeUnit u1 =>
   TimeUnit u2 =>
@@ -31,7 +31,7 @@ instance Default ClockSkewConfig where
   def =
     clockSkewConfig (Minutes 1) (Seconds 5)
 
--- |Check for 'Polysemy.Conc.Effect.Monitor' that checks every @interval@ whether the difference between the current
+-- | Check for 'Polysemy.Conc.Effect.Monitor' that checks every @interval@ whether the difference between the current
 -- time and the time at the last check is larger than @interval@ + @tolerance@.
 -- Can be used to detect that the operating system suspended and resumed.
 monitorClockSkew ::

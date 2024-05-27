@@ -1,6 +1,6 @@
 {-# options_haddock prune #-}
 
--- |Description: Mask Interpreters, Internal
+-- | Description: Mask Interpreters, Internal
 module Polysemy.Conc.Interpreter.Mask where
 
 import qualified Control.Exception as Base
@@ -39,26 +39,26 @@ interpretRestoreMask (Restoration restore) =
     Restore ma ->
       withStrategicToFinal (restore <$> runS (runTSimple ma))
 
--- |Interpret 'Mask' by sequencing the action without masking.
+-- | Interpret 'Mask' by sequencing the action without masking.
 interpretMaskPure :: InterpreterFor Mask r
 interpretMaskPure =
   interpretScopedH (const ($ ())) \ () -> \case
     Restore ma -> runTSimple ma
 
--- |Interpret 'Mask' in 'IO'.
+-- | Interpret 'Mask' in 'IO'.
 interpretMaskFinal ::
   Member (Final IO) r =>
   InterpreterFor Mask r
 interpretMaskFinal =
   runScoped (const mask) \ r -> interpretRestoreMask r
 
--- |Interpret 'UninterruptibleMask' by sequencing the action without masking.
+-- | Interpret 'UninterruptibleMask' by sequencing the action without masking.
 interpretUninterruptibleMaskPure :: InterpreterFor UninterruptibleMask r
 interpretUninterruptibleMaskPure =
   interpretScopedH (const ($ ())) \ () -> \case
     Restore ma -> runTSimple ma
 
--- |Interpret 'UninterruptibleMask' in 'IO'.
+-- | Interpret 'UninterruptibleMask' in 'IO'.
 interpretUninterruptibleMaskFinal ::
   Member (Final IO) r =>
   InterpreterFor UninterruptibleMask r

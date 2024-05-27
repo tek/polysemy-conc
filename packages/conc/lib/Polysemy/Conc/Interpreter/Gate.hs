@@ -1,9 +1,9 @@
--- |Gate interpreters, Internal
+-- | Gate interpreters, Internal
 module Polysemy.Conc.Interpreter.Gate where
 
 import Polysemy.Conc.Effect.Gate (Gate (Gate, Signal))
 
--- |Interpret 'Gate' with an 'MVar'.
+-- | Interpret 'Gate' with an 'MVar'.
 interpretGate ::
   ∀ r .
   Member (Embed IO) r =>
@@ -20,7 +20,7 @@ interpretGate sem = do
         Gate ->
           embed (readMVar mv)
 
--- |Interpret @'Scoped_' 'Gate'@ with an @'MVar' ()@.
+-- | Interpret @'Scoped_' 'Gate'@ with an @'MVar' ()@.
 interpretGates ::
   Member (Embed IO) r =>
   InterpreterFor (Scoped_ Gate) r

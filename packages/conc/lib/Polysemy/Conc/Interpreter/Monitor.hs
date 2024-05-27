@@ -1,6 +1,6 @@
 {-# options_haddock prune #-}
 
--- |Description: Monitor Interpreters, Internal
+-- | Description: Monitor Interpreters, Internal
 module Polysemy.Conc.Interpreter.Monitor where
 
 import qualified Control.Exception as Base
@@ -41,7 +41,7 @@ monitorRestart (MonitorCheck interval check) use = do
       void (embedFinal @IO (tryTakeMVar sig))
       either (const (spin sig)) pure =<< errorToIOFinal @MonitorCancel (fromExceptionSem @MonitorCancel (raise (use res)))
 
--- |Interpret @'Polysemy.Conc.Scoped' 'Monitor'@ with the 'Polysemy.Conc.Restart' strategy.
+-- | Interpret @'Polysemy.Conc.Scoped' 'Monitor'@ with the 'Polysemy.Conc.Restart' strategy.
 -- This takes a check action that may put an 'MVar' when the scoped region should be restarted.
 -- The check is executed in a loop, with an interval given in 'MonitorCheck'.
 interpretMonitorRestart ::
@@ -60,7 +60,7 @@ interpretMonitorPure' _ =
     Monitor ma ->
       runTSimple ma
 
--- |Run 'Monitor' as a no-op.
+-- | Run 'Monitor' as a no-op.
 interpretMonitorPure :: InterpreterFor (ScopedMonitor action) r
 interpretMonitorPure =
   runScopedAs (const unit) interpretMonitorPure'

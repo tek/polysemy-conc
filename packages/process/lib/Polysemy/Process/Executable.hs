@@ -1,6 +1,6 @@
 {-# options_haddock prune #-}
 
--- |Description: Executable helpers, Internal
+-- | Description: Executable helpers, Internal
 module Polysemy.Process.Executable where
 
 import Path (Abs, File, Path, Rel, toFilePath)
@@ -26,12 +26,12 @@ checkExecutable name path =
     pathText =
       toText (toFilePath path)
 
--- |Find a file in @$PATH@, verifying that it is executable by this process.
+-- | Find a file in @$PATH@, verifying that it is executable by this process.
 resolveExecutable ::
   Member (Embed IO) r =>
-  -- |Executable name, for @$PATH@ lookup and error messages
+  -- | Executable name, for @$PATH@ lookup and error messages
   Path Rel File ->
-  -- |Explicit override to be checked for adequate permissions
+  -- | Explicit override to be checked for adequate permissions
   Maybe (Path Abs File) ->
   Sem r (Either Text (Path Abs File))
 resolveExecutable exe = \case

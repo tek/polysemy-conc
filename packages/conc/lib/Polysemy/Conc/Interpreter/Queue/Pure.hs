@@ -1,4 +1,4 @@
--- |Description: Pure Queue Interpreters
+-- | Description: Pure Queue Interpreters
 module Polysemy.Conc.Interpreter.Queue.Pure where
 
 import Polysemy.Conc.AtomicState (interpretAtomic)
@@ -7,7 +7,7 @@ import Polysemy.Conc.Data.QueueResult (QueueResult)
 import qualified Polysemy.Conc.Effect.Queue as Queue
 import Polysemy.Conc.Effect.Queue (Queue)
 
--- |Reinterpret 'Queue' as 'AtomicState' with a list that cannot be written to.
+-- | Reinterpret 'Queue' as 'AtomicState' with a list that cannot be written to.
 -- Useful for testing.
 interpretQueueListReadOnlyAtomicWith ::
   ∀ d r .
@@ -48,7 +48,7 @@ interpretQueueListReadOnlyAtomicWith =
         h : _ -> QueueResult.Success h
 {-# inline interpretQueueListReadOnlyAtomicWith #-}
 
--- |Variant of 'interpretQueueListReadOnlyAtomicWith' that interprets the 'AtomicState'.
+-- | Variant of 'interpretQueueListReadOnlyAtomicWith' that interprets the 'AtomicState'.
 interpretQueueListReadOnlyAtomic ::
   ∀ d r .
   Member (Embed IO) r =>
@@ -58,7 +58,7 @@ interpretQueueListReadOnlyAtomic ds sem =
   interpretAtomic ds (interpretQueueListReadOnlyAtomicWith (raiseUnder sem))
 {-# inline interpretQueueListReadOnlyAtomic #-}
 
--- |Reinterpret 'Queue' as 'State' with a list that cannot be written to.
+-- | Reinterpret 'Queue' as 'State' with a list that cannot be written to.
 -- Useful for testing.
 interpretQueueListReadOnlyStateWith ::
   ∀ d r .
@@ -99,7 +99,7 @@ interpretQueueListReadOnlyStateWith =
         h : _ -> QueueResult.Success h
 {-# inline interpretQueueListReadOnlyStateWith #-}
 
--- |Variant of 'interpretQueueListReadOnlyAtomicWith' that interprets the 'State'.
+-- | Variant of 'interpretQueueListReadOnlyAtomicWith' that interprets the 'State'.
 interpretQueueListReadOnlyState ::
   ∀ d r .
   [d] ->

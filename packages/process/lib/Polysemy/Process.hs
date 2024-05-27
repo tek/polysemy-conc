@@ -1,4 +1,4 @@
--- |Description: Polysemy Effects for System Processes
+-- | Description: Polysemy Effects for System Processes
 module Polysemy.Process (
   -- * Introduction
   -- $intro

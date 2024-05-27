@@ -1,6 +1,6 @@
 {-# options_haddock prune #-}
 
--- |Description: Process Effect, Internal
+-- | Description: Process Effect, Internal
 module Polysemy.Process.Effect.Process where
 
 import Polysemy.Input (Input (Input))
@@ -8,7 +8,7 @@ import Polysemy.Output (Output (Output))
 import Polysemy.Resume (interpretResumable, restop, type (!!))
 import Prelude hiding (send)
 
--- |Abstraction of a process with input and output.
+-- | Abstraction of a process with input and output.
 --
 -- This effect is intended to be used in a scoped_ manner:
 --
@@ -36,20 +36,20 @@ data Process i o :: Effect where
 
 makeSem_ ''Process
 
--- |Obtain a chunk of output.
+-- | Obtain a chunk of output.
 recv ::
   ∀ i o r .
   Member (Process i o) r =>
   Sem r o
 
--- |Send data to stdin.
+-- | Send data to stdin.
 send ::
   ∀ i o r .
   Member (Process i o) r =>
   i ->
   Sem r ()
 
--- |Create a scoped_ resource for 'Process'.
+-- | Create a scoped_ resource for 'Process'.
 -- The process configuration may depend on the provided value of type @param@.
 -- This variant models daemon processes that are expected to run forever, with 'Polysemy.Resume.Stop' being sent to this
 -- function, if at all.
@@ -61,7 +61,7 @@ withProcess ::
 withProcess =
   scoped @param
 
--- |Create a scoped_ resource for 'Process'.
+-- | Create a scoped_ resource for 'Process'.
 -- The process configuration may depend on the provided value of type @param@.
 -- This variant models processes that are expected to terminate, with 'Polysemy.Resume.Stop' being sent to individual
 -- actions within the scope.
@@ -73,7 +73,7 @@ withProcessOneshot ::
 withProcessOneshot =
   scoped @param
 
--- |Create a scoped_ resource for 'Process'.
+-- | Create a scoped_ resource for 'Process'.
 -- The process configuration is provided to the interpreter statically.
 -- This variant models daemon processes that are expected to run forever, with 'Polysemy.Resume.Stop' being sent to this
 -- function, if at all.
@@ -84,7 +84,7 @@ withProcess_ ::
 withProcess_ =
   scoped_
 
--- |Create a scoped_ resource for 'Process'.
+-- | Create a scoped_ resource for 'Process'.
 -- The process configuration is provided to the interpreter statically.
 -- This variant models processes that are expected to terminate, with 'Polysemy.Resume.Stop' being sent to individual
 -- actions within the scope.
@@ -95,7 +95,7 @@ withProcessOneshot_ ::
 withProcessOneshot_ =
   scoped_
 
--- |Convert 'Output' and 'Input' to 'Process' for a daemon process.
+-- | Convert 'Output' and 'Input' to 'Process' for a daemon process.
 runProcessIO ::
   ∀ i o r .
   Member (Process i o) r =>
@@ -109,7 +109,7 @@ runProcessIO =
     Output o ->
       send @i @o o
 
--- |Convert 'Output' and 'Input' to 'Process' for a oneshot process.
+-- | Convert 'Output' and 'Input' to 'Process' for a oneshot process.
 runProcessOneshotIO ::
   ∀ i o err r .
   Member (Process i o !! err) r =>

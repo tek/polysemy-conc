@@ -1,4 +1,4 @@
--- |Interpreters for 'ProcessOutput' and 'ProcessInput', Internal
+-- | Interpreters for 'ProcessOutput' and 'ProcessInput', Internal
 module Polysemy.Process.Interpreter.ProcessIO where
 
 import Polysemy.Process.Effect.ProcessInput (ProcessInput)
@@ -12,7 +12,7 @@ import Polysemy.Process.Interpreter.ProcessOutput (
   interpretProcessOutputTextLines,
   )
 
--- |The effects used by 'Polysemy.Process.Process' to send and receive chunks of bytes to and from a process.
+-- | The effects used by 'Polysemy.Process.Process' to send and receive chunks of bytes to and from a process.
 type ProcessIO i o =
   [
     ProcessInput i,
@@ -20,7 +20,7 @@ type ProcessIO i o =
     ProcessOutput 'Stderr o
   ]
 
--- |Interpret 'ProcessIO' with plain 'ByteString's without chunking.
+-- | Interpret 'ProcessIO' with plain 'ByteString's without chunking.
 -- Silently discards stderr.
 interpretProcessByteString ::
   InterpretersFor (ProcessIO ByteString ByteString) r
@@ -29,7 +29,7 @@ interpretProcessByteString =
   interpretProcessOutputId @'Stdout .
   interpretProcessInputId
 
--- |Interpret 'ProcessIO' with 'ByteString's chunked as lines.
+-- | Interpret 'ProcessIO' with 'ByteString's chunked as lines.
 -- Silently discards stderr.
 interpretProcessByteStringLines ::
   InterpretersFor (ProcessIO ByteString ByteString) r
@@ -38,7 +38,7 @@ interpretProcessByteStringLines =
   interpretProcessOutputLines @'Stdout .
   interpretProcessInputId
 
--- |Interpret 'ProcessIO' with plain 'Text's without chunking.
+-- | Interpret 'ProcessIO' with plain 'Text's without chunking.
 -- Silently discards stderr.
 interpretProcessText ::
   InterpretersFor (ProcessIO Text Text) r
@@ -47,7 +47,7 @@ interpretProcessText =
   interpretProcessOutputText @'Stdout .
   interpretProcessInputText
 
--- |Interpret 'ProcessIO' with 'Text's chunked as lines.
+-- | Interpret 'ProcessIO' with 'Text's chunked as lines.
 -- Silently discards stderr.
 interpretProcessTextLines ::
   InterpretersFor (ProcessIO Text Text) r

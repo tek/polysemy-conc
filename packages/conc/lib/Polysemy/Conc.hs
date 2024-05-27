@@ -1,4 +1,4 @@
--- |Description: Polysemy Effects for Concurrency
+-- | Description: Polysemy Effects for Concurrency
 module Polysemy.Conc (
   -- * Introduction
   -- $intro

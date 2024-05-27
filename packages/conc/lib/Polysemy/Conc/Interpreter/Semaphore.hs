@@ -1,4 +1,4 @@
--- |Semaphore interpreters, Internal.
+-- | Semaphore interpreters, Internal.
 module Polysemy.Conc.Interpreter.Semaphore where
 
 import Control.Concurrent (QSem, newQSem, signalQSem, waitQSem)
@@ -8,7 +8,7 @@ import Control.Concurrent.STM.TSem (TSem, newTSem, signalTSem, waitTSem)
 import qualified Polysemy.Conc.Effect.Semaphore as Semaphore
 import Polysemy.Conc.Effect.Semaphore (Semaphore)
 
--- |Interpret 'Semaphore' using the supplied 'QSem'.
+-- | Interpret 'Semaphore' using the supplied 'QSem'.
 interpretSemaphoreQWith ::
   Member (Embed IO) r =>
   QSem ->
@@ -21,7 +21,7 @@ interpretSemaphoreQWith qsem =
       embed (signalQSem qsem)
 {-# inline interpretSemaphoreQWith #-}
 
--- |Interpret 'Semaphore' as a 'QSem'.
+-- | Interpret 'Semaphore' as a 'QSem'.
 interpretSemaphoreQ ::
   Member (Embed IO) r =>
   Int ->
@@ -31,7 +31,7 @@ interpretSemaphoreQ n sem = do
   interpretSemaphoreQWith qsem sem
 {-# inline interpretSemaphoreQ #-}
 
--- |Interpret 'Semaphore' using the supplied 'TSem'.
+-- | Interpret 'Semaphore' using the supplied 'TSem'.
 interpretSemaphoreTWith ::
   Member (Embed IO) r =>
   TSem ->
@@ -44,7 +44,7 @@ interpretSemaphoreTWith qsem =
       embed (atomically (signalTSem qsem))
 {-# inline interpretSemaphoreTWith #-}
 
--- |Interpret 'Semaphore' as a 'TSem'.
+-- | Interpret 'Semaphore' as a 'TSem'.
 interpretSemaphoreT ::
   Member (Embed IO) r =>
   Integer ->

@@ -1,9 +1,9 @@
 {-# options_haddock prune #-}
 
--- |Description: Gate effect, Internal
+-- | Description: Gate effect, Internal
 module Polysemy.Conc.Effect.Gate where
 
--- |A single-use synchronization point that blocks all consumers who called 'gate' until 'signal' is called.
+-- | A single-use synchronization point that blocks all consumers who called 'gate' until 'signal' is called.
 --
 -- The constructors are exported from [Polysemy.Conc.Gate]("Polysemy.Conc.Gate").
 data Gate :: Effect where
@@ -12,11 +12,11 @@ data Gate :: Effect where
 
 makeSem ''Gate
 
--- |Convenience alias for scoped 'Gate'.
+-- | Convenience alias for scoped 'Gate'.
 type Gates =
   Scoped_ Gate
 
--- |Run an action with a locally scoped 'Gate' effect.
+-- | Run an action with a locally scoped 'Gate' effect.
 --
 -- This avoids a dependency on @'Embed' 'IO'@ in application logic while still allowing the effect to be scoped.
 withGate ::

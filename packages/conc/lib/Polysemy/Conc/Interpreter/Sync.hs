@@ -1,4 +1,4 @@
--- |Description: Sync Interpreters
+-- | Description: Sync Interpreters
 module Polysemy.Conc.Interpreter.Sync where
 
 import Polysemy.Conc.Effect.Race (Race)
@@ -6,7 +6,7 @@ import qualified Polysemy.Conc.Effect.Sync as Sync
 import Polysemy.Conc.Effect.Sync (Sync)
 import qualified Polysemy.Conc.Race as Race
 
--- |Interpret 'Sync' with the provided 'MVar'.
+-- | Interpret 'Sync' with the provided 'MVar'.
 interpretSyncWith ::
   ∀ d r .
   Members [Race, Embed IO] r =>
@@ -35,7 +35,7 @@ interpretSyncWith var =
     Sync.Empty ->
       embed (isEmptyMVar var)
 
--- |Interpret 'Sync' with an empty 'MVar'.
+-- | Interpret 'Sync' with an empty 'MVar'.
 interpretSync ::
   ∀ d r .
   Members [Race, Embed IO] r =>
@@ -44,7 +44,7 @@ interpretSync sem = do
   var <- embed newEmptyMVar
   interpretSyncWith var sem
 
--- |Interpret 'Sync' with an 'MVar' containing the specified value.
+-- | Interpret 'Sync' with an 'MVar' containing the specified value.
 interpretSyncAs ::
   ∀ d r .
   Members [Race, Embed IO] r =>
@@ -54,7 +54,7 @@ interpretSyncAs d sem = do
   var <- embed (newMVar d)
   interpretSyncWith var sem
 
--- |Interpret 'Sync' for locally scoped use with an empty 'MVar'.
+-- | Interpret 'Sync' for locally scoped use with an empty 'MVar'.
 interpretScopedSync ::
   ∀ d r .
   Members [Resource, Race, Embed IO] r =>
@@ -62,7 +62,7 @@ interpretScopedSync ::
 interpretScopedSync =
   runScopedAs (const (embed newEmptyMVar)) \ r -> interpretSyncWith r
 
--- |Interpret 'Sync' for locally scoped use with an 'MVar' containing the specified value.
+-- | Interpret 'Sync' for locally scoped use with an 'MVar' containing the specified value.
 interpretScopedSyncAs ::
   ∀ d r .
   Members [Resource, Race, Embed IO] r =>

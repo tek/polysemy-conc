@@ -1,6 +1,6 @@
 {-# options_haddock prune #-}
 
--- |Description: Scoped Effect, Internal
+-- | Description: Scoped Effect, Internal
 module Polysemy.Conc.Effect.Scoped where
 
 import Prelude hiding (Scoped, Scoped_, scoped)
@@ -108,7 +108,7 @@ data Scoped (param :: Type) (effect :: Effect) :: Effect where
 
 {-# deprecated Scoped "Scoped has been moved to Polysemy.Scoped" #-}
 
--- |A convenience alias for a scope without parameters.
+-- | A convenience alias for a scope without parameters.
 type Scoped_ effect =
   Scoped () effect
 

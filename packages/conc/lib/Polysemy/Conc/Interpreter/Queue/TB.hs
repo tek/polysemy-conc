@@ -1,4 +1,4 @@
--- |Description: Queue Interpreters for 'TBQueue'
+-- | Description: Queue Interpreters for 'TBQueue'
 module Polysemy.Conc.Interpreter.Queue.TB where
 
 import Control.Concurrent.STM (
@@ -20,7 +20,7 @@ import Polysemy.Conc.Effect.Race (Race)
 import Polysemy.Conc.Queue.Result (naResult)
 import Polysemy.Conc.Queue.Timeout (withTimeout)
 
--- |Interpret 'Queue' with a 'TBQueue'.
+-- | Interpret 'Queue' with a 'TBQueue'.
 --
 -- This variant expects an allocated queue as an argument.
 interpretQueueTBWith ::
@@ -53,11 +53,11 @@ interpretQueueTBWith queue =
       unit
 {-# inline interpretQueueTBWith #-}
 
--- |Interpret 'Queue' with a 'TBQueue'.
+-- | Interpret 'Queue' with a 'TBQueue'.
 interpretQueueTB ::
   ∀ d r .
   Members [Race, Embed IO] r =>
-  -- |Buffer size
+  -- | Buffer size
   Natural ->
   InterpreterFor (Queue d) r
 interpretQueueTB maxQueued sem = do

@@ -1,8 +1,8 @@
 {-# options_haddock prune #-}
--- |Description: Interrupt effect
+-- | Description: Interrupt effect
 module Polysemy.Process.Effect.Interrupt where
 
--- |The interrupt handler effect allows three kinds of interaction for interrupt signals:
+-- | The interrupt handler effect allows three kinds of interaction for interrupt signals:
 --
 -- - Execute a callback when a signal is received
 -- - Block a thread until a signal is received
@@ -19,22 +19,22 @@ module Polysemy.Process.Effect.Interrupt where
 --    doSomeWork
 -- @
 data Interrupt :: Effect where
-  -- |Add a computation to be executed on interrupt, using the first argument as a key.
+  -- | Add a computation to be executed on interrupt, using the first argument as a key.
   Register :: Text -> IO () -> Interrupt m ()
-  -- |Remove the previously added handler with the given key.
+  -- | Remove the previously added handler with the given key.
   Unregister :: Text -> Interrupt m ()
-  -- |Manually trigger the interrupt.
+  -- | Manually trigger the interrupt.
   Quit :: Interrupt m ()
-  -- |Block until an interrupt is triggered.
+  -- | Block until an interrupt is triggered.
   WaitQuit :: Interrupt m ()
-  -- |Indicate whether an interrupt was triggered.
+  -- | Indicate whether an interrupt was triggered.
   Interrupted :: Interrupt m Bool
-  -- |Execute a computation, waiting for it to finish, killing its thread on interrupt.
+  -- | Execute a computation, waiting for it to finish, killing its thread on interrupt.
   KillOnQuit :: Text -> m a -> Interrupt m (Maybe a)
 
 makeSem ''Interrupt
 
--- |Variant of 'killOnQuit' that returns @()@.
+-- | Variant of 'killOnQuit' that returns @()@.
 killOnQuit_ ::
   Member Interrupt r =>
   Text ->

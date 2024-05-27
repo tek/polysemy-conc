@@ -1,5 +1,5 @@
 {-# options_haddock prune #-}
--- |Description: Race Interpreters
+-- | Description: Race Interpreters
 module Polysemy.Conc.Interpreter.Race where
 
 import qualified Control.Concurrent.Async as Async
@@ -19,7 +19,7 @@ biseqEither =
   either (fmap Left) (fmap Right)
 {-# inline biseqEither #-}
 
--- |Interpret 'Race' in terms of 'Async.race' and 'System.timeout'.
+-- | Interpret 'Race' in terms of 'Async.race' and 'System.timeout'.
 -- Since this has to pass higher-order thunks as 'IO' arguments, it is interpreted in terms of 'Final IO'.
 interpretRace ::
   Member (Final IO) r =>

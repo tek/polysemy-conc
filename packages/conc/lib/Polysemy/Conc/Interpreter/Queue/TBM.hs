@@ -1,6 +1,6 @@
 {-# options_haddock prune #-}
 
--- |Description: Queue Interpreters for 'TBMQueue'
+-- | Description: Queue Interpreters for 'TBMQueue'
 module Polysemy.Conc.Interpreter.Queue.TBM where
 
 import Control.Concurrent.STM (atomically)
@@ -23,7 +23,7 @@ import Polysemy.Conc.Effect.Race (Race)
 import Polysemy.Conc.Queue.Result (closedBoolResult, closedNaResult, closedResult)
 import Polysemy.Conc.Queue.Timeout (withTimeout)
 
--- |Interpret 'Queue' with a 'TBMQueue'.
+-- | Interpret 'Queue' with a 'TBMQueue'.
 --
 -- This variant expects an allocated queue as an argument.
 interpretQueueTBMWith ::
@@ -65,11 +65,11 @@ withTBMQueue ::
 withTBMQueue maxQueued =
   bracket (embed (newTBMQueueIO maxQueued)) (embed . atomically . closeTBMQueue)
 
--- |Interpret 'Queue' with a 'TBMQueue'.
+-- | Interpret 'Queue' with a 'TBMQueue'.
 interpretQueueTBM ::
   ∀ d r .
   Members [Resource, Race, Embed IO] r =>
-  -- |Buffer size
+  -- | Buffer size
   Int ->
   InterpreterFor (Queue d) r
 interpretQueueTBM maxQueued sem = do

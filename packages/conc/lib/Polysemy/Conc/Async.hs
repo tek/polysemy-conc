@@ -1,4 +1,4 @@
--- |Description: Async Combinators
+-- | Description: Async Combinators
 module Polysemy.Conc.Async where
 
 import qualified Control.Concurrent.Async as Base
@@ -12,7 +12,7 @@ import Polysemy.Conc.Interpreter.Sync (interpretSync)
 import qualified Polysemy.Conc.Race as Race
 import Polysemy.Conc.Sync (withSync)
 
--- |Run the first action asynchronously while the second action executes, then cancel the first action.
+-- | Run the first action asynchronously while the second action executes, then cancel the first action.
 -- Passes the handle into the action to allow it to await its result.
 --
 -- When cancelling, this variant will wait indefinitely for the thread to be gone.
@@ -25,7 +25,7 @@ withAsyncBlock mb use = do
   handle <- async mb
   finally (use handle) (cancel handle)
 
--- |Run the first action asynchronously while the second action executes, then cancel the first action.
+-- | Run the first action asynchronously while the second action executes, then cancel the first action.
 -- Passes the handle into the sync action to allow it to await the async action's result.
 --
 -- When cancelling, this variant will wait for the specified interval for the thread to be gone.
@@ -40,7 +40,7 @@ withAsyncWait interval mb use = do
   handle <- async mb
   finally (use handle) (Race.timeoutU interval (cancel handle))
 
--- |Run the first action asynchronously while the second action executes, then cancel the first action.
+-- | Run the first action asynchronously while the second action executes, then cancel the first action.
 -- Passes the handle into the sync action to allow it to await the async action's result.
 --
 -- When cancelling, this variant will wait for 500ms for the thread to be gone.
@@ -52,7 +52,7 @@ withAsync ::
 withAsync =
   withAsyncWait (MilliSeconds 500)
 
--- |Run the first action asynchronously while the second action executes, then cancel the first action.
+-- | Run the first action asynchronously while the second action executes, then cancel the first action.
 -- Discards the handle, expecting the async action to either terminate or be cancelled.
 --
 -- When cancelling, this variant will wait for 500ms for the thread to be gone.
@@ -64,7 +64,7 @@ withAsync_ ::
 withAsync_ mb =
   withAsync mb . const
 
--- |Run an action with 'async', but don't start it right away, so the thread handle can be processed before the action
+-- | Run an action with 'async', but don't start it right away, so the thread handle can be processed before the action
 -- executes.
 --
 -- Takes a callback function that is invoked after spawning the thread.
@@ -93,7 +93,7 @@ scheduleAsync mb f =
       raise mb
     f h (Sync.putBlock ())
 
--- |Variant of 'scheduleAsync' that directly interprets the 'Control.Concurrent.MVar' used for signalling.
+-- | Variant of 'scheduleAsync' that directly interprets the 'Control.Concurrent.MVar' used for signalling.
 scheduleAsyncIO ::
   ∀ b r a .
   Members [Resource, Async, Race, Embed IO] r =>
@@ -107,7 +107,7 @@ scheduleAsyncIO mb f =
       raise mb
     f h (Sync.putBlock ())
 
--- |Run the first action asynchronously while the second action executes, then cancel the first action.
+-- | Run the first action asynchronously while the second action executes, then cancel the first action.
 --
 -- The second action will only start when the first action calls 'Polysemy.Conc.Gate.signal'.
 --
@@ -125,7 +125,7 @@ withAsyncGated mb use =
     gate
     raise (use h)
 
--- |Run the first action asynchronously while the second action executes, then cancel the first action.
+-- | Run the first action asynchronously while the second action executes, then cancel the first action.
 --
 -- The second action will only start when the first action calls 'Polysemy.Conc.Gate.signal'.
 --

@@ -1,4 +1,4 @@
--- |Description: Timeout Helper
+-- | Description: Timeout Helper
 module Polysemy.Conc.Queue.Timeout where
 
 import Control.Concurrent.STM (STM, atomically)
@@ -9,7 +9,7 @@ import Polysemy.Conc.Data.QueueResult (QueueResult)
 import Polysemy.Conc.Effect.Race (Race)
 import qualified Polysemy.Conc.Race as Race
 
--- |Run an 'STM' action atomically with a time limit
+-- | Run an 'STM' action atomically with a time limit
 withTimeout ::
   TimeUnit t =>
   Members [Race, Embed IO] r =>

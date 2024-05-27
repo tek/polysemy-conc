@@ -1,6 +1,6 @@
 {-# options_haddock prune #-}
 
--- |Description: Process Interpreters, Internal
+-- | Description: Process Interpreters, Internal
 module Polysemy.Process.Interpreter.Process where
 
 import Control.Concurrent.STM.TBMQueue (TBMQueue)
@@ -132,7 +132,7 @@ withQueues ::
 withQueues qSize action =
   withSTMResources qSize \ qs -> interpretQueues qs action
 
--- |Call a chunk reading action repeatedly, pass the bytes to 'ProcessOutput' and enqueue its results.
+-- | Call a chunk reading action repeatedly, pass the bytes to 'ProcessOutput' and enqueue its results.
 -- As soon as an empty chunk is encountered, the queue is closed if the gating action returns 'False'.
 -- The conditional closing is for the purpose of keeping the queue alive until the last producer has written all
 -- received chunks – this is important when both stdout and stderr are written to the same queue.
@@ -242,7 +242,7 @@ pscope options consResource param sem =
     raiseUnder $
     queues @err options sem
 
--- |Interpret 'Process' with a system process resource whose file descriptors are connected to three 'TBMQueue's,
+-- | Interpret 'Process' with a system process resource whose file descriptors are connected to three 'TBMQueue's,
 -- deferring decoding of stdout and stderr to the interpreters of two 'ProcessOutput' effects.
 -- This variant:
 -- - Models a daemon process that is not expected to terminate, causing 'Stop' to be sent to the scope callsite instead
@@ -270,7 +270,7 @@ interpretProcess options proc =
       mapStop ProcessError.StartFailed do
         pscope @SystemProcessScopeError options (raise . raiseUnder . proc) p (insertAt @4 sem)
 
--- |Interpret 'Process' with a system process resource whose file descriptors are connected to three 'TBMQueue's,
+-- | Interpret 'Process' with a system process resource whose file descriptors are connected to three 'TBMQueue's,
 -- deferring decoding of stdout and stderr to the interpreters of two 'ProcessOutput' effects.
 -- This variant:
 -- - Models a daemon process that is not expected to terminate, causing 'Stop' to be sent to the scope callsite instead
@@ -293,7 +293,7 @@ interpretProcess_ options =
       mapStop ProcessError.StartFailed do
         scope @SystemProcessScopeError options (insertAt @4 sem)
 
--- |Interpret 'Process' as a native 'Polysemy.Process.SystemProcess'.
+-- | Interpret 'Process' as a native 'Polysemy.Process.SystemProcess'.
 -- This variant:
 -- - Models a daemon process that is not expected to terminate, causing 'Stop' to be sent to the scope callsite instead
 --   of individual 'Process' actions.
@@ -312,7 +312,7 @@ interpretProcessNative options proc =
   interpretProcess options (insertAt @0 . proc) .
   raiseUnder
 
--- |Interpret 'Process' as a native 'Polysemy.Process.SystemProcess'.
+-- | Interpret 'Process' as a native 'Polysemy.Process.SystemProcess'.
 -- This variant:
 -- - Models a daemon process that is not expected to terminate, causing 'Stop' to be sent to the scope callsite instead
 --   of individual 'Process' actions.
@@ -329,7 +329,7 @@ interpretProcessNative_ options conf =
   interpretProcess_ options .
   raiseUnder
 
--- |Reinterpret 'Input' and 'Output' as 'Process'.
+-- | Reinterpret 'Input' and 'Output' as 'Process'.
 interpretInputOutputProcess ::
   ∀ i o r .
   Member (Process i o) r =>
@@ -338,7 +338,7 @@ interpretInputOutputProcess =
   runOutputSem (Process.send @i @o) .
   runInputSem (Process.recv @i @o)
 
--- |Interpret 'Input ByteString' by polling a 'Handle' and stopping with 'ProcessError' when it fails.
+-- | Interpret 'Input ByteString' by polling a 'Handle' and stopping with 'ProcessError' when it fails.
 interpretInputHandleBuffered ::
   Member (Embed IO) r =>
   Handle ->
@@ -348,7 +348,7 @@ interpretInputHandleBuffered handle =
     Input ->
       stopNote (Unknown "handle closed") =<< tryMaybe (hGetSome handle 4096)
 
--- |Interpret 'Input ByteString' by polling a 'Handle' and stopping with 'ProcessError' when it fails.
+-- | Interpret 'Input ByteString' by polling a 'Handle' and stopping with 'ProcessError' when it fails.
 -- This variant deactivates buffering for the 'Handle'.
 interpretInputHandle ::
   Member (Embed IO) r =>
@@ -358,7 +358,7 @@ interpretInputHandle handle sem = do
   tryAny_ (hSetBuffering handle NoBuffering)
   interpretInputHandleBuffered handle sem
 
--- |Interpret 'Output ByteString' by writing to a 'Handle' and stopping with 'ProcessError' when it fails.
+-- | Interpret 'Output ByteString' by writing to a 'Handle' and stopping with 'ProcessError' when it fails.
 interpretOutputHandleBuffered ::
   Member (Embed IO) r =>
   Handle ->
@@ -368,7 +368,7 @@ interpretOutputHandleBuffered handle =
     Output o ->
       stopNote (Unknown "handle closed") =<< tryMaybe (hPut handle o)
 
--- |Interpret 'Output ByteString' by writing to a 'Handle' and stopping with 'ProcessError' when it fails.
+-- | Interpret 'Output ByteString' by writing to a 'Handle' and stopping with 'ProcessError' when it fails.
 -- This variant deactivates buffering for the 'Handle'.
 interpretOutputHandle ::
   Member (Embed IO) r =>
@@ -378,7 +378,7 @@ interpretOutputHandle handle sem = do
   tryAny_ (hSetBuffering handle NoBuffering)
   interpretOutputHandleBuffered handle sem
 
--- |Interpret 'Process' in terms of 'Input' and 'Output'.
+-- | Interpret 'Process' in terms of 'Input' and 'Output'.
 -- Since the @i@ and @o@ parameters correspond to the abstraction of stdio fds of an external system process, @i@ is
 -- written by 'Output' and @o@ is read from 'Input'.
 -- This is useful to abstract the current process's stdio as an external process, with input and output swapped.
@@ -395,7 +395,7 @@ interpretProcessIO (ProcessOptions discard qSize _) =
   interpretResumable (handleProcessWithQueues (stop . Unknown)) .
   raiseUnder2
 
--- |Interpret 'Process' in terms of two 'Handle's.
+-- | Interpret 'Process' in terms of two 'Handle's.
 -- This is useful to abstract the current process's stdio as an external process, with input and output swapped.
 -- The first 'Handle' argument corresponds to the @o@ parameter, the second one to @i@, despite the first one usually
 -- being the current process's stdin.
@@ -414,7 +414,7 @@ interpretProcessHandles options hIn hOut =
   interpretProcessIO @i @o @ProcessError @ProcessError options .
   raiseUnder2
 
--- |Interpret 'Process' using the current process's stdin and stdout.
+-- | Interpret 'Process' using the current process's stdin and stdout.
 -- This mirrors the usual abstraction of an external process, to whose stdin would be /written/, while the current one's
 -- is /read/.
 interpretProcessCurrent ::

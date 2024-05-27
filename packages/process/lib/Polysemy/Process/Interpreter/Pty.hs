@@ -1,6 +1,6 @@
 {-# options_haddock prune #-}
 
--- |Description: Pty Interpreters, Internal
+-- | Description: Pty Interpreters, Internal
 module Polysemy.Process.Interpreter.Pty where
 
 import Polysemy.Resume (Stop, interpretScopedResumable, stopEitherWith, stopNote, type (!!))
@@ -42,7 +42,7 @@ withPty ::
 withPty =
   bracket acquirePty releasePty
 
--- |Interpret Pty as a 'System.Posix.Pty'.
+-- | Interpret Pty as a 'System.Posix.Pty'.
 interpretPty ::
   Members [Resource, Embed IO] r =>
   InterpreterFor (Scoped_ Pty !! PtyError) r

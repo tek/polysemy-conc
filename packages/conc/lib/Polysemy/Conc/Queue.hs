@@ -1,5 +1,5 @@
 {-# options_haddock prune #-}
--- |Description: Queue Combinators
+-- | Description: Queue Combinators
 module Polysemy.Conc.Queue (
   module Polysemy.Conc.Queue,
   module Polysemy.Conc.Effect.Queue,
@@ -24,7 +24,7 @@ import Polysemy.Conc.Effect.Queue (
   )
 import Polysemy.Conc.Queue.Result (resultToMaybe)
 
--- |Read from a 'Queue' repeatedly until it is closed.
+-- | Read from a 'Queue' repeatedly until it is closed.
 --
 -- When an element is received, call @action@ and recurse if it returns 'True'.
 -- When no element is available, evaluate @na@ and recurse if it returns 'True'.
@@ -42,7 +42,7 @@ loopOr na action =
         QueueResult.NotAvailable -> whenM na spin
         QueueResult.Closed -> unit
 
--- |Read from a 'Queue' repeatedly until it is closed.
+-- | Read from a 'Queue' repeatedly until it is closed.
 --
 -- When an element is received, call @action@ and recurse.
 loop ::
@@ -52,7 +52,7 @@ loop ::
 loop action =
   loopOr (pure True) \ d -> True <$ action d
 
--- |Read from a 'Queue' and convert the result to 'Maybe', returning 'Nothing' if the queue has been closed, and
+-- | Read from a 'Queue' and convert the result to 'Maybe', returning 'Nothing' if the queue has been closed, and
 -- blocking until an element is available.
 readMaybe ::
   Member (Queue d) r =>
@@ -60,7 +60,7 @@ readMaybe ::
 readMaybe =
   resultToMaybe <$> read
 
--- |Read from a 'Queue' and convert the result to 'Maybe', returning 'Nothing' if there is no element available or the
+-- | Read from a 'Queue' and convert the result to 'Maybe', returning 'Nothing' if there is no element available or the
 -- queue has been closed.
 tryReadMaybe ::
   Member (Queue d) r =>

@@ -1,7 +1,7 @@
--- |A data type encoding the result of an incremental parser for process output.
+-- | A data type encoding the result of an incremental parser for process output.
 module Polysemy.Process.Data.ProcessOutputParseResult where
 
--- |An incremental parse result, potentially a partial result containing a continuation function.
+-- | An incremental parse result, potentially a partial result containing a continuation function.
 data ProcessOutputParseResult a =
   Done { value :: a, leftover :: ByteString }
   |

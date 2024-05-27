@@ -1,7 +1,7 @@
--- |Pid data type, Internal
+-- | Pid data type, Internal
 module Polysemy.Process.Data.Pid where
 
--- |A process ID.
+-- | A process ID.
 newtype Pid =
   Pid { unPid :: Int }
   deriving stock (Eq, Show, Read)

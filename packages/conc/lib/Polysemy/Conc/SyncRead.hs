@@ -1,6 +1,6 @@
 {-# options_haddock prune #-}
 
--- |Description: API and combinators for 'SyncRead'.
+-- | Description: API and combinators for 'SyncRead'.
 module Polysemy.Conc.SyncRead (
   module Polysemy.Conc.SyncRead,
   module Polysemy.Conc.Effect.SyncRead,
@@ -12,7 +12,7 @@ import Polysemy.Time (Time, TimeUnit)
 import qualified Polysemy.Conc.Effect.SyncRead as SyncRead
 import Polysemy.Conc.Effect.SyncRead (SyncRead, block, empty, try, wait)
 
--- |Run an action repeatedly until the 'SyncRead' variable is available.
+-- | Run an action repeatedly until the 'SyncRead' variable is available.
 whileEmpty ::
   ∀ a r .
   Member (SyncRead a) r =>
@@ -25,7 +25,7 @@ whileEmpty action =
       action
       whenM (not <$> SyncRead.empty @a) spin
 
--- |Run an action repeatedly until the 'SyncRead' variable is available, waiting for the specified time between executions.
+-- | Run an action repeatedly until the 'SyncRead' variable is available, waiting for the specified time between executions.
 whileEmptyInterval ::
   ∀ a u t d r .
   TimeUnit u =>

@@ -1,6 +1,6 @@
 {-# options_haddock prune #-}
 
--- |Description: SystemProcess Interpreters, Internal
+-- | Description: SystemProcess Interpreters, Internal
 module Polysemy.Process.Interpreter.SystemProcess where
 
 import Data.ByteString (hGetSome, hPut)
@@ -30,11 +30,11 @@ import Polysemy.Process.Data.SystemProcessError (SystemProcessError, SystemProce
 import qualified Polysemy.Process.Effect.SystemProcess as SystemProcess
 import Polysemy.Process.Effect.SystemProcess (SystemProcess)
 
--- |Convenience alias for a vanilla 'ProcessConfig', which will usually be transformed by interpreters to use 'Handle's.
+-- | Convenience alias for a vanilla 'ProcessConfig', which will usually be transformed by interpreters to use 'Handle's.
 type SysProcConf =
   ProcessConfig () () ()
 
--- |Convenience alias for the 'Process' type used by native interpreters.
+-- | Convenience alias for the 'Process' type used by native interpreters.
 type PipesProcess =
   Process Handle Handle Handle
 
@@ -109,7 +109,7 @@ checkEof = \case
   b ->
     pure b
 
--- |Handle 'SystemProcess' with a concrete 'System.Process' with connected pipes.
+-- | Handle 'SystemProcess' with a concrete 'System.Process' with connected pipes.
 handleSystemProcessWithProcess ::
   ∀ r r0 a .
   Members [Stop SystemProcessError, Embed IO] r =>
@@ -131,7 +131,7 @@ handleSystemProcessWithProcess process = \case
   SystemProcess.Wait ->
     tryStop "wait failed" (waitExitCode process)
 
--- |Interpret 'SystemProcess' with a concrete 'System.Process' with connected pipes.
+-- | Interpret 'SystemProcess' with a concrete 'System.Process' with connected pipes.
 interpretSystemProcessWithProcess ::
   ∀ r .
   Member (Embed IO) r =>
@@ -140,7 +140,7 @@ interpretSystemProcessWithProcess ::
 interpretSystemProcessWithProcess process =
   interpretResumable (handleSystemProcessWithProcess process)
 
--- |Interpret 'SystemProcess' as a single global 'System.Process' that's started immediately.
+-- | Interpret 'SystemProcess' as a single global 'System.Process' that's started immediately.
 interpretSystemProcessNativeSingle ::
   ∀ r .
   Members [Stop SystemProcessScopeError, Resource, Embed IO] r =>
@@ -162,7 +162,7 @@ withProcConf use = \case
     stop (StartFailed err)
 {-# inline withProcConf #-}
 
--- |Interpret 'SystemProcess' as a scoped 'System.Process' that's started wherever 'Polysemy.Process.withSystemProcess'
+-- | Interpret 'SystemProcess' as a scoped 'System.Process' that's started wherever 'Polysemy.Process.withSystemProcess'
 -- is called and terminated when the wrapped action finishes.
 -- This variant is for parameterized scopes, allowing the consumer to supply a value of type @param@ to create the
 -- process config.
@@ -174,7 +174,7 @@ interpretSystemProcessNative ::
 interpretSystemProcessNative config =
   interpretScopedR (\ p u -> raise (raise (config p)) >>= withProcConf u) handleSystemProcessWithProcess
 
--- |Interpret 'SystemProcess' as a scoped 'System.Process' that's started wherever 'Polysemy.Process.withSystemProcess'
+-- | Interpret 'SystemProcess' as a scoped 'System.Process' that's started wherever 'Polysemy.Process.withSystemProcess'
 -- is called and terminated when the wrapped action finishes.
 -- This variant takes a static 'SysProcConf'.
 interpretSystemProcessNative_ ::
@@ -185,7 +185,7 @@ interpretSystemProcessNative_ ::
 interpretSystemProcessNative_ config =
   interpretScopedR (const (withProcess config)) handleSystemProcessWithProcess
 
--- |Interpret 'SystemProcess' with a concrete 'System.Process' with no connection to stdio.
+-- | Interpret 'SystemProcess' with a concrete 'System.Process' with no connection to stdio.
 interpretSystemProcessWithProcessOpaque ::
   ∀ i o e r .
   Member (Embed IO) r =>
@@ -207,7 +207,7 @@ interpretSystemProcessWithProcessOpaque process =
     SystemProcess.Wait ->
       tryStop "wait failed" (waitExitCode process)
 
--- |Interpret 'SystemProcess' as a single global 'System.Process' that's started immediately.
+-- | Interpret 'SystemProcess' as a single global 'System.Process' that's started immediately.
 interpretSystemProcessNativeOpaqueSingle ::
   ∀ i o e r .
   Members [Resource, Embed IO] r =>
@@ -217,7 +217,7 @@ interpretSystemProcessNativeOpaqueSingle config sem =
   withProcessOpaque config \ process ->
     interpretSystemProcessWithProcessOpaque process sem
 
--- |Interpret 'SystemProcess' as a scoped 'System.Process' that's started wherever 'Polysemy.Process.withSystemProcess'
+-- | Interpret 'SystemProcess' as a scoped 'System.Process' that's started wherever 'Polysemy.Process.withSystemProcess'
 -- is called and terminated when the wrapped action finishes.
 interpretSystemProcessNativeOpaque ::
   ∀ i o e r .
