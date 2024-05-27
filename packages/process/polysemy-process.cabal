@@ -95,20 +95,20 @@ library
       NoFieldSelectors
   ghc-options: -Wall -Widentities -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Wredundant-constraints -Wunused-type-patterns -Wunused-packages
   build-depends:
-      async
-    , base
-    , incipit-core
-    , path
-    , path-io
-    , polysemy
+      async >=2.2.5
+    , base >=4.17.2.1
+    , incipit-core >=0.4.1.0
+    , path >=0.9.1
+    , path-io >=1.6.3
+    , polysemy >=1.9.0.0
     , polysemy-conc >=0.13.0.1 && <0.14
-    , polysemy-resume
-    , polysemy-time
-    , posix-pty
-    , process
-    , stm-chans
-    , typed-process
-    , unix
+    , polysemy-resume >=0.7.0.0
+    , polysemy-time >=0.5.1.0
+    , posix-pty >=0.2.2
+    , process >=1.6.18.0
+    , stm-chans >=2.0.0
+    , typed-process >=0.2.4.1
+    , unix >=2.7.3
   mixins:
       base hiding (Prelude)
     , incipit-core (IncipitCore as Prelude)
@@ -161,20 +161,20 @@ test-suite polysemy-process-test
       NoFieldSelectors
   ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall -Widentities -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Wredundant-constraints -Wunused-type-patterns -Wunused-packages
   build-depends:
-      async
-    , base
-    , incipit-core
-    , polysemy
+      async >=2.2.5
+    , base >=4.17.2.1
+    , incipit-core >=0.4.1.0
+    , polysemy >=1.9.0.0
     , polysemy-conc >=0.13.0.1 && <0.14
-    , polysemy-plugin
+    , polysemy-plugin >=0.4.4.0
     , polysemy-process
-    , polysemy-resume
-    , polysemy-test
-    , polysemy-time
-    , tasty
-    , tasty-expected-failure
-    , typed-process
-    , unix
+    , polysemy-resume >=0.7.0.0
+    , polysemy-test >=0.6.0.0
+    , polysemy-time >=0.5.1.0
+    , tasty >=1.4.2
+    , tasty-expected-failure >=0.11.1.2
+    , typed-process >=0.2.4.1
+    , unix >=2.7.3
   mixins:
       base hiding (Prelude)
     , incipit-core (IncipitCore as Prelude)
