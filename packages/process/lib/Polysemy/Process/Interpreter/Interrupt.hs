@@ -30,10 +30,12 @@ import Polysemy.Process.Effect.Interrupt (Interrupt (..))
 
 putErr ::
   Member (Embed IO) r =>
+  Bool ->
   Text ->
   Sem r ()
-putErr =
-  embed . Text.hPutStrLn stderr
+putErr = \case
+  True -> embed . Text.hPutStrLn stderr
+  False -> const unit
 
 data InterruptState =
   InterruptState {
@@ -82,23 +84,25 @@ onQuit name ma = do
 
 processHandler ::
   Member (Embed IO) r =>
+  Bool ->
   Text ->
   IO () ->
   Sem r ()
-processHandler name thunk = do
-  putErr ("processing interrupt handler: " <> name)
+processHandler verbose name thunk = do
+  putErr verbose ("processing interrupt handler: " <> name)
   embed thunk
 
 execInterrupt ::
   Members [AtomicState InterruptState, Embed IO] r =>
+  Bool ->
   Sem r (SignalInfo -> Sem r ())
-execInterrupt = do
+execInterrupt verbose = do
   InterruptState quitSignal finishSignal _ orig _ <- atomicGet
   whenM (embed (tryPutMVar quitSignal ())) do
-    traverse_ (uncurry processHandler) . Map.toList =<< atomicGets handlers
+    traverse_ (uncurry (processHandler verbose)) . Map.toList =<< atomicGets handlers
     checkListeners
     embed (takeMVar finishSignal)
-  embed . orig <$ putErr "interrupt handlers finished"
+  embed . orig <$ putErr verbose "interrupt handlers finished"
 
 registerHandler ::
   Member (AtomicState InterruptState) r =>
@@ -110,10 +114,11 @@ registerHandler name handler =
 
 awaitOrKill ::
   Members [AtomicState InterruptState, Critical, Race, Async, Embed IO] r =>
+  Bool ->
   Text ->
   A.Async (Maybe a) ->
   Sem r (Maybe a)
-awaitOrKill desc handle = do
+awaitOrKill verbose desc handle = do
   interpretSync @() do
     race_ (catchCritical (await handle)) kill
   where
@@ -123,16 +128,17 @@ awaitOrKill desc handle = do
       Nothing <$ Sync.wait @() (Seconds 1)
     kill = do
       onQuit desc do
-        putErr ("killing " <> desc)
+        putErr verbose ("killing " <> desc)
         cancel handle
-        putErr ("killed " <> desc)
+        putErr verbose ("killed " <> desc)
         Sync.putBlock ()
         pure Nothing
 
 interpretInterruptState ::
   Members [AtomicState InterruptState, Critical, Race, Async, Embed IO] r =>
+  Bool ->
   InterpreterFor Interrupt r
-interpretInterruptState =
+interpretInterruptState verbose =
   interpretH \case
     Register name handler ->
       liftT (registerHandler name handler)
@@ -142,25 +148,26 @@ interpretInterruptState =
       liftT waitQuit
     Quit ->
       liftT do
-        putErr "manual interrupt"
-        void execInterrupt
+        putErr verbose "manual interrupt"
+        void (execInterrupt verbose)
     Interrupted ->
       liftT . fmap isJust . embed . tryReadMVar =<< atomicGets quit
     KillOnQuit desc ma -> do
       maT <- runT ma
       ins <- getInspectorT
-      handle <- raise (interpretInterruptState (async maT))
-      result <- liftT (awaitOrKill desc handle)
+      handle <- raise (interpretInterruptState verbose (async maT))
+      result <- liftT (awaitOrKill verbose desc handle)
       pure (join . fmap (inspect ins) <$> result)
 {-# inline interpretInterruptState #-}
 
 broadcastInterrupt ::
   Members [AtomicState InterruptState, Embed IO] r =>
+  Bool ->
   SignalInfo ->
   Sem r ()
-broadcastInterrupt sig = do
-  putErr "caught interrupt signal"
-  orig <- execInterrupt
+broadcastInterrupt verbose sig = do
+  putErr verbose "caught interrupt signal"
+  orig <- execInterrupt verbose
   orig sig
 
 -- The original handler is either the default handler that kills all threads or a handler installed by an environment
@@ -182,30 +189,48 @@ originalHandler _ =
 {-# inline originalHandler #-}
 
 installSignalHandler ::
+  Bool ->
   TVar InterruptState ->
   ((SignalInfo -> IO ()) -> Handler) ->
   IO Handler
-installSignalHandler state consHandler =
+installSignalHandler verbose state consHandler =
   installHandler keyboardSignal (consHandler handler) Nothing
   where
     handler sig =
-      runFinal $ embedToFinal @IO $ runAtomicStateTVar state (broadcastInterrupt sig)
+      runFinal $ embedToFinal @IO $ runAtomicStateTVar state (broadcastInterrupt verbose sig)
 
 -- | Interpret 'Interrupt' by installing a signal handler.
 --
 -- Takes a constructor for 'Handler'.
+interpretInterruptWith' ::
+  Members [Critical, Race, Async, Embed IO] r =>
+  Bool ->
+  ((SignalInfo -> IO ()) -> Handler) ->
+  InterpreterFor Interrupt r
+interpretInterruptWith' verbose consHandler sem = do
+  quitMVar <- embed newEmptyMVar
+  finishMVar <- embed newEmptyMVar
+  state <- embed (newTVarIO (InterruptState quitMVar finishMVar Set.empty (const unit) Map.empty))
+  orig <- embed $ installSignalHandler verbose state consHandler
+  runAtomicStateTVar state do
+    atomicModify' \ s -> s {original = originalHandler orig}
+    interpretInterruptState verbose $ raiseUnder sem
+
 interpretInterruptWith ::
   Members [Critical, Race, Async, Embed IO] r =>
   ((SignalInfo -> IO ()) -> Handler) ->
   InterpreterFor Interrupt r
-interpretInterruptWith consHandler sem = do
-  quitMVar <- embed newEmptyMVar
-  finishMVar <- embed newEmptyMVar
-  state <- embed (newTVarIO (InterruptState quitMVar finishMVar Set.empty (const unit) Map.empty))
-  orig <- embed $ installSignalHandler state consHandler
-  runAtomicStateTVar state do
-    atomicModify' \ s -> s {original = originalHandler orig}
-    interpretInterruptState $ raiseUnder sem
+interpretInterruptWith = interpretInterruptWith' True
+
+-- | Interpret 'Interrupt' by installing a signal handler.
+--
+-- Catches repeat invocations of SIGINT.
+interpretInterrupt' ::
+  Members [Critical, Race, Async, Embed IO] r =>
+  Bool ->
+  InterpreterFor Interrupt r
+interpretInterrupt' verbose =
+  interpretInterruptWith' verbose CatchInfo
 
 -- | Interpret 'Interrupt' by installing a signal handler.
 --
@@ -214,7 +239,17 @@ interpretInterrupt ::
   Members [Critical, Race, Async, Embed IO] r =>
   InterpreterFor Interrupt r
 interpretInterrupt =
-  interpretInterruptWith CatchInfo
+  interpretInterrupt' True
+
+-- | Interpret 'Interrupt' by installing a signal handler.
+--
+-- Catches only the first invocation of SIGINT.
+interpretInterruptOnce' ::
+  Members [Critical, Race, Async, Embed IO] r =>
+  Bool ->
+  InterpreterFor Interrupt r
+interpretInterruptOnce' verbose =
+  interpretInterruptWith' verbose CatchInfoOnce
 
 -- | Interpret 'Interrupt' by installing a signal handler.
 --
@@ -223,7 +258,7 @@ interpretInterruptOnce ::
   Members [Critical, Race, Async, Embed IO] r =>
   InterpreterFor Interrupt r
 interpretInterruptOnce =
-  interpretInterruptWith CatchInfoOnce
+  interpretInterruptOnce' True
 
 -- | Eliminate 'Interrupt' without interpreting.
 interpretInterruptNull ::
