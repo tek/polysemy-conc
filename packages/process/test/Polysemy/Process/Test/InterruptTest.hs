@@ -7,7 +7,7 @@ import Polysemy.Test (UnitTest, assertEq, runTestAuto)
 import System.Posix (Handler (CatchInfoOnce), SignalInfo, installHandler, keyboardSignal, raiseSignal)
 
 import qualified Polysemy.Process.Effect.Interrupt as Interrupt
-import Polysemy.Process.Interpreter.Interrupt (interpretInterrupt)
+import Polysemy.Process.Interpreter.Interrupt (interpretInterrupt')
 
 handler :: MVar () -> TVar Int -> SignalInfo -> IO ()
 handler mv tv _ = do
@@ -20,7 +20,7 @@ test_interrupt = do
     tv <- embed (newTVarIO 0)
     mv <- embed newEmptyMVar
     embed (installHandler keyboardSignal (CatchInfoOnce (handler mv tv)) Nothing)
-    asyncToIOFinal $ interpretCritical $ interpretRace $ interpretInterrupt do
+    asyncToIOFinal $ interpretCritical $ interpretRace $ interpretInterrupt' False do
       Interrupt.register "test 1" do
         atomically (modifyTVar tv (3 +))
       Interrupt.register "test 2" do
