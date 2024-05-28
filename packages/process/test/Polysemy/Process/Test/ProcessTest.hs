@@ -8,7 +8,17 @@ import Polysemy.Conc.Effect.Race (Race)
 import Polysemy.Conc.Interpreter.Race (interpretRace)
 import qualified Polysemy.Conc.Race as Race
 import Polysemy.Resume (resumeEither, resumeHoistAs, resumeHoistError, resuming, runStop, type (!!), (<!))
-import Polysemy.Test (TestError (TestError), UnitTest, assertJust, assertLeft, evalLeft, runTestAuto, unitTest, (===))
+import Polysemy.Test (
+  TestError (TestError),
+  UnitTest,
+  assertJust,
+  assertLeft,
+  evalLeft,
+  runTestAuto,
+  unitTest,
+  unitTestTimes,
+  (===),
+  )
 import Polysemy.Time (MilliSeconds (MilliSeconds), Seconds (Seconds))
 import System.Exit (ExitCode (ExitSuccess))
 import qualified System.Process.Typed as Process
@@ -147,10 +157,10 @@ test_startFailed =
 test_processAll :: TestTree
 test_processAll =
   testGroup "process" [
-    unitTest "read raw chunks" test_process,
-    unitTest "read lines" test_processLines,
+    unitTestTimes 100 "read raw chunks" test_process,
+    unitTestTimes 100 "read lines" test_processLines,
     ignoreTest (unitTest "don't kill the process at the end of the scope" test_processKillNever),
-    unitTest "expect termination" test_processOneshot,
-    unitTest "daemon exit code" test_exit,
-    unitTest "system process start error" test_startFailed
+    unitTestTimes 100 "expect termination" test_processOneshot,
+    unitTestTimes 100 "daemon exit code" test_exit,
+    unitTestTimes 100 "system process start error" test_startFailed
   ]

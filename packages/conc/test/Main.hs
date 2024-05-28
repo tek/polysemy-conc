@@ -1,6 +1,5 @@
 module Main where
 
-import Hedgehog (property, test, withTests)
 import Polysemy.Conc.Test.EventsTest (test_events)
 import Polysemy.Conc.Test.LockTest (test_lock)
 import Polysemy.Conc.Test.MaskTest (test_mask)
@@ -14,38 +13,42 @@ import Polysemy.Conc.Test.QueueTest (
   test_queueTimeoutTBM,
   )
 import Polysemy.Conc.Test.SyncTest (test_sync, test_syncLock)
-import Polysemy.Test (unitTest)
-import Test.Tasty (TestTree, defaultMain, testGroup)
-import Test.Tasty.Hedgehog (testProperty)
+import Polysemy.Test (unitTestTimes)
+import Test.Tasty (TestTree, Timeout (NoTimeout), adjustOption, defaultMain, testGroup, mkTimeout)
+
+defaultTimeout :: Timeout -> Timeout
+defaultTimeout = \case
+  NoTimeout -> mkTimeout 60_000_000
+  t -> t
 
 tests :: TestTree
 tests =
+  adjustOption defaultTimeout $
   testGroup "main" [
     testGroup "queue" [
-      unitTest "TBM success" test_queueTBM,
-      unitTest "TBM timeout" test_queueTimeoutTBM,
-      unitTest "TBM peek" test_queuePeekTBM,
-      unitTest "TBM block" test_queueBlockTBM,
-      unitTest "TB success" test_queueTB,
-      unitTest "TB block" test_queueBlockTB
+      unitTestTimes 100 "TBM success" test_queueTBM,
+      unitTestTimes 100 "TBM timeout" test_queueTimeoutTBM,
+      unitTestTimes 100 "TBM peek" test_queuePeekTBM,
+      unitTestTimes 10 "TBM block" test_queueBlockTBM,
+      unitTestTimes 100 "TB success" test_queueTB,
+      unitTestTimes 10 "TB block" test_queueBlockTB
     ],
     testGroup "events" [
-      testProperty "events" (withTests 100 (property (test test_events)))
+      unitTestTimes 100 "events" test_events
     ],
     testGroup "sync" [
-      unitTest "sync" test_sync,
-      unitTest "lock" test_syncLock
+      unitTestTimes 100 "sync" test_sync,
+      unitTestTimes 10 "lock" test_syncLock
     ],
     test_lock,
     testGroup "mask" [
-      unitTest "mask" test_mask
+      unitTestTimes 10 "mask" test_mask
     ],
     testGroup "monitor" [
-      unitTest "basic" test_monitorBasic,
-      unitTest "clock skew" test_monitorClockSkew
+      unitTestTimes 100 "basic" test_monitorBasic,
+      unitTestTimes 100 "clock skew" test_monitorClockSkew
     ]
   ]
 
 main :: IO ()
-main =
-  defaultMain tests
+main = defaultMain tests

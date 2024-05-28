@@ -2,7 +2,7 @@
 
 module Polysemy.Conc.Test.LockTest where
 
-import Polysemy.Test (UnitTest, assert, assertJust, runTestAuto, unitTest)
+import Polysemy.Test (UnitTest, assert, assertJust, runTestAuto, unitTestTimes)
 import Polysemy.Time (GhcTime, MilliSeconds (MilliSeconds), Seconds (Seconds), interpretTimeGhc)
 import Test.Tasty (TestTree, testGroup)
 
@@ -52,6 +52,6 @@ test_lockReentry =
 test_lock :: TestTree
 test_lock =
   testGroup "lock" [
-    unitTest "basic" test_lockBasic,
-    unitTest "reentry" test_lockReentry
+    unitTestTimes 10 "basic" test_lockBasic,
+    unitTestTimes 10 "reentry" test_lockReentry
   ]
