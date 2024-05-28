@@ -17,7 +17,7 @@ import Polysemy.Time (
 
 import Polysemy.Conc.AtomicState (interpretAtomic)
 import qualified Polysemy.Conc.Effect.Monitor as Monitor
-import Polysemy.Conc.Effect.Monitor (Monitor, MonitorCheck (MonitorCheck), Restart)
+import Polysemy.Conc.Effect.Monitor (Monitor, MonitorCheck (MonitorCheck, check), Restart)
 import qualified Polysemy.Conc.Effect.Sync as Sync
 import Polysemy.Conc.Effect.Sync (Sync)
 import Polysemy.Conc.Interpreter.Monitor (interpretMonitorRestart)
@@ -39,10 +39,9 @@ prog = do
 
 checker ::
   Members [Time t d, Sync (), Embed IO] r =>
-  MVar () ->
-  Sem r ()
-checker signal =
-  Sync.takeBlock *> embed (putMVar signal ())
+  Sem r Bool
+checker =
+  True <$ Sync.takeBlock
 
 test_monitorBasic :: UnitTest
 test_monitorBasic =
@@ -59,7 +58,7 @@ progSkew ::
   Member (Sync (Proxy "start")) r =>
   Members [Monitor Restart, Time t d, AtomicState Int, Sync (Proxy 1), Sync (Proxy 2), Sync (Proxy 3)] r =>
   Sem r Int
-progSkew = do
+progSkew =
   Monitor.monitor do
     atomicModify' (1 +)
     Sync.putBlock (Proxy @"start")
@@ -76,12 +75,14 @@ test_monitorClockSkew =
   interpretTimeGhcConstantNow $
   interpretAtomic (0 :: Int) $
   interpretAtomic @(Maybe UTCTime) Nothing $
+  interpretSync @(Proxy "init") $
   interpretSync @(Proxy "start") $
   interpretSync @(Proxy 1) $
   interpretSync @(Proxy 2) $
   interpretSync @(Proxy 3) $
-  interpretMonitorRestart (monitorClockSkew (clockSkewConfig (MilliSeconds 1) (Minutes 30))) do
+  interpretMonitorRestart monitor do
     h <- async (Monitor.restart progSkew)
+    _ <- Sync.takeBlock @(Proxy "init")
     _ <- Sync.takeBlock @(Proxy "start")
     Time.adjust (Hours 1)
     _ <- Sync.takeBlock @(Proxy "start")
@@ -94,3 +95,10 @@ test_monitorClockSkew =
     Sync.takeBlock @(Proxy 2)
     Sync.putBlock (Proxy @3)
     assertJust 3 =<< await h
+  where
+    monitor = base {check}
+    check = do
+      detected <- base.check
+      Sync.putTry (Proxy @"init")
+      pure detected
+    base = monitorClockSkew (clockSkewConfig (MilliSeconds 1) (Minutes 30))

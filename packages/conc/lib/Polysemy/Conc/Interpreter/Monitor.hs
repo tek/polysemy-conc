@@ -34,12 +34,14 @@ monitorRestart ::
   Sem r a
 monitorRestart (MonitorCheck interval check) use = do
   sig <- embedFinal @IO newEmptyMVar
-  withAsync_ (Time.loop_ @t @d interval (check sig)) (spin sig)
+  withAsync_ (Time.loop_ @t @d interval (runCheck sig)) (spin sig)
   where
+    runCheck sig = whenM check (void (embedFinal @IO (tryPutMVar sig ())))
+
     spin sig = do
-      let res = (CancelResource sig)
+      let res = CancelResource sig
       void (embedFinal @IO (tryTakeMVar sig))
-      either (const (spin sig)) pure =<< errorToIOFinal @MonitorCancel (fromExceptionSem @MonitorCancel (raise (use res)))
+      leftA (const (spin sig)) =<< errorToIOFinal @MonitorCancel (fromExceptionSem @MonitorCancel (raise (use res)))
 
 -- | Interpret @'Polysemy.Conc.Scoped' 'Monitor'@ with the 'Polysemy.Conc.Restart' strategy.
 -- This takes a check action that may put an 'MVar' when the scoped region should be restarted.

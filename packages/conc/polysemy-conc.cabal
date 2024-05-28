@@ -132,6 +132,7 @@ test-suite polysemy-conc-test
       Polysemy.Conc.Test.MaskTest
       Polysemy.Conc.Test.MonitorTest
       Polysemy.Conc.Test.QueueTest
+      Polysemy.Conc.Test.Run
       Polysemy.Conc.Test.SyncTest
   hs-source-dirs:
       test

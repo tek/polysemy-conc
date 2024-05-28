@@ -2,7 +2,7 @@
 
 module Polysemy.Conc.Test.LockTest where
 
-import Polysemy.Test (UnitTest, assert, assertJust, runTestAuto, unitTestTimes)
+import Polysemy.Test (UnitTest, assert, assertJust, runTestAuto)
 import Polysemy.Time (GhcTime, MilliSeconds (MilliSeconds), Seconds (Seconds), interpretTimeGhc)
 import Test.Tasty (TestTree, testGroup)
 
@@ -16,6 +16,7 @@ import Polysemy.Conc.Interpreter.Mask (interpretMaskFinal)
 import Polysemy.Conc.Interpreter.Race (interpretRace)
 import Polysemy.Conc.Interpreter.Sync (interpretSync)
 import Polysemy.Conc.Race (timeout_)
+import Polysemy.Conc.Test.Run (unitTestTimes)
 
 interpretLockTest ::
   Members [Resource, Embed IO, Final IO] r =>

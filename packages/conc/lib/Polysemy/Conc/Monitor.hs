@@ -42,12 +42,8 @@ monitorClockSkew ::
   ClockSkewConfig ->
   MonitorCheck r
 monitorClockSkew (ClockSkewConfig interval tolerance) =
-  MonitorCheck interval \ signal -> do
-    atomicGet >>= \case
-      Just prev -> do
-        now <- Time.now @t @d
-        when (minus (convert (difference now prev)) tolerance > interval) (void (embed @IO (tryPutMVar signal ())))
-        atomicPut (Just now)
-      Nothing -> do
-        now <- Time.now @t @d
-        atomicPut (Just now)
+  MonitorCheck interval do
+    now <- Time.now @t @d
+    atomicState \ s -> (Just now, maybe False (skewed now) s)
+  where
+    skewed now prev = minus (convert (difference now prev)) tolerance > interval
