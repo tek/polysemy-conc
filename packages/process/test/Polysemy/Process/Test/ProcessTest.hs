@@ -8,17 +8,7 @@ import Polysemy.Conc.Effect.Race (Race)
 import Polysemy.Conc.Interpreter.Race (interpretRace)
 import qualified Polysemy.Conc.Race as Race
 import Polysemy.Resume (resumeEither, resumeHoistAs, resumeHoistError, resuming, runStop, type (!!), (<!))
-import Polysemy.Test (
-  TestError (TestError),
-  UnitTest,
-  assertJust,
-  assertLeft,
-  evalLeft,
-  runTestAuto,
-  unitTest,
-  unitTestTimes,
-  (===),
-  )
+import Polysemy.Test (TestError (TestError), UnitTest, assertJust, assertLeft, evalLeft, runTestAuto, unitTest, (===))
 import Polysemy.Time (MilliSeconds (MilliSeconds), Seconds (Seconds))
 import System.Exit (ExitCode (ExitSuccess))
 import qualified System.Process.Typed as Process
@@ -41,6 +31,7 @@ import Polysemy.Process.Interpreter.ProcessIO (ProcessIO, interpretProcessByteSt
 import Polysemy.Process.Interpreter.ProcessOneshot (interpretProcessOneshotNative)
 import Polysemy.Process.Interpreter.ProcessOutput (parseMany)
 import Polysemy.Process.Interpreter.SystemProcess (SysProcConf, interpretSystemProcessNative_)
+import Polysemy.Process.Test.Run (unitTestTimes)
 
 config :: ProcessConfig () () ()
 config =

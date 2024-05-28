@@ -12,9 +12,9 @@ import Polysemy.Conc.Test.QueueTest (
   test_queueTBM,
   test_queueTimeoutTBM,
   )
+import Polysemy.Conc.Test.Run (unitTestTimes)
 import Polysemy.Conc.Test.SyncTest (test_sync, test_syncLock)
-import Polysemy.Test (unitTestTimes)
-import Test.Tasty (TestTree, Timeout (NoTimeout), adjustOption, defaultMain, testGroup, mkTimeout)
+import Test.Tasty (TestTree, Timeout (NoTimeout), adjustOption, defaultMain, mkTimeout, testGroup)
 
 defaultTimeout :: Timeout -> Timeout
 defaultTimeout = \case
@@ -46,7 +46,7 @@ tests =
     ],
     testGroup "monitor" [
       unitTestTimes 100 "basic" test_monitorBasic,
-      unitTestTimes 100 "clock skew" test_monitorClockSkew
+      unitTestTimes 1000 "clock skew" test_monitorClockSkew
     ]
   ]
 

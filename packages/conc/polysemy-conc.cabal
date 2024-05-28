@@ -132,6 +132,7 @@ test-suite polysemy-conc-test
       Polysemy.Conc.Test.MaskTest
       Polysemy.Conc.Test.MonitorTest
       Polysemy.Conc.Test.QueueTest
+      Polysemy.Conc.Test.Run
       Polysemy.Conc.Test.SyncTest
   hs-source-dirs:
       test
@@ -185,6 +186,7 @@ test-suite polysemy-conc-test
     , tasty >=1.4.2 && <1.5
     , tasty-hedgehog >=1.3.0.0 && <1.5
     , time >=1.12.2 && <1.13
+    , torsor ==0.1.*
   mixins:
       base hiding (Prelude)
     , incipit-core (IncipitCore as Prelude)

@@ -73,6 +73,7 @@
           "tasty"
           "tasty-hedgehog"
           "time"
+          "torsor"
         ];
       };
 
@@ -108,6 +109,7 @@
         enable = true;
         dependencies = [
           "async"
+          "hedgehog"
           "polysemy"
           config.packages.polysemy-conc.dep.minor
           "polysemy-plugin"
@@ -117,6 +119,7 @@
           "polysemy-time"
           "tasty"
           "tasty-expected-failure"
+          "tasty-hedgehog"
           "typed-process"
           "unix"
         ];

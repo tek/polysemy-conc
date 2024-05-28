@@ -18,8 +18,8 @@ import Polysemy.Conc.Effect.Monitor (
 import qualified Polysemy.Conc.Effect.Race as Race
 import Polysemy.Conc.Effect.Race (Race)
 
-newtype CancelResource =
-  CancelResource { signal :: MVar () }
+data CancelResource =
+  CancelResource { kill :: MVar () }
 
 data MonitorCancel =
   MonitorCancel
@@ -33,13 +33,22 @@ monitorRestart ::
   (CancelResource -> Sem r a) ->
   Sem r a
 monitorRestart (MonitorCheck interval check) use = do
-  sig <- embedFinal @IO newEmptyMVar
-  withAsync_ (Time.loop_ @t @d interval (check sig)) (spin sig)
-  where
-    spin sig = do
-      let res = (CancelResource sig)
-      void (embedFinal @IO (tryTakeMVar sig))
-      either (const (spin sig)) pure =<< errorToIOFinal @MonitorCancel (fromExceptionSem @MonitorCancel (raise (use res)))
+  kill <- embedFinal @IO newEmptyMVar
+  start <- embedFinal @IO newEmptyMVar
+  let
+
+    runCheck = do
+      embedFinal (readMVar start)
+      whenM check $ embedFinal @IO do
+        takeMVar start
+        void (tryPutMVar kill ())
+
+    spin = do
+      let res = CancelResource {..}
+      embedFinal (putMVar start ())
+      leftA (const spin) =<< errorToIOFinal @MonitorCancel (fromExceptionSem @MonitorCancel (raise (use res)))
+
+  withAsync_ (Time.loop_ @t @d interval runCheck) spin
 
 -- | Interpret @'Polysemy.Conc.Scoped' 'Monitor'@ with the 'Polysemy.Conc.Restart' strategy.
 -- This takes a check action that may put an 'MVar' when the scoped region should be restarted.
@@ -51,8 +60,9 @@ interpretMonitorRestart ::
   InterpreterFor RestartingMonitor r
 interpretMonitorRestart check =
   interpretScopedH (const (monitorRestart @t @d (hoistMonitorCheck raise check))) \ CancelResource {..} -> \case
-    Monitor ma ->
-      either (const (Base.throw MonitorCancel)) pure =<< Race.race (embedFinal @IO (readMVar signal)) (runTSimple ma)
+    Monitor ma -> do
+      void (embedFinal @IO (tryTakeMVar kill))
+      leftA (const (Base.throw MonitorCancel)) =<< Race.race (embedFinal @IO (readMVar kill)) (runTSimple ma)
 
 interpretMonitorPure' :: () -> InterpreterFor (Monitor action) r
 interpretMonitorPure' _ =

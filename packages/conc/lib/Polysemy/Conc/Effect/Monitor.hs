@@ -38,7 +38,7 @@ type RestartingMonitor =
 data MonitorCheck r =
   MonitorCheck {
     interval :: NanoSeconds,
-    check :: MVar () -> Sem r ()
+    check :: Sem r Bool
   }
 
 -- | Transform the stack of the check in a 'MonitorCheck'.
@@ -47,7 +47,7 @@ hoistMonitorCheck ::
   MonitorCheck r ->
   MonitorCheck r'
 hoistMonitorCheck f MonitorCheck {..} =
-  MonitorCheck {check = f . check, ..}
+  MonitorCheck {check = f check, ..}
 
 -- | Start a region that can contain monitor-intervention regions.
 withMonitor ::
