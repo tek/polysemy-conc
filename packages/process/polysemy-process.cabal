@@ -99,7 +99,7 @@ library
     , base >=4.17.2.1 && <4.20
     , incipit-core >=0.4.1.0 && <0.7
     , path >=0.9.1 && <0.10
-    , path-io >=0.2.0 && <1.9
+    , path-io >=1.6.3 && <1.9
     , polysemy >=1.9.0.0 && <1.10
     , polysemy-conc >=0.14.0.0 && <0.15
     , polysemy-resume >=0.7.0.0 && <0.10
@@ -164,18 +164,18 @@ test-suite polysemy-process-test
   build-depends:
       async >=2.2.5 && <2.3
     , base >=4.17.2.1 && <4.20
-    , hedgehog
+    , hedgehog >=1.1.2
     , incipit-core >=0.4.1.0 && <0.7
     , polysemy >=1.9.0.0 && <1.10
     , polysemy-conc >=0.14.0.0 && <0.15
     , polysemy-plugin >=0.4.4.0 && <0.5
     , polysemy-process
     , polysemy-resume >=0.7.0.0 && <0.10
-    , polysemy-test >=0.3.1.6 && <0.11
+    , polysemy-test >=0.7.0.0 && <0.11
     , polysemy-time >=0.5.1.0 && <0.8
     , tasty >=1.4.2 && <1.5
     , tasty-expected-failure >=0.11.1.2 && <0.13
-    , tasty-hedgehog
+    , tasty-hedgehog >=1.3.0.0
     , typed-process >=0.2.4.1 && <0.3
     , unix >=2.7.3 && <2.9
   mixins:
