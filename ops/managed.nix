@@ -77,7 +77,7 @@
       };
       hedgehog = {
         lower = "1.1.2";
-        upper = null;
+        upper = "1.5";
       };
       incipit-core = {
         lower = "0.4.1.0";
@@ -133,7 +133,7 @@
       };
       tasty-hedgehog = {
         lower = "1.3.0.0";
-        upper = null;
+        upper = "1.5";
       };
       typed-process = {
         lower = "0.2.4.1";
@@ -167,6 +167,7 @@
     latest-polysemy-process = {
       async = "2.2.5";
       base = "4.19.1.0";
+      hedgehog = "1.4";
       incipit-core = "0.6.0.0";
       path = "0.9.5";
       path-io = "1.8.2";
@@ -180,6 +181,7 @@
       stm-chans = "3.0.0.9";
       tasty = "1.4.3";
       tasty-expected-failure = "0.12.3";
+      tasty-hedgehog = "1.4.0.2";
       typed-process = "0.2.11.1";
       unix = "2.8.4.0";
     };
