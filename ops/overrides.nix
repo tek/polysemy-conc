@@ -10,6 +10,24 @@ ghc98 = {
 hls = {
 };
 latest-polysemy-conc = {
+  cabal-doctest = {
+  meta = {
+    sha256 = "0irxfxy1qw7sif4408xdhqycddb4hs3hcf6xfxm65glsnmnmwl2i";
+    ver = "1.0.9";
+  };
+  drv = { mkDerivation, base, Cabal, directory, filepath, lib }:
+mkDerivation {
+  pname = "cabal-doctest";
+  version = "1.0.9";
+  src = /nix/store/zvv4lgrqgjx826ryk6697617pd3xpr7s-source;
+  libraryHaskellDepends = [ base Cabal directory filepath ];
+  homepage = "https://github.com/haskellari/cabal-doctest";
+  description = "A Setup.hs helper for running doctests";
+  license = lib.licenses.bsd3;
+}
+;
+}
+;
   incipit-base = {
   meta = {
     sha256 = "1hck35yfy0dcgimgnd90w02zvv7x7k456bljrbx2mwxalnhav9gf";
@@ -46,6 +64,69 @@ mkDerivation {
   homepage = "https://github.com/tek/incipit-core#readme";
   description = "A Prelude for Polysemy";
   license = "BSD-2-Clause-Patent";
+}
+;
+}
+;
+  polysemy = {
+  meta = {
+    sha256 = "00dq1ffsd9bld5zag4l2qssbmm4yb234cirsn5f19fmx43cdgngl";
+    ver = "1.9.2.0";
+  };
+  drv = { mkDerivation, async, base, Cabal, cabal-doctest, containers
+, doctest, first-class-families, hspec, hspec-discover
+, inspection-testing, lib, mtl, stm, syb, template-haskell
+, th-abstraction, transformers, type-errors, unagi-chan
+}:
+mkDerivation {
+  pname = "polysemy";
+  version = "1.9.2.0";
+  src = /nix/store/rrd35xyn2gzkvqid5k43dsqw5z0yb21d-source;
+  setupHaskellDepends = [ base Cabal cabal-doctest ];
+  libraryHaskellDepends = [
+    async base containers first-class-families mtl stm syb
+    template-haskell th-abstraction transformers type-errors unagi-chan
+  ];
+  testHaskellDepends = [
+    async base containers doctest first-class-families hspec
+    hspec-discover inspection-testing mtl stm syb template-haskell
+    th-abstraction transformers type-errors unagi-chan
+  ];
+  testToolDepends = [ hspec-discover ];
+  homepage = "https://github.com/polysemy-research/polysemy#readme";
+  description = "Higher-order, low-boilerplate free monads";
+  license = lib.licenses.bsd3;
+}
+;
+}
+;
+  polysemy-plugin = {
+  meta = {
+    sha256 = "18y0nfx7x7am7cvj9wwhzal9bqv6sj7ckvmkd16blx4c2nqyikp9";
+    ver = "0.4.5.2";
+  };
+  drv = { mkDerivation, base, Cabal, cabal-doctest, containers, doctest
+, ghc, ghc-tcplugins-extra, hspec, hspec-discover
+, inspection-testing, lib, polysemy, should-not-typecheck, syb
+, transformers
+}:
+mkDerivation {
+  pname = "polysemy-plugin";
+  version = "0.4.5.2";
+  src = /nix/store/l68cq0g74sq0ws1plbgva2ry1psk5s21-source;
+  setupHaskellDepends = [ base Cabal cabal-doctest ];
+  libraryHaskellDepends = [
+    base containers ghc ghc-tcplugins-extra polysemy syb transformers
+  ];
+  testHaskellDepends = [
+    base containers doctest ghc ghc-tcplugins-extra hspec
+    hspec-discover inspection-testing polysemy should-not-typecheck syb
+    transformers
+  ];
+  testToolDepends = [ hspec-discover ];
+  homepage = "https://github.com/polysemy-research/polysemy#readme";
+  description = "Disambiguate obvious uses of effects";
+  license = lib.licenses.bsd3;
 }
 ;
 }
@@ -129,6 +210,24 @@ mkDerivation {
 ;
 };
 latest-polysemy-process = {
+  cabal-doctest = {
+  meta = {
+    sha256 = "0irxfxy1qw7sif4408xdhqycddb4hs3hcf6xfxm65glsnmnmwl2i";
+    ver = "1.0.9";
+  };
+  drv = { mkDerivation, base, Cabal, directory, filepath, lib }:
+mkDerivation {
+  pname = "cabal-doctest";
+  version = "1.0.9";
+  src = /nix/store/zvv4lgrqgjx826ryk6697617pd3xpr7s-source;
+  libraryHaskellDepends = [ base Cabal directory filepath ];
+  homepage = "https://github.com/haskellari/cabal-doctest";
+  description = "A Setup.hs helper for running doctests";
+  license = lib.licenses.bsd3;
+}
+;
+}
+;
   incipit-base = {
   meta = {
     sha256 = "1hck35yfy0dcgimgnd90w02zvv7x7k456bljrbx2mwxalnhav9gf";
@@ -189,6 +288,69 @@ mkDerivation {
   testHaskellDepends = [ base exceptions hspec path unix-compat ];
   homepage = "https://github.com/mrkkrp/path-io";
   description = "Interface to ‘directory’ package for users of ‘path’";
+  license = lib.licenses.bsd3;
+}
+;
+}
+;
+  polysemy = {
+  meta = {
+    sha256 = "00dq1ffsd9bld5zag4l2qssbmm4yb234cirsn5f19fmx43cdgngl";
+    ver = "1.9.2.0";
+  };
+  drv = { mkDerivation, async, base, Cabal, cabal-doctest, containers
+, doctest, first-class-families, hspec, hspec-discover
+, inspection-testing, lib, mtl, stm, syb, template-haskell
+, th-abstraction, transformers, type-errors, unagi-chan
+}:
+mkDerivation {
+  pname = "polysemy";
+  version = "1.9.2.0";
+  src = /nix/store/rrd35xyn2gzkvqid5k43dsqw5z0yb21d-source;
+  setupHaskellDepends = [ base Cabal cabal-doctest ];
+  libraryHaskellDepends = [
+    async base containers first-class-families mtl stm syb
+    template-haskell th-abstraction transformers type-errors unagi-chan
+  ];
+  testHaskellDepends = [
+    async base containers doctest first-class-families hspec
+    hspec-discover inspection-testing mtl stm syb template-haskell
+    th-abstraction transformers type-errors unagi-chan
+  ];
+  testToolDepends = [ hspec-discover ];
+  homepage = "https://github.com/polysemy-research/polysemy#readme";
+  description = "Higher-order, low-boilerplate free monads";
+  license = lib.licenses.bsd3;
+}
+;
+}
+;
+  polysemy-plugin = {
+  meta = {
+    sha256 = "18y0nfx7x7am7cvj9wwhzal9bqv6sj7ckvmkd16blx4c2nqyikp9";
+    ver = "0.4.5.2";
+  };
+  drv = { mkDerivation, base, Cabal, cabal-doctest, containers, doctest
+, ghc, ghc-tcplugins-extra, hspec, hspec-discover
+, inspection-testing, lib, polysemy, should-not-typecheck, syb
+, transformers
+}:
+mkDerivation {
+  pname = "polysemy-plugin";
+  version = "0.4.5.2";
+  src = /nix/store/l68cq0g74sq0ws1plbgva2ry1psk5s21-source;
+  setupHaskellDepends = [ base Cabal cabal-doctest ];
+  libraryHaskellDepends = [
+    base containers ghc ghc-tcplugins-extra polysemy syb transformers
+  ];
+  testHaskellDepends = [
+    base containers doctest ghc ghc-tcplugins-extra hspec
+    hspec-discover inspection-testing polysemy should-not-typecheck syb
+    transformers
+  ];
+  testToolDepends = [ hspec-discover ];
+  homepage = "https://github.com/polysemy-research/polysemy#readme";
+  description = "Disambiguate obvious uses of effects";
   license = lib.licenses.bsd3;
 }
 ;
