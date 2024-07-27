@@ -11,7 +11,7 @@
       };
       hedgehog = {
         lower = "1.1.2";
-        upper = "1.5";
+        upper = "1.6";
       };
       incipit-core = {
         lower = "0.4.1.0";
@@ -77,7 +77,7 @@
       };
       hedgehog = {
         lower = "1.1.2";
-        upper = "1.5";
+        upper = "1.6";
       };
       incipit-core = {
         lower = "0.4.1.0";
@@ -149,7 +149,7 @@
     latest-polysemy-conc = {
       async = "2.2.5";
       base = "4.19.1.0";
-      hedgehog = "1.4";
+      hedgehog = "1.5";
       incipit-core = "0.6.0.0";
       polysemy = "1.9.2.0";
       polysemy-plugin = "0.4.5.2";
@@ -167,7 +167,7 @@
     latest-polysemy-process = {
       async = "2.2.5";
       base = "4.19.1.0";
-      hedgehog = "1.4";
+      hedgehog = "1.5";
       incipit-core = "0.6.0.0";
       path = "0.9.5";
       path-io = "1.8.2";
@@ -272,6 +272,10 @@
         version = "1.0.9";
         hash = "0irxfxy1qw7sif4408xdhqycddb4hs3hcf6xfxm65glsnmnmwl2i";
       };
+      hedgehog = {
+        version = "1.5";
+        hash = "1hz8xrg5p6vplvcj8c7pgidqnwqjmqahs9dla50nqpbcbdh932ll";
+      };
       incipit-base = {
         version = "0.6.0.0";
         hash = "1hck35yfy0dcgimgnd90w02zvv7x7k456bljrbx2mwxalnhav9gf";
@@ -300,11 +304,19 @@
         version = "0.7.0.0";
         hash = "0imvjiybxrsggh72pfkd226pvzhz5hg1zvxyd72b91a3xz1vynmq";
       };
+      tasty-hedgehog = {
+        version = "1.4.0.2";
+        hash = "04kg2qdnsqzzmj3xggy2jcgidlp21lsjkz4sfnbq7b1yhrv2vbbc";
+      };
     };
     latest-polysemy-process = {
       cabal-doctest = {
         version = "1.0.9";
         hash = "0irxfxy1qw7sif4408xdhqycddb4hs3hcf6xfxm65glsnmnmwl2i";
+      };
+      hedgehog = {
+        version = "1.5";
+        hash = "1hz8xrg5p6vplvcj8c7pgidqnwqjmqahs9dla50nqpbcbdh932ll";
       };
       incipit-base = {
         version = "0.6.0.0";
@@ -337,6 +349,10 @@
       polysemy-time = {
         version = "0.7.0.0";
         hash = "0imvjiybxrsggh72pfkd226pvzhz5hg1zvxyd72b91a3xz1vynmq";
+      };
+      tasty-hedgehog = {
+        version = "1.4.0.2";
+        hash = "04kg2qdnsqzzmj3xggy2jcgidlp21lsjkz4sfnbq7b1yhrv2vbbc";
       };
     };
     lower-polysemy-conc = {
