@@ -357,6 +357,35 @@ mkDerivation {
 ;
 }
 ;
+  path = {
+  meta = {
+    sha256 = "16hgrkvd27c9vp5447d1dv3b3fi0fv0jfig10h2j37mzk4850wg8";
+    ver = "0.9.6";
+  };
+  drv = { mkDerivation, aeson, base, bytestring, deepseq, exceptions
+, filepath, genvalidity, genvalidity-hspec, hashable, hspec, lib
+, QuickCheck, template-haskell, text, validity-bytestring
+}:
+mkDerivation {
+  pname = "path";
+  version = "0.9.6";
+  src = /nix/store/17x0d7bdy3wg6nq9zw20ndi417gy13ck-source;
+  libraryHaskellDepends = [
+    aeson base deepseq exceptions filepath hashable template-haskell
+    text
+  ];
+  testHaskellDepends = [
+    aeson base bytestring exceptions filepath genvalidity
+    genvalidity-hspec hspec QuickCheck template-haskell
+    validity-bytestring
+  ];
+  doHaddock = false;
+  description = "Support for well-typed paths";
+  license = lib.licenses.bsd3;
+}
+;
+}
+;
   path-io = {
   meta = {
     sha256 = "063ma7gzqr5c6s8a1yv72jgll3xdajvgclbc8w0ddmqgcrb62x2k";
