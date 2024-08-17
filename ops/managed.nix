@@ -169,7 +169,7 @@
       base = "4.19.1.0";
       hedgehog = "1.5";
       incipit-core = "0.6.0.0";
-      path = "0.9.5";
+      path = "0.9.6";
       path-io = "1.8.2";
       polysemy = "1.9.2.0";
       polysemy-plugin = "0.4.5.2";
@@ -325,6 +325,10 @@
       incipit-core = {
         version = "0.6.0.0";
         hash = "0gmngb4pinkpbsnclrgs6x016ffnls1g4xzz0hdzg2rpyl63d5ph";
+      };
+      path = {
+        version = "0.9.6";
+        hash = "16hgrkvd27c9vp5447d1dv3b3fi0fv0jfig10h2j37mzk4850wg8";
       };
       path-io = {
         version = "1.8.2";
