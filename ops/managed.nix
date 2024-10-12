@@ -150,7 +150,7 @@
       async = "2.2.5";
       base = "4.19.1.0";
       hedgehog = "1.5";
-      incipit-core = "0.6.0.0";
+      incipit-core = "0.6.1.0";
       polysemy = "1.9.2.0";
       polysemy-plugin = "0.4.5.2";
       polysemy-resume = "0.9.0.0";
@@ -168,7 +168,7 @@
       async = "2.2.5";
       base = "4.19.1.0";
       hedgehog = "1.5";
-      incipit-core = "0.6.0.0";
+      incipit-core = "0.6.1.0";
       path = "0.9.6";
       path-io = "1.8.2";
       polysemy = "1.9.2.0";
@@ -277,12 +277,12 @@
         hash = "1hz8xrg5p6vplvcj8c7pgidqnwqjmqahs9dla50nqpbcbdh932ll";
       };
       incipit-base = {
-        version = "0.6.0.0";
-        hash = "1hck35yfy0dcgimgnd90w02zvv7x7k456bljrbx2mwxalnhav9gf";
+        version = "0.6.1.0";
+        hash = "0iyyvxpyyybn5ygr875pav6g5hbs00wa9jbr7qslszqpkfpy5x33";
       };
       incipit-core = {
-        version = "0.6.0.0";
-        hash = "0gmngb4pinkpbsnclrgs6x016ffnls1g4xzz0hdzg2rpyl63d5ph";
+        version = "0.6.1.0";
+        hash = "144c239nxl8zi2ik3ycic3901gxn8rccij3g609n2zgnn3b6zilj";
       };
       polysemy = {
         version = "1.9.2.0";
@@ -319,12 +319,12 @@
         hash = "1hz8xrg5p6vplvcj8c7pgidqnwqjmqahs9dla50nqpbcbdh932ll";
       };
       incipit-base = {
-        version = "0.6.0.0";
-        hash = "1hck35yfy0dcgimgnd90w02zvv7x7k456bljrbx2mwxalnhav9gf";
+        version = "0.6.1.0";
+        hash = "0iyyvxpyyybn5ygr875pav6g5hbs00wa9jbr7qslszqpkfpy5x33";
       };
       incipit-core = {
-        version = "0.6.0.0";
-        hash = "0gmngb4pinkpbsnclrgs6x016ffnls1g4xzz0hdzg2rpyl63d5ph";
+        version = "0.6.1.0";
+        hash = "144c239nxl8zi2ik3ycic3901gxn8rccij3g609n2zgnn3b6zilj";
       };
       path = {
         version = "0.9.6";

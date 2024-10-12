@@ -63,16 +63,16 @@ mkDerivation {
 ;
   incipit-base = {
   meta = {
-    sha256 = "1hck35yfy0dcgimgnd90w02zvv7x7k456bljrbx2mwxalnhav9gf";
-    ver = "0.6.0.0";
+    sha256 = "0iyyvxpyyybn5ygr875pav6g5hbs00wa9jbr7qslszqpkfpy5x33";
+    ver = "0.6.1.0";
   };
   drv = { mkDerivation, base, bytestring, containers, data-default, lib
 , stm, text
 }:
 mkDerivation {
   pname = "incipit-base";
-  version = "0.6.0.0";
-  src = /nix/store/bcs2wgdcfmnm1msbd7n8qd27ikwv3rcm-source;
+  version = "0.6.1.0";
+  src = /nix/store/2k1isywgqm3pcbzdhwyp97n9250g044k-source;
   libraryHaskellDepends = [
     base bytestring containers data-default stm text
   ];
@@ -85,14 +85,14 @@ mkDerivation {
 ;
   incipit-core = {
   meta = {
-    sha256 = "0gmngb4pinkpbsnclrgs6x016ffnls1g4xzz0hdzg2rpyl63d5ph";
-    ver = "0.6.0.0";
+    sha256 = "144c239nxl8zi2ik3ycic3901gxn8rccij3g609n2zgnn3b6zilj";
+    ver = "0.6.1.0";
   };
   drv = { mkDerivation, base, incipit-base, lib, polysemy }:
 mkDerivation {
   pname = "incipit-core";
-  version = "0.6.0.0";
-  src = /nix/store/r29nfjc427wwr536jccy99r885kbyw02-source;
+  version = "0.6.1.0";
+  src = /nix/store/7bfdjb94bzganyaybhhjmxjcwypnsasp-source;
   libraryHaskellDepends = [ base incipit-base polysemy ];
   homepage = "https://github.com/tek/incipit-core#readme";
   description = "A Prelude for Polysemy";
@@ -319,16 +319,16 @@ mkDerivation {
 ;
   incipit-base = {
   meta = {
-    sha256 = "1hck35yfy0dcgimgnd90w02zvv7x7k456bljrbx2mwxalnhav9gf";
-    ver = "0.6.0.0";
+    sha256 = "0iyyvxpyyybn5ygr875pav6g5hbs00wa9jbr7qslszqpkfpy5x33";
+    ver = "0.6.1.0";
   };
   drv = { mkDerivation, base, bytestring, containers, data-default, lib
 , stm, text
 }:
 mkDerivation {
   pname = "incipit-base";
-  version = "0.6.0.0";
-  src = /nix/store/bcs2wgdcfmnm1msbd7n8qd27ikwv3rcm-source;
+  version = "0.6.1.0";
+  src = /nix/store/2k1isywgqm3pcbzdhwyp97n9250g044k-source;
   libraryHaskellDepends = [
     base bytestring containers data-default stm text
   ];
@@ -341,14 +341,14 @@ mkDerivation {
 ;
   incipit-core = {
   meta = {
-    sha256 = "0gmngb4pinkpbsnclrgs6x016ffnls1g4xzz0hdzg2rpyl63d5ph";
-    ver = "0.6.0.0";
+    sha256 = "144c239nxl8zi2ik3ycic3901gxn8rccij3g609n2zgnn3b6zilj";
+    ver = "0.6.1.0";
   };
   drv = { mkDerivation, base, incipit-base, lib, polysemy }:
 mkDerivation {
   pname = "incipit-core";
-  version = "0.6.0.0";
-  src = /nix/store/r29nfjc427wwr536jccy99r885kbyw02-source;
+  version = "0.6.1.0";
+  src = /nix/store/7bfdjb94bzganyaybhhjmxjcwypnsasp-source;
   libraryHaskellDepends = [ base incipit-base polysemy ];
   homepage = "https://github.com/tek/incipit-core#readme";
   description = "A Prelude for Polysemy";
