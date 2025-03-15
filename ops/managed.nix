@@ -7,7 +7,7 @@
       };
       base = {
         lower = "4.17.2.1";
-        upper = "4.20";
+        upper = "4.21";
       };
       hedgehog = {
         lower = "1.1.2";
@@ -47,7 +47,7 @@
       };
       tasty = {
         lower = "1.4.2";
-        upper = "1.5";
+        upper = "1.6";
       };
       tasty-hedgehog = {
         lower = "1.3.0.0";
@@ -73,7 +73,7 @@
       };
       base = {
         lower = "4.17.2.1";
-        upper = "4.20";
+        upper = "4.21";
       };
       hedgehog = {
         lower = "1.1.2";
@@ -125,7 +125,7 @@
       };
       tasty = {
         lower = "1.4.2";
-        upper = "1.5";
+        upper = "1.6";
       };
       tasty-expected-failure = {
         lower = "0.11.1.2";
@@ -148,17 +148,17 @@
   versions = {
     latest-polysemy-conc = {
       async = "2.2.5";
-      base = "4.19.1.0";
+      base = "4.20.0.0";
       hedgehog = "1.5";
       incipit-core = "0.6.1.0";
       polysemy = "1.9.2.0";
-      polysemy-plugin = "0.4.5.2";
-      polysemy-resume = "0.9.0.0";
-      polysemy-test = "0.10.0.0";
-      polysemy-time = "0.7.0.0";
-      stm = "2.5.2.1";
+      polysemy-plugin = "0.4.5.3";
+      polysemy-resume = "0.9.0.1";
+      polysemy-test = "0.10.0.1";
+      polysemy-time = "0.7.0.1";
+      stm = "2.5.3.1";
       stm-chans = "3.0.0.9";
-      tasty = "1.4.3";
+      tasty = "1.5.3";
       tasty-hedgehog = "1.4.0.2";
       time = "1.12.2";
       torsor = "0.1.0.1";
@@ -166,24 +166,24 @@
     };
     latest-polysemy-process = {
       async = "2.2.5";
-      base = "4.19.1.0";
+      base = "4.20.0.0";
       hedgehog = "1.5";
       incipit-core = "0.6.1.0";
       path = "0.9.6";
       path-io = "1.8.2";
       polysemy = "1.9.2.0";
-      polysemy-plugin = "0.4.5.2";
-      polysemy-resume = "0.9.0.0";
-      polysemy-test = "0.10.0.0";
-      polysemy-time = "0.7.0.0";
+      polysemy-plugin = "0.4.5.3";
+      polysemy-resume = "0.9.0.1";
+      polysemy-test = "0.10.0.1";
+      polysemy-time = "0.7.0.1";
       posix-pty = "0.2.2";
-      process = "1.6.18.0";
+      process = "1.6.19.0";
       stm-chans = "3.0.0.9";
-      tasty = "1.4.3";
+      tasty = "1.5.3";
       tasty-expected-failure = "0.12.3";
       tasty-hedgehog = "1.4.0.2";
       typed-process = "0.2.12.0";
-      unix = "2.8.4.0";
+      unix = "2.8.5.1";
     };
     lower-polysemy-conc = {
       async = "2.2.4";
@@ -284,25 +284,25 @@
         version = "0.6.1.0";
         hash = "144c239nxl8zi2ik3ycic3901gxn8rccij3g609n2zgnn3b6zilj";
       };
-      polysemy = {
-        version = "1.9.2.0";
-        hash = "00dq1ffsd9bld5zag4l2qssbmm4yb234cirsn5f19fmx43cdgngl";
-      };
       polysemy-plugin = {
-        version = "0.4.5.2";
-        hash = "18y0nfx7x7am7cvj9wwhzal9bqv6sj7ckvmkd16blx4c2nqyikp9";
+        version = "0.4.5.3";
+        hash = "1c2agk21jj7fwdj6xkagq0prvxknp3zr6q1f480wizssibcvm7y6";
       };
       polysemy-resume = {
-        version = "0.9.0.0";
-        hash = "1achlwdkycbgjlcdkq641r481m1bl9rb7fklbwfb9nnb6xmqyzms";
+        version = "0.9.0.1";
+        hash = "1i2bnpd3l357jhln8xl92z65b3mskz9y8z1xlha4lm0m855qyk15";
       };
       polysemy-test = {
-        version = "0.10.0.0";
-        hash = "0vdsid9xg41szx4g37lmg44h31q7j9ll805rgfrpr1ylf4f3x1hp";
+        version = "0.10.0.1";
+        hash = "1sp9iag1brknmdy0qvmgnmynwc4gbg1jy21w584x1m2hpqi25p6j";
       };
       polysemy-time = {
-        version = "0.7.0.0";
-        hash = "0imvjiybxrsggh72pfkd226pvzhz5hg1zvxyd72b91a3xz1vynmq";
+        version = "0.7.0.1";
+        hash = "0cw39gvmr9rgh3hc0gd55wimm4lxzw9nyrczixk42nw170bpls40";
+      };
+      tasty = {
+        version = "1.5.3";
+        hash = "1xjlmgsww34asjl9rcwbziw5l4qqbvi5l4b7qvzf4dc7hqkpq1rs";
       };
       tasty-hedgehog = {
         version = "1.4.0.2";
@@ -334,33 +334,33 @@
         version = "1.8.2";
         hash = "063ma7gzqr5c6s8a1yv72jgll3xdajvgclbc8w0ddmqgcrb62x2k";
       };
-      polysemy = {
-        version = "1.9.2.0";
-        hash = "00dq1ffsd9bld5zag4l2qssbmm4yb234cirsn5f19fmx43cdgngl";
-      };
       polysemy-plugin = {
-        version = "0.4.5.2";
-        hash = "18y0nfx7x7am7cvj9wwhzal9bqv6sj7ckvmkd16blx4c2nqyikp9";
+        version = "0.4.5.3";
+        hash = "1c2agk21jj7fwdj6xkagq0prvxknp3zr6q1f480wizssibcvm7y6";
       };
       polysemy-resume = {
-        version = "0.9.0.0";
-        hash = "1achlwdkycbgjlcdkq641r481m1bl9rb7fklbwfb9nnb6xmqyzms";
+        version = "0.9.0.1";
+        hash = "1i2bnpd3l357jhln8xl92z65b3mskz9y8z1xlha4lm0m855qyk15";
       };
       polysemy-test = {
-        version = "0.10.0.0";
-        hash = "0vdsid9xg41szx4g37lmg44h31q7j9ll805rgfrpr1ylf4f3x1hp";
+        version = "0.10.0.1";
+        hash = "1sp9iag1brknmdy0qvmgnmynwc4gbg1jy21w584x1m2hpqi25p6j";
       };
       polysemy-time = {
-        version = "0.7.0.0";
-        hash = "0imvjiybxrsggh72pfkd226pvzhz5hg1zvxyd72b91a3xz1vynmq";
+        version = "0.7.0.1";
+        hash = "0cw39gvmr9rgh3hc0gd55wimm4lxzw9nyrczixk42nw170bpls40";
+      };
+      tasty = {
+        version = "1.5.3";
+        hash = "1xjlmgsww34asjl9rcwbziw5l4qqbvi5l4b7qvzf4dc7hqkpq1rs";
+      };
+      tasty-expected-failure = {
+        version = "0.12.3";
+        hash = "1dplg5n7rv8azy7xysl0z85inicvcxwprf5n9lh5k12lki5i1hdc";
       };
       tasty-hedgehog = {
         version = "1.4.0.2";
         hash = "04kg2qdnsqzzmj3xggy2jcgidlp21lsjkz4sfnbq7b1yhrv2vbbc";
-      };
-      typed-process = {
-        version = "0.2.12.0";
-        hash = "1ka7ffgaci25gmlz92k7b4cjkxj1x210c8zl9n011klkc217r2w4";
       };
     };
     lower-polysemy-conc = {

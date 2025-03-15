@@ -3,41 +3,11 @@
 
   inputs.hix.url = "git+https://git.tryp.io/tek/hix";
 
-  outputs = { hix, ... }: hix.lib.pro ({config, ...}: let
-    overrides = {jailbreak, unbreak, ...}: {
-      polysemy-test = jailbreak unbreak;
-    };
-  in {
-    ghcVersions = ["ghc94" "ghc96" "ghc98"];
-    compat.versions = ["ghc96"];
+  outputs = {hix, ...}: hix.lib.pro ({config, ...}: {
+    ghcVersions = ["ghc94" "ghc96" "ghc98" "ghc910"];
     hackage.versionFile = "ops/version.nix";
     main = "polysemy-process";
     gen-overrides.enable = true;
-    managed = {
-      enable = true;
-      lower.enable = true;
-      sets = "each";
-      envs.solverOverrides = overrides;
-      latest.compiler = "ghc98";
-    };
-
-    inherit overrides;
-
-    cabal = {
-      license = "BSD-2-Clause-Patent";
-      license-file = "LICENSE";
-      author = "Torsten Schmits";
-      prelude = {
-        enable = true;
-        package.name = "incipit-core";
-        module = "IncipitCore";
-      };
-      meta = {
-        maintainer = "hackage@tryp.io";
-        github = "tek/polysemy-conc";
-        extra-source-files = ["readme.md" "changelog.md"];
-      };
-    };
 
     packages.polysemy-conc = {
       src = ./packages/conc;
@@ -125,6 +95,52 @@
         ];
       };
 
+    };
+
+    cabal = {
+      license = "BSD-2-Clause-Patent";
+      license-file = "LICENSE";
+      author = "Torsten Schmits";
+      prelude = {
+        enable = true;
+        package.name = "incipit-core";
+        module = "IncipitCore";
+      };
+      meta = {
+        maintainer = "hackage@tryp.io";
+        github = "tek/polysemy-conc";
+        extra-source-files = ["readme.md" "changelog.md"];
+      };
+    };
+
+    managed = {
+      enable = true;
+      lower.enable = true;
+      sets = "each";
+      envs.solverOverrides = {hackage, jailbreak, unbreak, ...}: {
+        bytebuild = jailbreak;
+        chronos = jailbreak;
+        polysemy-test = jailbreak unbreak;
+        polysemy-time = jailbreak;
+        polysemy-resume = jailbreak;
+        incipit-base = jailbreak;
+        incipit-core = jailbreak;
+      };
+      latest.compiler = "ghc910";
+    };
+
+    overrides = {jailbreak, unbreak, hackage, ...}: {
+      polysemy-test = unbreak;
+    };
+
+    envs.ghc910.overrides = {hackage, jailbreak, ...}: {
+      bytebuild = jailbreak;
+      chronos = jailbreak;
+      incipit-base = jailbreak;
+      incipit-core = jailbreak;
+      polysemy-test = jailbreak;
+      polysemy-resume = jailbreak;
+      polysemy-time = jailbreak;
     };
 
   });
