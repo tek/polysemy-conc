@@ -5,7 +5,7 @@ cabal-version: 2.2
 -- see: https://github.com/sol/hpack
 
 name:           polysemy-process
-version:        0.14.1.0
+version:        0.14.1.1
 synopsis:       Polysemy effects for system processes
 description:    See https://hackage.haskell.org/package/polysemy-process/docs/Polysemy-Process.html
 category:       Process
@@ -101,7 +101,7 @@ library
     , path >=0.9.1 && <0.10
     , path-io >=1.6.3 && <1.9
     , polysemy >=1.9.0.0 && <1.10
-    , polysemy-conc >=0.14.1.0 && <0.15
+    , polysemy-conc >=0.14.1.1 && <0.15
     , polysemy-resume >=0.7.0.0 && <0.10
     , polysemy-time >=0.5.1.0 && <0.8
     , posix-pty >=0.2.2 && <0.3
@@ -167,7 +167,7 @@ test-suite polysemy-process-test
     , hedgehog >=1.1.2 && <1.6
     , incipit-core >=0.4.1.0 && <0.7
     , polysemy >=1.9.0.0 && <1.10
-    , polysemy-conc >=0.14.1.0 && <0.15
+    , polysemy-conc >=0.14.1.1 && <0.15
     , polysemy-plugin >=0.4.4.0 && <0.5
     , polysemy-process
     , polysemy-resume >=0.7.0.0 && <0.10
