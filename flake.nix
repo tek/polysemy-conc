@@ -117,15 +117,6 @@
       enable = true;
       lower.enable = true;
       sets = "each";
-      envs.solverOverrides = {hackage, jailbreak, unbreak, ...}: {
-        bytebuild = jailbreak;
-        chronos = jailbreak;
-        polysemy-test = jailbreak unbreak;
-        polysemy-time = jailbreak;
-        polysemy-resume = jailbreak;
-        incipit-base = jailbreak;
-        incipit-core = jailbreak;
-      };
       latest.compiler = "ghc910";
     };
 
