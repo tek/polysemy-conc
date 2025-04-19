@@ -182,7 +182,7 @@
       tasty = "1.5.3";
       tasty-expected-failure = "0.12.3";
       tasty-hedgehog = "1.4.0.2";
-      typed-process = "0.2.12.0";
+      typed-process = "0.2.13.0";
       unix = "2.8.5.1";
     };
     lower-polysemy-conc = {
@@ -361,6 +361,10 @@
       tasty-hedgehog = {
         version = "1.4.0.2";
         hash = "04kg2qdnsqzzmj3xggy2jcgidlp21lsjkz4sfnbq7b1yhrv2vbbc";
+      };
+      typed-process = {
+        version = "0.2.13.0";
+        hash = "06ysyzxvlkn1fhd0nxk0q9dcy9vrdqj7c51bv9x33gjbxbaqnfs3";
       };
     };
     lower-polysemy-conc = {

@@ -583,6 +583,34 @@ mkDerivation {
 ;
 }
 ;
+  typed-process = {
+  meta = {
+    sha256 = "06ysyzxvlkn1fhd0nxk0q9dcy9vrdqj7c51bv9x33gjbxbaqnfs3";
+    ver = "0.2.13.0";
+  };
+  drv = { mkDerivation, async, base, base64-bytestring, bytestring, hspec
+, hspec-discover, lib, process, stm, temporary, text, transformers
+, unliftio-core
+}:
+mkDerivation {
+  pname = "typed-process";
+  version = "0.2.13.0";
+  src = /nix/store/7a0pbalinl2kfsv29ld50afdiynkf285-source;
+  libraryHaskellDepends = [
+    async base bytestring process stm text transformers unliftio-core
+  ];
+  testHaskellDepends = [
+    async base base64-bytestring bytestring hspec process stm temporary
+    text transformers unliftio-core
+  ];
+  testToolDepends = [ hspec-discover ];
+  homepage = "https://github.com/fpco/typed-process";
+  description = "Run external processes, with strong typing of streams";
+  license = lib.licenses.mit;
+}
+;
+}
+;
 };
 lower-polysemy-conc = {
   aeson = {
