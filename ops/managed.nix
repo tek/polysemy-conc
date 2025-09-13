@@ -11,7 +11,7 @@
       };
       hedgehog = {
         lower = "1.1.2";
-        upper = "1.6";
+        upper = "1.7";
       };
       incipit-core = {
         lower = "0.4.1.0";
@@ -81,7 +81,7 @@
       };
       hedgehog = {
         lower = "1.1.2";
-        upper = "1.6";
+        upper = "1.7";
       };
       incipit-core = {
         lower = "0.4.1.0";
@@ -161,7 +161,7 @@
     latest-polysemy-conc = {
       async = "2.2.5";
       base = "4.20.0.0";
-      hedgehog = "1.5";
+      hedgehog = "1.6";
       incipit-core = "0.6.1.1";
       polysemy = "1.9.2.0";
       polysemy-plugin = "0.4.5.3";
@@ -179,7 +179,7 @@
     latest-polysemy-process = {
       async = "2.2.5";
       base = "4.20.0.0";
-      hedgehog = "1.5";
+      hedgehog = "1.6";
       incipit-core = "0.6.1.1";
       path = "0.9.6";
       path-io = "1.8.2";
@@ -289,8 +289,8 @@
         repo = "hackage.haskell.org";
       };
       hedgehog = {
-        version = "1.5";
-        hash = "1hz8xrg5p6vplvcj8c7pgidqnwqjmqahs9dla50nqpbcbdh932ll";
+        version = "1.6";
+        hash = "1z3lry3pbni71hlvm2qkjjnhw3spgxh8pm1slhp55aszfmk4zsp6";
         repo = "hackage.haskell.org";
       };
       incipit-base = {
@@ -341,8 +341,8 @@
         repo = "hackage.haskell.org";
       };
       hedgehog = {
-        version = "1.5";
-        hash = "1hz8xrg5p6vplvcj8c7pgidqnwqjmqahs9dla50nqpbcbdh932ll";
+        version = "1.6";
+        hash = "1z3lry3pbni71hlvm2qkjjnhw3spgxh8pm1slhp55aszfmk4zsp6";
         repo = "hackage.haskell.org";
       };
       incipit-base = {
@@ -933,8 +933,40 @@
     };
   };
   solver = {
-    latest-polysemy-conc = {};
-    latest-polysemy-process = {};
+    latest-polysemy-conc = {
+      incipit-base = {
+        jailbreak = true;
+      };
+      incipit-core = {
+        jailbreak = true;
+      };
+      polysemy-resume = {
+        jailbreak = true;
+      };
+      polysemy-test = {
+        jailbreak = true;
+      };
+      polysemy-time = {
+        jailbreak = true;
+      };
+    };
+    latest-polysemy-process = {
+      incipit-base = {
+        jailbreak = true;
+      };
+      incipit-core = {
+        jailbreak = true;
+      };
+      polysemy-resume = {
+        jailbreak = true;
+      };
+      polysemy-test = {
+        jailbreak = true;
+      };
+      polysemy-time = {
+        jailbreak = true;
+      };
+    };
     lower-polysemy-conc = {};
     lower-polysemy-process = {};
   };
