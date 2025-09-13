@@ -35,9 +35,9 @@ mkDerivation {
 ;
   hedgehog = {
   meta = {
-    sha256 = "1hz8xrg5p6vplvcj8c7pgidqnwqjmqahs9dla50nqpbcbdh932ll";
+    sha256 = "1z3lry3pbni71hlvm2qkjjnhw3spgxh8pm1slhp55aszfmk4zsp6";
     url = "https://hackage.haskell.org";
-    ver = "1.5";
+    ver = "1.6";
   };
   drv = { mkDerivation, ansi-terminal, async, barbies, base, bytestring
 , concurrent-output, containers, deepseq, directory, erf
@@ -48,8 +48,8 @@ mkDerivation {
 }:
 mkDerivation {
   pname = "hedgehog";
-  version = "1.5";
-  src = /nix/store/asphc2qzd1cykd892r5fnhflbd8cwana-source;
+  version = "1.6";
+  src = /nix/store/myr3rqcqplhg4cw16h6pxddczgqy5gj6-source;
   libraryHaskellDepends = [
     ansi-terminal async barbies base bytestring concurrent-output
     containers deepseq directory erf exceptions lifted-async mmorph
@@ -292,9 +292,9 @@ mkDerivation {
 ;
   hedgehog = {
   meta = {
-    sha256 = "1hz8xrg5p6vplvcj8c7pgidqnwqjmqahs9dla50nqpbcbdh932ll";
+    sha256 = "1z3lry3pbni71hlvm2qkjjnhw3spgxh8pm1slhp55aszfmk4zsp6";
     url = "https://hackage.haskell.org";
-    ver = "1.5";
+    ver = "1.6";
   };
   drv = { mkDerivation, ansi-terminal, async, barbies, base, bytestring
 , concurrent-output, containers, deepseq, directory, erf
@@ -305,8 +305,8 @@ mkDerivation {
 }:
 mkDerivation {
   pname = "hedgehog";
-  version = "1.5";
-  src = /nix/store/asphc2qzd1cykd892r5fnhflbd8cwana-source;
+  version = "1.6";
+  src = /nix/store/myr3rqcqplhg4cw16h6pxddczgqy5gj6-source;
   libraryHaskellDepends = [
     ansi-terminal async barbies base bytestring concurrent-output
     containers deepseq directory erf exceptions lifted-async mmorph
