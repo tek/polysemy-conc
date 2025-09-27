@@ -11,7 +11,7 @@
       };
       hedgehog = {
         lower = "1.1.2";
-        upper = "1.7";
+        upper = "1.8";
       };
       incipit-core = {
         lower = "0.4.1.0";
@@ -81,7 +81,7 @@
       };
       hedgehog = {
         lower = "1.1.2";
-        upper = "1.7";
+        upper = "1.8";
       };
       incipit-core = {
         lower = "0.4.1.0";
@@ -161,7 +161,7 @@
     latest-polysemy-conc = {
       async = "2.2.5";
       base = "4.20.0.0";
-      hedgehog = "1.6";
+      hedgehog = "1.7";
       incipit-core = "0.6.1.1";
       polysemy = "1.9.2.0";
       polysemy-plugin = "0.4.5.3";
@@ -179,7 +179,7 @@
     latest-polysemy-process = {
       async = "2.2.5";
       base = "4.20.0.0";
-      hedgehog = "1.6";
+      hedgehog = "1.7";
       incipit-core = "0.6.1.1";
       path = "0.9.6";
       path-io = "1.8.2";
@@ -289,8 +289,8 @@
         repo = "hackage.haskell.org";
       };
       hedgehog = {
-        version = "1.6";
-        hash = "1z3lry3pbni71hlvm2qkjjnhw3spgxh8pm1slhp55aszfmk4zsp6";
+        version = "1.7";
+        hash = "04cjnz4i1qs3v9bza8a3ry1czapwqgxazhywkjzq2rg1544gjmby";
         repo = "hackage.haskell.org";
       };
       incipit-base = {
@@ -341,8 +341,8 @@
         repo = "hackage.haskell.org";
       };
       hedgehog = {
-        version = "1.6";
-        hash = "1z3lry3pbni71hlvm2qkjjnhw3spgxh8pm1slhp55aszfmk4zsp6";
+        version = "1.7";
+        hash = "04cjnz4i1qs3v9bza8a3ry1czapwqgxazhywkjzq2rg1544gjmby";
         repo = "hackage.haskell.org";
       };
       incipit-base = {
