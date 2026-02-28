@@ -169,7 +169,7 @@
       polysemy-test = "0.10.0.1";
       polysemy-time = "0.7.0.1";
       stm = "2.5.3.1";
-      stm-chans = "3.0.0.9";
+      stm-chans = "3.0.0.11";
       tasty = "1.5.3";
       tasty-hedgehog = "1.4.0.2";
       time = "1.12.2";
@@ -191,7 +191,7 @@
       polysemy-time = "0.7.0.1";
       posix-pty = "0.2.2";
       process = "1.6.19.0";
-      stm-chans = "3.0.0.9";
+      stm-chans = "3.0.0.11";
       tasty = "1.5.3";
       tasty-expected-failure = "0.12.3";
       tasty-hedgehog = "1.4.0.2";
@@ -283,11 +283,6 @@
   };
   overrides = {
     latest-polysemy-conc = {
-      aeson = {
-        version = "2.2.3.0";
-        hash = "1a9a0z6ljbck5scwkk9r9p04y9avn9vja3n063lyqgn2v1vjb1sp";
-        repo = "hackage.haskell.org";
-      };
       async = {
         version = "2.2.6";
         hash = "1731pcifiskq6g1b72p34phx85l65ax7mbjw11310b3zwzk0ldyn";
@@ -316,11 +311,6 @@
       incipit-core = {
         version = "0.6.1.1";
         hash = "0qpw07f8ip6h7srqkbzfxyz1z36n75irhc6465s9xvrii1840b2k";
-        repo = "hackage.haskell.org";
-      };
-      indexed-traversable-instances = {
-        version = "0.1.2";
-        hash = "05vpkasz70yjf09hsmbw7nap70sr8p5b7hrsdbmij8k8xqf3qg8r";
         repo = "hackage.haskell.org";
       };
       lifted-async = {
@@ -363,14 +353,9 @@
         hash = "0cw39gvmr9rgh3hc0gd55wimm4lxzw9nyrczixk42nw170bpls40";
         repo = "hackage.haskell.org";
       };
-      semialign = {
-        version = "1.3.1";
-        hash = "05h1ab484ghd2wzx4pdlsfwiy6rayy0lzwk9yda9il7fjwi9sj7n";
-        repo = "hackage.haskell.org";
-      };
-      semigroupoids = {
-        version = "6.0.1";
-        hash = "10qd2y5f5m7jzrha1wfbwwybhhghdwkdmk9ajybdz8h88cz9ig2g";
+      stm-chans = {
+        version = "3.0.0.11";
+        hash = "0h6vdv1243csipwi7wsysprnmip4smvx8l36fq39fqya2nm9n2j0";
         repo = "hackage.haskell.org";
       };
       tasty = {
@@ -383,23 +368,8 @@
         hash = "04kg2qdnsqzzmj3xggy2jcgidlp21lsjkz4sfnbq7b1yhrv2vbbc";
         repo = "hackage.haskell.org";
       };
-      unordered-containers = {
-        version = "0.2.21";
-        hash = "0na84q5vxxww3pmz72ihpx4j7dhk71z28r55i7j0pq7mj27jasb0";
-        repo = "hackage.haskell.org";
-      };
-      witherable = {
-        version = "0.5";
-        hash = "0xm77dqyfm0zh0xvnh1srwxrkn4sl7m126lqhbzc4q9f6lziwzdx";
-        repo = "hackage.haskell.org";
-      };
     };
     latest-polysemy-process = {
-      aeson = {
-        version = "2.2.3.0";
-        hash = "1a9a0z6ljbck5scwkk9r9p04y9avn9vja3n063lyqgn2v1vjb1sp";
-        repo = "hackage.haskell.org";
-      };
       async = {
         version = "2.2.6";
         hash = "1731pcifiskq6g1b72p34phx85l65ax7mbjw11310b3zwzk0ldyn";
@@ -428,11 +398,6 @@
       incipit-core = {
         version = "0.6.1.1";
         hash = "0qpw07f8ip6h7srqkbzfxyz1z36n75irhc6465s9xvrii1840b2k";
-        repo = "hackage.haskell.org";
-      };
-      indexed-traversable-instances = {
-        version = "0.1.2";
-        hash = "05vpkasz70yjf09hsmbw7nap70sr8p5b7hrsdbmij8k8xqf3qg8r";
         repo = "hackage.haskell.org";
       };
       lifted-async = {
@@ -480,14 +445,9 @@
         hash = "0cw39gvmr9rgh3hc0gd55wimm4lxzw9nyrczixk42nw170bpls40";
         repo = "hackage.haskell.org";
       };
-      semialign = {
-        version = "1.3.1";
-        hash = "05h1ab484ghd2wzx4pdlsfwiy6rayy0lzwk9yda9il7fjwi9sj7n";
-        repo = "hackage.haskell.org";
-      };
-      semigroupoids = {
-        version = "6.0.1";
-        hash = "10qd2y5f5m7jzrha1wfbwwybhhghdwkdmk9ajybdz8h88cz9ig2g";
+      stm-chans = {
+        version = "3.0.0.11";
+        hash = "0h6vdv1243csipwi7wsysprnmip4smvx8l36fq39fqya2nm9n2j0";
         repo = "hackage.haskell.org";
       };
       tasty = {
@@ -508,16 +468,6 @@
       typed-process = {
         version = "0.2.13.0";
         hash = "06ysyzxvlkn1fhd0nxk0q9dcy9vrdqj7c51bv9x33gjbxbaqnfs3";
-        repo = "hackage.haskell.org";
-      };
-      unordered-containers = {
-        version = "0.2.21";
-        hash = "0na84q5vxxww3pmz72ihpx4j7dhk71z28r55i7j0pq7mj27jasb0";
-        repo = "hackage.haskell.org";
-      };
-      witherable = {
-        version = "0.5";
-        hash = "0xm77dqyfm0zh0xvnh1srwxrkn4sl7m126lqhbzc4q9f6lziwzdx";
         repo = "hackage.haskell.org";
       };
     };
