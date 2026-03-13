@@ -115,6 +115,7 @@ module Polysemy.Conc (
 
   -- * Masking
   Mask,
+  MaskMode (..),
   UninterruptibleMask,
   mask,
   uninterruptibleMask,
@@ -188,7 +189,7 @@ import Polysemy.Conc.Effect.Critical (Critical)
 import Polysemy.Conc.Effect.Events (Consume, Events, consume, publish, subscribe)
 import Polysemy.Conc.Effect.Gate (Gate, Gates)
 import Polysemy.Conc.Effect.Lock (Lock, lock, lockOr, lockOrSkip, lockOrSkip_)
-import Polysemy.Conc.Effect.Mask (Mask, Restoration, UninterruptibleMask, mask, restore, uninterruptibleMask)
+import Polysemy.Conc.Effect.Mask (Mask, MaskMode (..), Restoration, UninterruptibleMask, mask, restore, uninterruptibleMask)
 import Polysemy.Conc.Effect.Monitor (Monitor, Restart, RestartingMonitor, ScopedMonitor, monitor, restart, withMonitor)
 import Polysemy.Conc.Effect.Queue (Queue)
 import Polysemy.Conc.Effect.Race (Race, race, timeout)
@@ -275,10 +276,9 @@ import Polysemy.Conc.Sync (withSync)
 
 -- $mask
 -- #mask#
--- The two effects 'Mask' and 'UninterruptibleMask' use the 'Polysemy.Scoped' pattern, which allow an effect
--- with resources to be constrained to a region of code.
--- The actual effect is 'Polysemy.Conc.Effect.Mask.RestoreMask', with `mask` and 'uninterruptibleMask' only specializing
--- 'Polysemy.Conc.Effect.scoped' to the appropriate resource type.
+-- The 'Mask' effect uses the 'Polysemy.Scoped' pattern with 'MaskMode' as the scope parameter.
+-- 'mask' and 'uninterruptibleMask' are convenience functions that pass 'Interruptible' or 'Uninterruptible' to
+-- 'Polysemy.scoped'.
 --
 -- Usage is straightforward:
 --
@@ -291,5 +291,3 @@ import Polysemy.Conc.Sync (withSync)
 --      doUnmaskedThing
 --    doMaskedThing
 -- @
---
--- The @resource@ parameter stays polymorphic; it is used to connect the resource in the interpreter to the callsite.

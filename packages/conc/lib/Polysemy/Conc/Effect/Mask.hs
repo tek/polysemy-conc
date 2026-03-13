@@ -21,26 +21,33 @@ restore ::
 newtype Restoration =
   Restoration { unRestoration :: ∀ a . IO a -> IO a }
 
--- | The scoped masking effect.
-type Mask =
-  Scoped_ RestoreMask
+-- | Whether 'mask' or 'uninterruptibleMask' was requested.
+data MaskMode =
+  Interruptible
+  |
+  Uninterruptible
+  deriving stock (Eq, Show)
 
--- | The scoped uninterruptible masking effect.
-type UninterruptibleMask =
-  Scoped_ RestoreMask
+-- | The scoped masking effect, parameterized by 'MaskMode'.
+type Mask =
+  Scoped MaskMode RestoreMask
+
+-- | Deprecated synonym for 'Mask'.
+type UninterruptibleMask = Mask
+{-# deprecated UninterruptibleMask "Use Mask instead, which now handles both variants via MaskMode" #-}
 
 -- | Mark a region as masked.
--- Uses the 'Scoped_' pattern.
+-- Uses the 'Scoped' pattern with 'Interruptible'.
 mask ::
   Member Mask r =>
   InterpreterFor RestoreMask r
 mask =
-  scoped_
+  scoped Interruptible
 
 -- | Mark a region as uninterruptibly masked.
--- Uses the 'Scoped_' pattern.
+-- Uses the 'Scoped' pattern with 'Uninterruptible'.
 uninterruptibleMask ::
-  Member UninterruptibleMask r =>
+  Member Mask r =>
   InterpreterFor RestoreMask r
 uninterruptibleMask =
-  scoped_
+  scoped Uninterruptible

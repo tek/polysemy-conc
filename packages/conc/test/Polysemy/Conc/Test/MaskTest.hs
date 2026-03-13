@@ -13,7 +13,7 @@ import System.IO.Error (userError)
 import Polysemy.Conc.AtomicState (interpretAtomic)
 import Polysemy.Conc.Effect.Mask (restore, uninterruptibleMask)
 import qualified Polysemy.Conc.Effect.Sync as Sync
-import Polysemy.Conc.Interpreter.Mask (interpretUninterruptibleMaskFinal)
+import Polysemy.Conc.Interpreter.Mask (interpretMaskFinal)
 import Polysemy.Conc.Interpreter.Race (interpretRace)
 import Polysemy.Conc.Interpreter.Sync (interpretSync)
 
@@ -39,7 +39,7 @@ test_mask =
   asyncToIOFinal $
   interpretRace $
   interpretTimeGhc $
-  interpretUninterruptibleMaskFinal $
+  interpretMaskFinal $
   interpretAtomic (0 :: Int) $
   interpretSync @(Proxy 2) $
   interpretSync @(Proxy 1) do

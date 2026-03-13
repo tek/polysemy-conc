@@ -8,9 +8,9 @@ import Polysemy.Final (runS, withStrategicToFinal, withWeavingToFinal)
 
 import Polysemy.Conc.Effect.Mask (
   Mask,
+  MaskMode (Interruptible, Uninterruptible),
   Restoration (Restoration),
   RestoreMask (Restore),
-  UninterruptibleMask,
   )
 
 mask ::
@@ -39,28 +39,42 @@ interpretRestoreMask (Restoration restore) =
     Restore ma ->
       withStrategicToFinal (restore <$> runS (runTSimple ma))
 
+maskForMode ::
+  Member (Final IO) r =>
+  MaskMode ->
+  (Restoration -> Sem r a) ->
+  Sem r a
+maskForMode = \case
+  Interruptible -> mask
+  Uninterruptible -> uninterruptibleMask
+
 -- | Interpret 'Mask' by sequencing the action without masking.
 interpretMaskPure :: InterpreterFor Mask r
 interpretMaskPure =
   interpretScopedH (const ($ ())) \ () -> \case
     Restore ma -> runTSimple ma
 
--- | Interpret 'Mask' in 'IO'.
+-- | Interpret 'Mask' in 'IO', dispatching on 'MaskMode' to select 'Base.mask' or 'Base.uninterruptibleMask'.
 interpretMaskFinal ::
   Member (Final IO) r =>
   InterpreterFor Mask r
 interpretMaskFinal =
-  runScoped (const mask) \ r -> interpretRestoreMask r
+  runScoped maskForMode interpretRestoreMask
 
--- | Interpret 'UninterruptibleMask' by sequencing the action without masking.
-interpretUninterruptibleMaskPure :: InterpreterFor UninterruptibleMask r
+-- | Interpret 'Mask' by sequencing the action without masking.
+--
+-- @since 0.14.1.0
+{-# deprecated interpretUninterruptibleMaskPure "Use interpretMaskPure, which now handles both variants" #-}
+interpretUninterruptibleMaskPure :: InterpreterFor Mask r
 interpretUninterruptibleMaskPure =
-  interpretScopedH (const ($ ())) \ () -> \case
-    Restore ma -> runTSimple ma
+  interpretMaskPure
 
--- | Interpret 'UninterruptibleMask' in 'IO'.
+-- | Interpret 'Mask' in 'IO'.
+--
+-- @since 0.14.1.0
+{-# deprecated interpretUninterruptibleMaskFinal "Use interpretMaskFinal, which now handles both variants" #-}
 interpretUninterruptibleMaskFinal ::
   Member (Final IO) r =>
-  InterpreterFor UninterruptibleMask r
+  InterpreterFor Mask r
 interpretUninterruptibleMaskFinal =
-  runScoped (const uninterruptibleMask) \ r -> interpretRestoreMask r
+  interpretMaskFinal
