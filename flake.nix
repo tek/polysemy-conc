@@ -4,8 +4,8 @@
   inputs.hix.url = "git+https://git.tryp.io/tek/hix";
 
   outputs = {hix, ...}: hix.lib.pro ({config, ...}: {
-    ghcVersions = ["ghc94" "ghc96" "ghc98" "ghc910"];
-    hackage.versionFile = "ops/version.nix";
+    ghcVersions = ["ghc98" "ghc910" "ghc912"];
+    release.versionFile = "ops/version.nix";
     main = "polysemy-process";
     gen-overrides.enable = true;
 
@@ -101,6 +101,7 @@
       license = "BSD-2-Clause-Patent";
       license-file = "LICENSE";
       author = "Torsten Schmits";
+      language = "GHC2021";
       prelude = {
         enable = true;
         package.name = "incipit-core";
@@ -117,22 +118,19 @@
       enable = true;
       lower.enable = true;
       sets = "each";
-      latest.compiler = "ghc910";
+      latest.compiler = "ghc912";
+      lower.compiler = "ghc94";
     };
 
-    overrides = {jailbreak, unbreak, hackage, ...}: {
-      polysemy-test = unbreak;
-    };
-
-    envs.ghc910.overrides = {hackage, jailbreak, ...}: {
-      bytebuild = jailbreak;
-      chronos = jailbreak;
-      incipit-base = jailbreak;
-      incipit-core = jailbreak;
-      polysemy-test = jailbreak;
+    package-sets.ghc912.overrides = {jailbreak, ...}: {
       polysemy-resume = jailbreak;
+      polysemy-test = jailbreak;
       polysemy-time = jailbreak;
     };
+
+    hackage.repos."hackage.haskell.org".user = "tek";
+
+    internal.hixCli.dev = true;
 
   });
 }
