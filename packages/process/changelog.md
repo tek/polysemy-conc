@@ -1,3 +1,10 @@
+# Unreleased
+
+## Breaking
+
+* Fixed a regression in the effect `Mask`, which used the same type for both modes.
+  Changed to use a term-level scope parameter.
+
 # 0.14.0.0
 
 ## Breaking
