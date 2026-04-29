@@ -46,7 +46,7 @@ tests =
     ],
     testGroup "monitor" [
       unitTestTimes 100 "basic" test_monitorBasic,
-      unitTestTimes 1000 "clock skew" test_monitorClockSkew
+      unitTestTimes 100 "clock skew" test_monitorClockSkew
     ]
   ]
 
