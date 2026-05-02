@@ -23,7 +23,7 @@
       };
       polysemy-conc = {
         lower = null;
-        upper = null;
+        upper = "0.16";
       };
       polysemy-plugin = {
         lower = "0.4.4.0";
@@ -101,7 +101,7 @@
       };
       polysemy-conc = {
         lower = "0.12.1.0";
-        upper = "0.15";
+        upper = "0.16";
       };
       polysemy-plugin = {
         lower = "0.4.4.0";
@@ -109,7 +109,7 @@
       };
       polysemy-process = {
         lower = null;
-        upper = null;
+        upper = "0.16";
       };
       polysemy-resume = {
         lower = "0.7.0.0";
@@ -1028,6 +1028,13 @@
     lower-polysemy-conc = {};
     lower-polysemy-process = {};
   };
-  packages = {};
+  packages = {
+    polysemy-conc = {
+      version = "0.15.0.0";
+    };
+    polysemy-process = {
+      version = "0.15.0.0";
+    };
+  };
   resolving = false;
 }

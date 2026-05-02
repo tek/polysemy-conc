@@ -5,7 +5,7 @@ cabal-version: 2.2
 -- see: https://github.com/sol/hpack
 
 name:           polysemy-conc
-version:        0.14.1.1
+version:        0.15.0.0
 synopsis:       Polysemy effects for concurrency
 description:    See https://hackage.haskell.org/package/polysemy-conc/docs/Polysemy-Conc.html
 category:       Concurrency
@@ -179,7 +179,7 @@ test-suite polysemy-conc-test
     , hedgehog >=1.4 && <1.8
     , incipit-core >=0.4.1.0 && <0.8
     , polysemy >=1.9.0.0 && <1.10
-    , polysemy-conc
+    , polysemy-conc <0.16
     , polysemy-plugin >=0.4.4.0 && <0.5
     , polysemy-test >=0.6.0.0 && <0.12
     , polysemy-time >=0.5.1.0 && <0.8
