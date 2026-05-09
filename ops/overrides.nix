@@ -149,15 +149,15 @@ mkDerivation {
 ;
     incipit-core = {
   meta = {
-    sha256 = "1bnaqzdc1vs9vcdlbaljdwv586syam3ahppqq9lwmg2jcvqp2zqr";
+    sha256 = "0izgrcc75icfv9hncrcp5dwc40ydjvc3p2xi10n221nkan6wq6hc";
     url = "https://hackage.haskell.org";
-    ver = "0.7.0.1";
+    ver = "0.7.0.2";
   };
   drv = { mkDerivation, base, incipit-base, lib, polysemy }:
 mkDerivation {
   pname = "incipit-core";
-  version = "0.7.0.1";
-  src = /nix/store/fphdspn1hwi7ygddkdy3m6qdvc2vlkx6-source;
+  version = "0.7.0.2";
+  src = /nix/store/0aanxgvnggn7k9qn0qnwa8gazas9f4sg-source;
   libraryHaskellDepends = [ base incipit-base polysemy ];
   homepage = "https://github.com/tek/incipit-core#readme";
   description = "A Prelude for Polysemy";
@@ -347,17 +347,17 @@ mkDerivation {
 ;
     polysemy-resume = {
   meta = {
-    sha256 = "1i2bnpd3l357jhln8xl92z65b3mskz9y8z1xlha4lm0m855qyk15";
+    sha256 = "0d6hi0p71z2nv1xpd163gjv2yrnwsj0w7cx1nqabw53gpr63mrip";
     url = "https://hackage.haskell.org";
-    ver = "0.9.0.1";
+    ver = "0.9.0.2";
   };
   drv = { mkDerivation, base, incipit-core, lib, polysemy, polysemy-plugin
 , polysemy-test, stm, tasty, transformers
 }:
 mkDerivation {
   pname = "polysemy-resume";
-  version = "0.9.0.1";
-  src = /nix/store/mxw7kjiqx9gr4p06crj2j0f34rkdrdqn-source;
+  version = "0.9.0.2";
+  src = /nix/store/c73wa2bm1qgz5vc2gfzv3xh2rzhryrm4-source;
   libraryHaskellDepends = [
     base incipit-core polysemy transformers
   ];
@@ -401,17 +401,17 @@ mkDerivation {
 ;
     polysemy-time = {
   meta = {
-    sha256 = "0cw39gvmr9rgh3hc0gd55wimm4lxzw9nyrczixk42nw170bpls40";
+    sha256 = "1g536vx6yflx86yb7l8ld47byasj2dx8qsy32ji5dk7qi059mnwg";
     url = "https://hackage.haskell.org";
-    ver = "0.7.0.1";
+    ver = "0.7.0.2";
   };
   drv = { mkDerivation, aeson, base, incipit-core, lib, polysemy-test
 , tasty, template-haskell, time, torsor
 }:
 mkDerivation {
   pname = "polysemy-time";
-  version = "0.7.0.1";
-  src = /nix/store/akynivsc8xs0v3cf06g7jlcch86xsapw-source;
+  version = "0.7.0.2";
+  src = /nix/store/s8nnhjqzc3h3l34qvjp97inmw87sf8ka-source;
   libraryHaskellDepends = [
     aeson base incipit-core template-haskell time torsor
   ];
@@ -757,15 +757,15 @@ mkDerivation {
 ;
     incipit-core = {
   meta = {
-    sha256 = "1bnaqzdc1vs9vcdlbaljdwv586syam3ahppqq9lwmg2jcvqp2zqr";
+    sha256 = "0izgrcc75icfv9hncrcp5dwc40ydjvc3p2xi10n221nkan6wq6hc";
     url = "https://hackage.haskell.org";
-    ver = "0.7.0.1";
+    ver = "0.7.0.2";
   };
   drv = { mkDerivation, base, incipit-base, lib, polysemy }:
 mkDerivation {
   pname = "incipit-core";
-  version = "0.7.0.1";
-  src = /nix/store/fphdspn1hwi7ygddkdy3m6qdvc2vlkx6-source;
+  version = "0.7.0.2";
+  src = /nix/store/0aanxgvnggn7k9qn0qnwa8gazas9f4sg-source;
   libraryHaskellDepends = [ base incipit-base polysemy ];
   homepage = "https://github.com/tek/incipit-core#readme";
   description = "A Prelude for Polysemy";
@@ -923,9 +923,9 @@ mkDerivation {
 ;
     polysemy-conc = {
   meta = {
-    sha256 = "1xli6ja9f7qx2k9956lw4h9y5ywdglhgw769afxw9d4w9avclx28";
+    sha256 = "00ds083rpahv3q5n355hcbgv1ba7l121bpj642pkc7z0lpciq0z5";
     url = "https://hackage.haskell.org";
-    ver = "0.14.1.1";
+    ver = "0.15.0.0";
   };
   drv = { mkDerivation, async, base, hedgehog, incipit-core, lib, polysemy
 , polysemy-plugin, polysemy-resume, polysemy-test, polysemy-time
@@ -933,8 +933,8 @@ mkDerivation {
 }:
 mkDerivation {
   pname = "polysemy-conc";
-  version = "0.14.1.1";
-  src = /nix/store/j8i858l0kb1zddk8w5g2swga6cfmd2ap-source;
+  version = "0.15.0.0";
+  src = /nix/store/gjpqg6nqs2kxqgawxckyj52lpwshqi5v-source;
   libraryHaskellDepends = [
     async base incipit-core polysemy polysemy-resume polysemy-time stm
     stm-chans torsor unagi-chan
@@ -984,17 +984,17 @@ mkDerivation {
 ;
     polysemy-resume = {
   meta = {
-    sha256 = "1i2bnpd3l357jhln8xl92z65b3mskz9y8z1xlha4lm0m855qyk15";
+    sha256 = "0d6hi0p71z2nv1xpd163gjv2yrnwsj0w7cx1nqabw53gpr63mrip";
     url = "https://hackage.haskell.org";
-    ver = "0.9.0.1";
+    ver = "0.9.0.2";
   };
   drv = { mkDerivation, base, incipit-core, lib, polysemy, polysemy-plugin
 , polysemy-test, stm, tasty, transformers
 }:
 mkDerivation {
   pname = "polysemy-resume";
-  version = "0.9.0.1";
-  src = /nix/store/mxw7kjiqx9gr4p06crj2j0f34rkdrdqn-source;
+  version = "0.9.0.2";
+  src = /nix/store/c73wa2bm1qgz5vc2gfzv3xh2rzhryrm4-source;
   libraryHaskellDepends = [
     base incipit-core polysemy transformers
   ];
@@ -1038,17 +1038,17 @@ mkDerivation {
 ;
     polysemy-time = {
   meta = {
-    sha256 = "0cw39gvmr9rgh3hc0gd55wimm4lxzw9nyrczixk42nw170bpls40";
+    sha256 = "1g536vx6yflx86yb7l8ld47byasj2dx8qsy32ji5dk7qi059mnwg";
     url = "https://hackage.haskell.org";
-    ver = "0.7.0.1";
+    ver = "0.7.0.2";
   };
   drv = { mkDerivation, aeson, base, incipit-core, lib, polysemy-test
 , tasty, template-haskell, time, torsor
 }:
 mkDerivation {
   pname = "polysemy-time";
-  version = "0.7.0.1";
-  src = /nix/store/akynivsc8xs0v3cf06g7jlcch86xsapw-source;
+  version = "0.7.0.2";
+  src = /nix/store/s8nnhjqzc3h3l34qvjp97inmw87sf8ka-source;
   libraryHaskellDepends = [
     aeson base incipit-core template-haskell time torsor
   ];
